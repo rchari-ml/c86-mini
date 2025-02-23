@@ -1,0 +1,316 @@
+global:
+  ingress:
+    enabled: true
+    className: nginx
+    host: "c86-mini.makelabs.in"
+#    tls:
+#      enabled: true
+#      secretName: tls-grpc-secret
+  identity:
+    auth:
+      publicIssuerUrl: "https://c86-mini.makelabs.in/auth/realms/camunda-platform"
+      operate:
+        redirectUrl: "http://c86-mini.makelabs.in/operate"
+        existingSecret:
+          name: identity-secret-for-components
+        existingSecretKey: operate-secret
+
+      tasklist:
+        redirectUrl: "http://c86-mini.makelabs.in/tasklist"
+        existingSecret:
+          name: identity-secret-for-components
+        existingSecretKey: tasklist-secret
+
+      optimize:
+        redirectUrl: "http://c86-mini.makelabs.in/optimize"
+        existingSecret:
+          name: identity-secret-for-components
+        existingSecretKey: optimize-secret
+#     web modeler is not in use at the moment.
+#      webModeler:
+#        redirectUrl: "http://camunda.makelabs.in/webmodeler"
+#        existingSecret:
+#          name: identity-secret-for-components
+
+      connectors:
+        existingSecret:
+          name: identity-secret-for-components
+        existingSecretKey: connectors-secret
+
+      console:
+        redirectUrl: "https://c86-mini.makelabs.in/console"
+        existingSecret:
+          name: identity-secret-for-components
+        existingSecretKey: console-secret
+
+      zeebe:
+        existingSecret:
+          name: identity-secret-for-components
+        existingSecretKey: zeebe-secret
+
+  elasticsearch:
+    enabled: true
+    external: true
+    tls:
+      enabled: true
+      existingSecret: elastic-jks
+    auth:
+      username: elastic
+      password: makelabs
+    url:
+      protocol: https
+      host: elasticsearch-master
+      port: 9200
+    clusterName: elasticsearch
+    prefix: zeebe-record
+
+identity:
+  image:
+    pullSecrets:
+      - name: registry-docker-hub
+  contextPath: "/identity"
+  fullURL: "http://c86-mini.makelabs.in/identity"
+  firstUser:
+    username: demo
+    password: makelabs
+    email: demo@makelabs.in
+#    existingSecret:
+#      name: identity-secret-for-components
+#    existingSecretKey: identity-firstuser-password
+
+  keycloak:
+    extraEnvVars:
+      - name: KEYCLOAK_PROXY_ADDRESS_FORWARDING
+        value: "true"
+      - name: KEYCLOAK_FRONTEND_URL
+        value: "http://c86-mini.makelabs.in/auth"
+
+
+identityKeycloak:
+  image:
+    pullSecrets:
+      - name: registry-docker-hub
+  auth:
+    existingSecret: identity-secret-for-components
+    passwordSecretKey: admin-password
+  postgresql:
+    auth:
+      existingSecret: identity-secret-for-components
+    existingSecretKey: admin-password
+
+operate:
+  image:
+    pullSecrets:
+      - name: registry-docker-hub
+#  ingress:
+#    enabled: true
+  contextPath: "/operate"
+#  resources:
+#    requests:
+#      cpu: "100m"
+#      memory: "512M"
+#    limits:
+#      cpu: "250m"
+#      memory: "1Gi"
+
+optimize:
+  enabled: true
+  image:
+    pullSecrets:
+      - name: registry-docker-hub
+  contextPath: "/optimize"
+#  ingress:
+#    enabled: true
+#  resources:
+#    requests:
+#      cpu: "100m"
+#      memory: "512M"
+#    limits:
+#      cpu: "250m"
+#      memory: "1Gi"
+
+tasklist:
+#  ingress:
+#    enabled: true
+  contextPath: "/tasklist"
+  image:
+    pullSecrets:
+      - name: registry-docker-hub
+#  resources:
+#    requests:
+#      cpu: "100m"
+#      memory: "512M"
+#    limits:
+#      cpu: "250m"
+#      memory: "1Gi"
+
+#webModeler:
+  # The context path is used for the web application that will be accessed by users in the browser.
+  # In addition, a WebSocket endpoint will be exposed on "[contextPath]-ws", e.g. "/modeler-ws".
+#  contextPath: "/modeler"
+
+console:
+  contextPath: "/console"
+  enabled: true
+  image:
+    pullSecrets:
+      - name: registry-camunda-cloud
+  ingress:
+    host: "c86-mini.makelabs.in"
+    path: "/"
+    pathType: Prefix
+  env:
+    - name: KEYCLOAK_BASE_URL
+      value: "https://c86-mini.makelabs.in/auth"
+    - name: KEYCLOAK_INTERNAL_BASE_URL
+      value: "http://camunda.makelabs.in/auth"
+    - name: CAMUNDA_CONSOLE_CONTEXT_PATH
+      value: console
+    - name: CAMUNDA_IDENTITY_CLIENT_ID
+      value: console
+    - name: CAMUNDA_IDENTITY_AUDIENCE
+      value: console
+    - name: CAMUNDA_CONSOLE_CUSTOMERID
+      value: makelabs-in
+    - name: CAMUNDA_CONSOLE_INSTALLATIONID
+      value: makelabs-in-c86-mini-deployment
+    - name: CAMUNDA_CONSOLE_TELEMETRY
+      value: online
+    - name: KEYCLOAK_REALM
+      value: camunda-platform
+#  resources:
+#    requests:
+#      cpu: "100m"
+#      memory: "512M"
+#    limits:
+#      cpu: "250m"
+#      memory: "1Gi"
+
+
+connectors:
+  image:
+    pullSecrets:
+      - name: registry-docker-hub
+  contextPath: "/connectors"
+  enabled: true
+  ingress:
+    host: "c86-mini.makelabs.in"
+  replicas: 1
+  metrics:
+    prometheus: /actuator/prometheus
+#  resources:
+#    requests:
+#      cpu: "100m"
+#      memory: "512M"
+#    limits:
+#      cpu: "250m"
+#      memory: "1Gi"
+
+zeebeGateway:
+  image:
+    pullSecrets:
+      - name: registry-docker-hub
+  contextPath: "/zeebe"
+  env:
+    - name: ZEEBE_GATEWAY_SECURITY_AUTHENTICATION_MODE
+      value: "none"
+  ingress:
+    grpc:
+      enabled: true
+      className: nginx
+      host: "zeebe.c86-mini.makelabs.in"
+    rest:
+      enabled: true
+      className: nginx
+      host: "c86-mini.makelabs.in"
+      path: "/zeebe"
+  replicas: 1
+#  resources:
+#    requests:
+#      memory: "512Mi"
+#      cpu: "150m"
+#    limits:
+#      memory: "1024Mi"
+#      cpu: "500m"
+
+zeebe:
+  image:
+    pullSecrets:
+      - name: registry-docker-hub
+  enabled: true
+  prometheusServiceMonitor:
+    enabled: true
+  metrics:
+    prometheus: /zeebe/actuator/prometheus
+  env:
+    - name: ZEEBE_BROKER_CLUSTER_RAFT_ENABLEPRIORITYELECTION
+      value: "false"
+    - name: ZEEBE_BROKER_CLUSTER_MEMBERSHIP_BROADCASTUPDATES
+      value: "true"
+    - name: ZEEBE_BROKER_EXECUTION_METRICS_EXPORTER_ENABLED
+      value: "true"
+    - name: ZEEBE_BROKER_EXPERIMENTAL_ROCKSDB_ENABLEACCESSMETRICS
+      value: "fine"
+  clusterSize: 3
+  partitionCount: 5
+  replicationFactor: 3
+  pvcSize: 3Gi
+  # refer to partitioning docs. https://docs.camunda.io/docs/self-managed/zeebe-deployment/configuration/fixed-partitioning/
+
+  membership:
+    configManager:
+      gossip:
+        syncDelay: 10s
+        syncRequestTimeout: 5s
+        gossipFanout: 2
+
+#  resources:
+#    requests:
+#      cpu: "100m"
+#      memory: "512M"
+#    limits:
+#      cpu: "250m"
+#      memory: "1Gi"
+
+  exporters:
+    elasticsearch:
+      className: io.camunda.zeebe.exporter.ElasticsearchExporter
+      args:
+        url: https://elasticsearch-master:9200
+        bulk:
+          delay: 5
+          size: 1000
+          memoryLimit: 10485760
+        authentication:
+          username: elastic
+          password: makelabs
+        index:
+          prefix: zeebe-record
+          createTemplate: true
+          numberOfShards: 3
+          numberOfReplicas: 0
+        retention:
+          enabled: true
+          minimumAge: 10d
+          policyName: zeebe-record-retention-policy
+
+postgresql:
+  image:
+    pullSecrets:
+      - name: registry-docker-hub
+
+# lets use existing elk - we have it running with another namespace. check the config.
+elasticsearch:
+  enabled: false
+#  image:
+#    pullSecrets:
+#      - name: registry-docker-hub
+
+#  master:
+#    replicaCount: 1
+#  data:
+#    replicaCount: 0
+#  coordinating:
+#    replicaCount: 0
+#  ingest:
+#    replicaCount: 0

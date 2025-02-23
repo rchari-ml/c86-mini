@@ -1,0 +1,11 @@
+connectors:
+  env:
+     - name: CAMUNDA_CONNECTOR_SECRETPROVIDER_ENVIRONMENT_PREFIX
+       value: CEP_SECRETS_
+     - name: CEP_SECRETS_CUSTOMER_APP_SECRET
+       value: do-not-use-this-app-secret-use-below-token-instead
+     - name: CEP_SECRETS_EMAIL_APP_ACCESS_TOKEN
+       value: copy-value-from-this-site-cep-now.makelabs.in
+  image:
+    pullSecrets:
+      - name: registry-docker-hub

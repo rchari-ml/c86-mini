@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    field.cattle.io/containerDefaultResourceLimit: '{"limitsCpu":"1000m","limitsMemory":"1024Mi","requestsCpu":"500m","requestsMemory":"512Mi"}'
+  creationTimestamp: "2025-02-18T11:21:40Z"
+  labels:
+    kubernetes.io/metadata.name: c86-mini
+  managedFields:
+  - apiVersion: v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:metadata:
+        f:annotations:
+          .: {}
+          f:field.cattle.io/containerDefaultResourceLimit: {}
+        f:labels:
+          .: {}
+          f:kubernetes.io/metadata.name: {}
+    manager: raghu
+    operation: Update
+    time: "2025-02-18T11:21:40Z"
+  name: c86-mini
+  resourceVersion: "13076"
+  uid: 265e8b36-4804-413c-a1a2-fc1e3f377d9f
+spec:
+  finalizers:
+  - kubernetes
+status:
+  phase: Active
