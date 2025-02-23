@@ -251,9 +251,9 @@ zeebe:
       value: "true"
     - name: ZEEBE_BROKER_EXPERIMENTAL_ROCKSDB_ENABLEACCESSMETRICS
       value: "fine"
-  clusterSize: 3
+  clusterSize: 1
   partitionCount: 5
-  replicationFactor: 3
+  replicationFactor: 1
   pvcSize: 3Gi
   # refer to partitioning docs. https://docs.camunda.io/docs/self-managed/zeebe-deployment/configuration/fixed-partitioning/
 
