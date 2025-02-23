@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to Camunda 8.6 Cluster Setup Hands On Lab!</title>
+
+    <style media="screen">
+      body { background: white; color: rgba(0,0,0,0.87); font-family: "Manrope", sans-serif; margin: 0; padding: 0; }
+      #message { background: #ECEFF1; max-width: 400px; margin: 50px auto 25px; padding: 28px 36px; border-radius: 2px; }
+      #message h2 { color: #ffa100; font-weight: bold; font-size: 18px; margin: 0 0 24px; }
+      #message h1 { font-size: 24px; font-weight: 400; color: rgba(0,0,0,0.6); margin: 0 0 20px;letter-spacing: -0.1px;line-height: 1.125;}
+      #message h4 { font-size: 12px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 10px;}
+      #message small { font-size: 12px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 10px;}
+      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
+      #message a { cursor: pointer; }
+      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
+      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
+      @media (max-width: 600px) {
+        body, #message { margin-top: 0; background: white; box-shadow: none; }
+        body { border-top: 16px solid #ffa100; }
+      }
+      .top-banner {
+            background-color: rgb(6,147,227);
+            color: white;
+            text-align: center;
+            padding: 5px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+      }
+    </style>
+</head>
+<body>
+  <div>
+    <div style="background-color:rgb(6,147,227);padding-top:25px;padding-bottom:25px;">
+      <p style="color: white"></p>
+    </div>
+
+    <div style="margin-top: 25px;">
+      <center><img style="height: 10%;width: 9%;vertical-align: top; padding: 0px 5px 0px 5px;z-index: 2;" src="/favicon.ico"/></center>
+    </div>
+    <div id="message">
+          <h1>Welcome to Enablement Program</h1>
+          <h2>Camunda 8.6 Cluster Setup Hands On Lab</h2>
+          <h4>MakeLabs.in</h4>
+          <p>
+            Camunda 8.6 cluster is setup on KIND (Kubernetes in Docker) platform.
+            It creates a Kubernetes cluster using Docker to host the nodes.
+            The setup was implemented using Helm charts provided by Camunda.
+            <br/><br/>
+            More about the official documentation <a href="https://github.com/camunda/camunda-platform-helm/tree/main/charts/camunda-platform-8.6">here</a>.
+          </p>
+
+          <p>
+            Camunda Platform Webapps.
+            <br/>
+            <a href="/console">Console</a>&nbsp;&nbsp;
+            <a  href="/operate">Operate</a>&nbsp;&nbsp;
+            <a href="/optimize">Optimize</a>&nbsp;&nbsp;
+            <a href="/tasklist">Tasklist</a>&nbsp;&nbsp;
+          </p>
+          <p>
+            Administration Webapps.
+            <br/>
+            <a href="/auth/">Admin Console</a>&nbsp;&nbsp;
+            <a href="/auth/realms/camunda-platform/.well-known/openid-configuration">Open ID Config</a>&nbsp;&nbsp;
+            <a href="/camunda-pods-status.png">Pods Infra Status</a>&nbsp;&nbsp;
+            <a href="/ml-api/fetchTopology">Topology</a>&nbsp;&nbsp;
+          </p>
+
+          <p><em>Visit the <a href="https://cep-now.makelabs.in">Enablement Program portal</a> here.</em></p>
+          <p><em>Note: This site is built using Cloudflare Access and Zero Trust components.</em></p>
+      </div>
+  </div>
+</body>
+</html>
