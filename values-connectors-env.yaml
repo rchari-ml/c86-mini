@@ -6,6 +6,10 @@ connectors:
        value: do-not-use-this-app-secret-use-below-token-instead
      - name: CEP_SECRETS_EMAIL_APP_ACCESS_TOKEN
        value: copy-value-from-this-site-cep-now.makelabs.in
+     - name: CEP_SECRETS_NOT_IN_USE_ACCESS_TOKEN
+        existingSecret:
+          name: identity-secret-for-components
+        existingSecretKey: cep-not-in-use-access-token
   image:
     pullSecrets:
       - name: registry-docker-hub
