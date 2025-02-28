@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.4.2</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>in.makelabs.tasklist</groupId>
+	<artifactId>toolkit</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>tasklist-toolkit</name>
+	<description>Toolkit project for Spring Boot and Camunda Cluster Mini</description>
+	<url/>
+	<licenses>
+		<license/>
+	</licenses>
+	<developers>
+		<developer/>
+	</developers>
+	<scm>
+		<connection/>
+		<developerConnection/>
+		<tag/>
+		<url/>
+	</scm>
+	<properties>
+		<java.version>21</java.version>
+		<zeebe.client.version>8.3.0</zeebe.client.version>
+		<zeebe.starter.version>8.3.0</zeebe.starter.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>io.camunda</groupId>
+			<artifactId>spring-boot-starter-camunda-sdk</artifactId>
+			<version>8.6.7</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- this is deprecated since Camunda 8.6.x. See here: https://docs.camunda.io/docs/apis-tools/spring-zeebe-sdk/getting-started/
+		<dependency>
+			<groupId>io.camunda</groupId>
+			<artifactId>zeebe-client-java</artifactId>
+			<version>${zeebe.client.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.camunda</groupId>
+			<artifactId>spring-zeebe-starter</artifactId>
+			<version>${zeebe.starter.version}</version>
+		</dependency>
+		-->
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
