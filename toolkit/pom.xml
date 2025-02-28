@@ -27,7 +27,7 @@
 		<url/>
 	</scm>
 	<properties>
-		<java.version>21</java.version>
+		<java.version>11</java.version>
 		<zeebe.client.version>8.3.0</zeebe.client.version>
 		<zeebe.starter.version>8.3.0</zeebe.starter.version>
 	</properties>
