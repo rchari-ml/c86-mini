@@ -1,0 +1,88 @@
+{
+  "components": [
+    {
+      "label": "Group",
+      "components": [
+        {
+          "label": "Company Name",
+          "type": "textfield",
+          "layout": {
+            "row": "Row_008egnh",
+            "columns": null
+          },
+          "id": "Field_0gkfoth",
+          "key": "companyName",
+          "readonly": true
+        },
+        {
+          "label": "Pincode",
+          "type": "textfield",
+          "layout": {
+            "row": "Row_008egnh",
+            "columns": null
+          },
+          "id": "Field_1iuzfzc",
+          "key": "companyPincode",
+          "readonly": true
+        },
+        {
+          "label": "Phone",
+          "type": "textfield",
+          "layout": {
+            "row": "Row_1y536ck",
+            "columns": null
+          },
+          "id": "Field_08g4lrl",
+          "key": "companyContactPhone",
+          "readonly": true
+        },
+        {
+          "label": "Email",
+          "type": "textfield",
+          "layout": {
+            "row": "Row_1y536ck",
+            "columns": null
+          },
+          "id": "Field_1dxvmoi",
+          "key": "companyContactEmail"
+        }
+      ],
+      "showOutline": true,
+      "type": "group",
+      "layout": {
+        "row": "Row_17bc9jk",
+        "columns": null
+      },
+      "id": "Field_18htf90"
+    },
+    {
+      "label": "Approved?",
+      "values": [
+        {
+          "label": "Yes",
+          "value": "true"
+        },
+        {
+          "label": "No",
+          "value": "false"
+        }
+      ],
+      "type": "radio",
+      "layout": {
+        "row": "Row_0bnck9c",
+        "columns": null
+      },
+      "id": "Field_0mi5lks",
+      "key": "t_flag"
+    }
+  ],
+  "type": "default",
+  "id": "Form_NewLead_Approval",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.6.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.29.0"
+  },
+  "schemaVersion": 17
+}

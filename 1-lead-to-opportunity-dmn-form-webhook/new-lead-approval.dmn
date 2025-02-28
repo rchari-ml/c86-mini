@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0qtmnuj" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="5.29.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.6.0">
+  <decision id="Decision_New_Lead_Approval" name="Decision for Pre Approval - New Lead Record">
+    <decisionTable id="DecisionTable_1bjiqar" hitPolicy="FIRST">
+      <input id="Input_1" label="pincode">
+        <inputExpression id="InputExpression_1" typeRef="string">
+          <text>customerPincode</text>
+        </inputExpression>
+      </input>
+      <output id="Output_1" label="preApproveFlag" name="preApproveFlag" typeRef="boolean" />
+      <rule id="DecisionRule_1atac28">
+        <description>Put specific rules at the top, general at the bottom</description>
+        <inputEntry id="UnaryTests_09jzpzy">
+          <text>"600001"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_09jif30">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_15hpi9y">
+        <description>Another value</description>
+        <inputEntry id="UnaryTests_0752v5t">
+          <text>"560054"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0eo0djz">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1mbont6">
+        <description>Chennai and industrial areas</description>
+        <inputEntry id="UnaryTests_0w1m6f6">
+          <text>matches(pincode, "^6000*")</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1y0jt40">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0xoz66w">
+        <description>Bengaluru region - Use regular expression to match multiple criteria</description>
+        <inputEntry id="UnaryTests_16lscuh">
+          <text>matches(pincode, "^5600*")</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1n9fl97">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1j6r6s0">
+        <description>Hyderabad region</description>
+        <inputEntry id="UnaryTests_1x2ry02">
+          <text>matches(pincode, "^5000*")</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_04ui1sq">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1pnhwnr">
+        <description>All others are handled as per process def</description>
+        <inputEntry id="UnaryTests_0ec3muc">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0ul5lzs">
+          <text>false</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram>
+      <dmndi:DMNShape dmnElementRef="Decision_New_Lead_Approval">
+        <dc:Bounds height="80" width="180" x="160" y="100" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>
