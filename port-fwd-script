@@ -1,19 +1,23 @@
 kubectl port-forward svc/camunda-keycloak       18080:80 --namespace c86-mini
 
-kubectl port-forward svc/camunda-identity       8080:80 --namespace c86-mini
+kubectl port-forward svc/camunda-identity       8080:80  --namespace c86-mini
 
-kubectl port-forward svc/camunda-operate      8081:80 --namespace c86-mini
+kubectl port-forward svc/camunda-operate        8081:80  --namespace c86-mini
 
-kubectl port-forward svc/camunda-tasklist       8082:80 --namespace c86-mini
+kubectl port-forward svc/camunda-tasklist       8082:80  --namespace c86-mini
 
-kubectl port-forward svc/camunda-optimize     8083:80 --namespace c86-mini
+kubectl port-forward svc/camunda-optimize       8083:80  --namespace c86-mini
 
-kubectl port-forward svc/camunda-connectors 8086:8080 --namespace c86-mini
+kubectl port-forward svc/camunda-connectors     8086:8080 --namespace c86-mini
 
-kubectl port-forward svc/camunda-console       8087:80 --namespace c86-mini
+kubectl port-forward svc/camunda-console        8087:80   --namespace c86-mini
 
-kubectl port-forward svc/camunda-zeebe-gateway 8088:8080 --namespace c86-mini 
+kubectl port-forward svc/camunda-zeebe-gateway  8088:8080 --namespace c86-mini 
 
 kubectl port-forward svc/camunda-zeebe-gateway  26500:26500 --namespace c86-mini
 
-kubectl port-forward svc/camunda-zeebe-gateway 9600:9600 --namespace c86-mini 
+kubectl port-forward svc/camunda-zeebe-gateway  9600:9600 --namespace c86-mini 
+
+kubectl port-forward service/prometheus-server  9090:80   --namespace c86-mini 
+
+kubectl port-forward service/grafana            3000:80   --namespace c86-mini 
