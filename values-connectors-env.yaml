@@ -5,12 +5,10 @@ connectors:
      - name: CEP_SECRETS_CUSTOMER_APP_SECRET
        value: do-not-use-this-app-secret-use-below-token-instead
      - name: CEP_SECRETS_EMAIL_APP_ACCESS_TOKEN
-       value: copy-value-from-this-site-cep-now.makelabs.in
-     - name: CEP_SECRETS_NOT_IN_USE_ACCESS_TOKEN
        valueFrom:
          secretKeyRef:
            name: identity-secret-for-components
-           key: cep-not-in-use-access-token
+           key: cep-email-access-token
 
   image:
     pullSecrets:
