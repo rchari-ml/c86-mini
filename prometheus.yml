@@ -10,4 +10,4 @@ extraScrapeConfigs: |
        insecure_skip_verify: true
      static_configs:
      - targets:
-         - 'c86-mini-x3.makelabs.in'
+         - 'c86-mini.makelabs.in'
