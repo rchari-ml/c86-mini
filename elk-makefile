@@ -22,7 +22,7 @@ kubectl create secret -n c86-mini generic elastic-certificates --from-file=elast
 kubectl create secret -n c86-mini generic elastic-certificate-pem --from-file=elastic-certificate.pem
 kubectl create secret -n c86-mini generic elastic-certificate-crt --from-file=elastic-certificate.crt
 
-openssl pkcs12 -passin pass:'' -in elastic-certificates.p12 -nodes -nocerts | openssl ec -out tls.key
+openssl pkcs12 -passin pass:'' -in elastic-certificates.p12 -nodes -nocerts 1> tls.key
 openssl pkcs12 -passin pass:'' -in elastic-certificates.p12 -nodes -clcerts -nokeys 1> tls.crt
 openssl pkcs12 -passin pass:'' -in elastic-certificates.p12 -nodes -cacerts -nokeys 1> ca.crt
 
