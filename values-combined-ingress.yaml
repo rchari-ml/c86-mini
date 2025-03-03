@@ -10,19 +10,19 @@ global:
     auth:
       publicIssuerUrl: "https://c86-mini.makelabs.in/auth/realms/camunda-platform"
       operate:
-        redirectUrl: "http://c86-mini.makelabs.in/operate"
+        redirectUrl: "https://c86-mini.makelabs.in/operate"
         existingSecret:
           name: identity-secret-for-components
         existingSecretKey: operate-secret
 
       tasklist:
-        redirectUrl: "http://c86-mini.makelabs.in/tasklist"
+        redirectUrl: "https://c86-mini.makelabs.in/tasklist"
         existingSecret:
           name: identity-secret-for-components
         existingSecretKey: tasklist-secret
 
       optimize:
-        redirectUrl: "http://c86-mini.makelabs.in/optimize"
+        redirectUrl: "https://c86-mini.makelabs.in/optimize"
         existingSecret:
           name: identity-secret-for-components
         existingSecretKey: optimize-secret
@@ -69,7 +69,7 @@ identity:
     pullSecrets:
       - name: registry-docker-hub
   contextPath: "/identity"
-  fullURL: "http://c86-mini.makelabs.in/identity"
+  fullURL: "https://c86-mini.makelabs.in/identity"
   firstUser:
     username: demo
     password: makelabs
@@ -83,7 +83,7 @@ identity:
       - name: KEYCLOAK_PROXY_ADDRESS_FORWARDING
         value: "true"
       - name: KEYCLOAK_FRONTEND_URL
-        value: "http://c86-mini.makelabs.in/auth"
+        value: "https://c86-mini.makelabs.in/auth"
 
 
 identityKeycloak:
