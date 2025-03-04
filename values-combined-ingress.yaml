@@ -59,7 +59,7 @@ global:
       password: makelabs
     url:
       protocol: https
-      host: elasticsearch-master
+      host: elasticsearch-master.elastic.svc.cluster.local
       port: 9200
     clusterName: elasticsearch
     prefix: zeebe-record
@@ -276,7 +276,7 @@ zeebe:
     elasticsearch:
       className: io.camunda.zeebe.exporter.ElasticsearchExporter
       args:
-        url: https://elasticsearch-master:9200
+        url: https://elasticsearch-master.elastic.svc.cluster.local:9200
         bulk:
           delay: 5
           size: 1000
