@@ -18,7 +18,8 @@ openssl pkcs12 -passin pass:'' -in elastic-certificates.p12 -nodes -clcerts -nok
 openssl pkcs12 -passin pass:'' -in elastic-certificates.p12 -nodes -cacerts -nokeys 1> ca.crt
 
 #create certs secret in elastic namespace
-kubectl create secret -n elastic generic elasticsearch-master-certs  --from-file=tls.crt  --from-file=tls.key --from-file=ca.crt --type=kubernetes.io/tls
+#Secret name given here should match the corresponding entry in elasticsearch.yaml
+kubectl create secret -n elastic generic elastic-certificates  --from-file=tls.crt  --from-file=tls.key --from-file=ca.crt --type=kubernetes.io/tls
 
 #If this step returns an error, that can be safely ignored
 keytool -delete -alias elasticsearch -keystore externaldb.jks
