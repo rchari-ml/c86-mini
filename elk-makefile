@@ -6,7 +6,7 @@ docker run --name elastic-helm-charts-certs -i -w /tmp \
 		$ELASTICSEARCH_IMAGE \
 		/bin/sh -c " \
 			elasticsearch-certutil ca --out /tmp/elastic-stack-ca.p12 --pass '' && \
-			elasticsearch-certutil cert --name elasticsearch-master --dns elasticsearch-master,elasticsearch-master.elastic --ca /tmp/elastic-stack-ca.p12 --pass '' --ca-pass '' --out /tmp/elastic-certificates.p12"
+			elasticsearch-certutil cert --name elasticsearch-master --dns elasticsearch-master,elasticsearch-master.elastic,elasticsearch-master.elastic.svc.cluster.local --ca /tmp/elastic-stack-ca.p12 --pass '' --ca-pass '' --out /tmp/elastic-certificates.p12"
 docker cp elastic-helm-charts-certs:/tmp/elastic-certificates.p12 ./
 
 docker rm -f elastic-helm-charts-certs
