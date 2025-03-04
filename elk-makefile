@@ -23,8 +23,9 @@ openssl pkcs12 -passin pass:'' -in elastic-certificates.p12 -nodes -cacerts -nok
 kubectl create secret -n elastic generic elastic-certificates --from-file=elastic-certificates.p12
 
 
-#create certs secret in c86-mini namespace
-kubectl create secret -n c86-mini generic elasticsearch-master-certs  --from-file=tls.crt  --from-file=tls.key --from-file=ca.crt --type=kubernetes.io/tls
+#create certs secret in elastic namespace
+#this will be used in kibana container startup
+kubectl create secret -n elastic generic elasticsearch-master-certs  --from-file=tls.crt  --from-file=tls.key --from-file=ca.crt --type=kubernetes.io/tls
 
 #If this step returns an error, that can be safely ignored
 keytool -delete -alias elasticsearch -keystore externaldb.jks
