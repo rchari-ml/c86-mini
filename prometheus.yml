@@ -5,9 +5,9 @@ extraScrapeConfigs: |
    - job_name: 'zeebe'
      scrape_interval: 15s
      metrics_path: /zeebe/actuator/prometheus
-     scheme: https
+     scheme: http
      tls_config:
        insecure_skip_verify: true
      static_configs:
      - targets:
-         - 'c86-mini.makelabs.in'
+         - 'camunda-zeebe-gateway:9600'
