@@ -29,5 +29,4 @@ keytool -import -alias elasticsearch -keystore externaldb.jks -storetype jks -fi
 kubectl  create secret -n c86-mini generic elastic-jks --from-file=externaldb.jks
 
 rm -f elastic-certificates.p12 elastic-certificate.pem elastic-certificate.crt  externaldb.jks
-#rm -f elastic-stack-ca.p12
 rm -f tls.crt ca.crt tls.key
