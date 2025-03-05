@@ -50,22 +50,24 @@ server {
         proxy_set_header X-Forwarded-For $remote_addr;
         proxy_pass http://127.0.0.1:8086;
     }
-    location /zeebe/actuator/prometheus {
-        proxy_set_header Host c86-mini.makelabs.in;
-        proxy_set_header X-Forwarded-For $remote_addr;
-        proxy_pass http://127.0.0.1:9600;
+    #Used for some internal testing. Not required anymore.
+    #location /zeebe/actuator/prometheus {
+    #    proxy_set_header Host c86-mini.makelabs.in;
+    #    proxy_set_header X-Forwarded-For $remote_addr;
+    #    proxy_pass http://127.0.0.1:9600;
+        ##auth_basic "Basic Authentication";
+        ##auth_basic_user_file /opt/homebrew/etc/nginx/.htpasswd;
+    #}
 
-        #auth_basic "Basic Authentication";
-        #auth_basic_user_file /opt/homebrew/etc/nginx/.htpasswd;
-    }
-    location /metrics {
-        proxy_set_header Host c86-mini.makelabs.in;
-        proxy_set_header X-Forwarded-For $remote_addr;
-        proxy_pass http://127.0.0.1:9090;
+    #Used for some internal testing. Not required anymore.
+    #location /metrics {
+    #    proxy_set_header Host c86-mini.makelabs.in;
+    #    proxy_set_header X-Forwarded-For $remote_addr;
+    #    proxy_pass http://127.0.0.1:9090;
 
-        #auth_basic "Basic Authentication";
-        #auth_basic_user_file /opt/homebrew/etc/nginx/.htpasswd;
-    }
+        ##auth_basic "Basic Authentication";
+        ##auth_basic_user_file /opt/homebrew/etc/nginx/.htpasswd;
+    #}
     location /api/ {
         proxy_set_header Host c86-mini.makelabs.in;
         proxy_set_header X-Forwarded-For $remote_addr;
@@ -76,22 +78,23 @@ server {
         proxy_set_header X-Forwarded-For $remote_addr;
         proxy_pass http://127.0.0.1:9010;
     }
-    location /targets {
-        proxy_set_header Host c86-mini.makelabs.in;
-        proxy_set_header X-Forwarded-For $remote_addr;
-        proxy_pass http://127.0.0.1:9090;
-    }
-    location /assets/index-C-xOGIPC.js {
-        add_header  Content-Type    application/x-javascript;
-        proxy_set_header Host c86-mini.makelabs.in;
-        proxy_set_header X-Forwarded-For $remote_addr;
-        proxy_pass http://127.0.0.1:9090;
-    }
-    location /assets/index-BSNrRXkN.css {
-        add_header  Content-Type    text/css;
-        proxy_set_header Host c86-mini.makelabs.in;
-        proxy_set_header X-Forwarded-For $remote_addr;
-        proxy_pass http://127.0.0.1:9090;
-    }
+    #Used for some internal testing. Not required anymore.
+    #location /targets {
+    #    proxy_set_header Host c86-mini.makelabs.in;
+    #    proxy_set_header X-Forwarded-For $remote_addr;
+    #    proxy_pass http://127.0.0.1:9090;
+    #}
+    #location /assets/index-C-xOGIPC.js {
+    #    add_header  Content-Type    application/x-javascript;
+    #    proxy_set_header Host c86-mini.makelabs.in;
+    #    proxy_set_header X-Forwarded-For $remote_addr;
+    #    proxy_pass http://127.0.0.1:9090;
+    #}
+    #location /assets/index-BSNrRXkN.css {
+    #    add_header  Content-Type    text/css;
+    #    proxy_set_header Host c86-mini.makelabs.in;
+    #    proxy_set_header X-Forwarded-For $remote_addr;
+    #    proxy_pass http://127.0.0.1:9090;
+    #}
   }
 
