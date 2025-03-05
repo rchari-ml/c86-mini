@@ -251,7 +251,7 @@ zeebe:
       value: "true"
     - name: ZEEBE_BROKER_EXPERIMENTAL_ROCKSDB_ENABLEACCESSMETRICS
       value: "fine"
-  clusterSize: 5
+  clusterSize: 3
   partitionCount: 7
   replicationFactor: 3
   pvcSize: 3Gi
