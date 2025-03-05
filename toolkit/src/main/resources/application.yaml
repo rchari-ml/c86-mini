@@ -13,8 +13,8 @@ camunda:
       grpc-address: http://127.0.0.1:26500
       rest-address: http://127.0.0.1:8088
     auth:
-      client-id: ml-toolkit-app
+      client-id: tasklist-api
       # include secret from the camunda env
       client-secret: put-correct-secret-value-here
       # include issuer endpoint from the camunda env
-      issuer: https://put-host-name-here/auth/realms/camunda-platform/protocol/openid-connect/token
+      issuer: https://c86-mini.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token
