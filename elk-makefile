@@ -31,6 +31,10 @@ kubectl create secret -n elastic generic elasticsearch-master-certs  --from-file
 keytool -delete -alias elasticsearch -keystore externaldb.jks
 keytool -import -alias elasticsearch -keystore externaldb.jks -storetype jks -file elastic-certificate.crt -storepass changeit -noprompt
 
+printf "Convert to crt from cf pem and import to jks"
+openssl x509 -outform der -in ./nginx/cf-tls.pem -out ./nginx/cf-tls.crt
+keytool -import -alias camunda       -keystore externaldb.jks -storetype jks -file ./nginx/cf-tls.crt      -storepass changeit -noprompt
+
 #The jks file is needed by camunda install. Keep it in the camunda namespace
 kubectl  create secret -n c86-mini generic elastic-jks --from-file=externaldb.jks
 
