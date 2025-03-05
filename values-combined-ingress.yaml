@@ -241,7 +241,7 @@ zeebe:
   prometheusServiceMonitor:
     enabled: true
   metrics:
-    prometheus: /zeebe/actuator/prometheus
+    prometheus: /actuator/prometheus
   env:
     - name: ZEEBE_BROKER_CLUSTER_RAFT_ENABLEPRIORITYELECTION
       value: "false"
