@@ -8,30 +8,30 @@
 
 # Includes Elastic, Kibana, (10) camunda services, prometheus and grafana
 
-kubectl port-forward service/elasticsearch-master 9200:9200 --namespace  elastic 1> c86-port-fwd-out.log 2> c86-port-fwd-out.log &
+kubectl port-forward service/elasticsearch-master 9200:9200 --namespace  elastic 1> c86-port-fwd-out1.log 2> c86-port-fwd-out1.log &
 
-kubectl port-forward service/kibana-kibana      5601:5601 --namespace  elastic 1> c86-port-fwd-out.log 2> c86-port-fwd-out.log &
+kubectl port-forward service/kibana-kibana      5601:5601 --namespace  elastic 1> c86-port-fwd-out2.log 2> c86-port-fwd-out2.log &
 
-kubectl port-forward svc/camunda-keycloak       18080:80 --namespace c86-mini 1> c86-port-fwd-out.log 2> c86-port-fwd-out.log &
+kubectl port-forward svc/camunda-keycloak       18080:80 --namespace c86-mini 1> c86-port-fwd-out3.log 2> c86-port-fwd-out3.log &
 
-kubectl port-forward svc/camunda-identity       8080:80  --namespace c86-mini 1> c86-port-fwd-out.log 2> c86-port-fwd-out.log &
+kubectl port-forward svc/camunda-identity       8080:80  --namespace c86-mini 1> c86-port-fwd-out4.log 2> c86-port-fwd-out4.log &
 
-kubectl port-forward svc/camunda-operate        8081:80  --namespace c86-mini 1> c86-port-fwd-out.log 2> c86-port-fwd-out.log &
+kubectl port-forward svc/camunda-operate        8081:80  --namespace c86-mini 1> c86-port-fwd-out5.log 2> c86-port-fwd-out5.log &
 
-kubectl port-forward svc/camunda-tasklist       8082:80  --namespace c86-mini 1> c86-port-fwd-out.log 2> c86-port-fwd-out.log &
+kubectl port-forward svc/camunda-tasklist       8082:80  --namespace c86-mini 1> c86-port-fwd-out6.log 2> c86-port-fwd-out6.log &
 
-kubectl port-forward svc/camunda-optimize       8083:80  --namespace c86-mini 1> c86-port-fwd-out.log 2> c86-port-fwd-out.log &
+kubectl port-forward svc/camunda-optimize       8083:80  --namespace c86-mini 1> c86-port-fwd-out7.log 2> c86-port-fwd-out7.log &
 
-kubectl port-forward svc/camunda-connectors     8086:8080 --namespace c86-mini 1> c86-port-fwd-out.log 2> c86-port-fwd-out.log &
+kubectl port-forward svc/camunda-connectors     8086:8080 --namespace c86-mini 1> c86-port-fwd-out8.log 2> c86-port-fwd-out8.log &
 
-kubectl port-forward svc/camunda-console        8087:80   --namespace c86-mini 1> c86-port-fwd-out.log 2> c86-port-fwd-out.log &
+kubectl port-forward svc/camunda-console        8087:80   --namespace c86-mini 1> c86-port-fwd-out9.log 2> c86-port-fwd-out9.log &
 
-kubectl port-forward svc/camunda-zeebe-gateway  8088:8080 --namespace c86-mini  1> c86-port-fwd-out.log 2> c86-port-fwd-out.log &
+kubectl port-forward svc/camunda-zeebe-gateway  8088:8080 --namespace c86-mini  1> c86-port-fwd-out10.log 2> c86-port-fwd-out10.log &
 
-kubectl port-forward svc/camunda-zeebe-gateway  26500:26500 --namespace c86-mini 1> c86-port-fwd-out.log 2> c86-port-fwd-out.log &
+kubectl port-forward svc/camunda-zeebe-gateway  26500:26500 --namespace c86-mini 1> c86-port-fwd-out11.log 2> c86-port-fwd-out11.log &
 
-kubectl port-forward svc/camunda-zeebe-gateway  9600:9600 --namespace c86-mini  1> c86-port-fwd-out.log 2> c86-port-fwd-out.log &
+kubectl port-forward svc/camunda-zeebe-gateway  9600:9600 --namespace c86-mini  1> c86-port-fwd-out12.log 2> c86-port-fwd-out12.log &
 
-kubectl port-forward service/prometheus-server  9090:80   --namespace c86-mini  1> c86-port-fwd-out.log 2> c86-port-fwd-out.log &
+kubectl port-forward service/prometheus-server  9090:80   --namespace c86-mini  1> c86-port-fwd-out13.log 2> c86-port-fwd-out13.log &
 
-kubectl port-forward service/grafana            3000:80   --namespace c86-mini  1> c86-port-fwd-out.log 2> c86-port-fwd-out.log &
+kubectl port-forward service/grafana            3000:80   --namespace c86-mini  1> c86-port-fwd-out14.log 2> c86-port-fwd-out14.log &
