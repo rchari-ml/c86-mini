@@ -6,6 +6,12 @@
 # The below set of commands help you run all in one go.
 # The logs are redirected to a single file for ease of use.
 
+# Includes Elastic, Kibana, (10) camunda services, prometheus and grafana
+
+kubectl port-forward service/elasticsearch-master 9200:9200 --namespace  elastic 1> c86-port-fwd-out.log 2> c86-port-fwd-out.log &
+
+kubectl port-forward service/kibana-kibana      5601:5601 --namespace  elastic 1> c86-port-fwd-out.log 2> c86-port-fwd-out.log &
+
 kubectl port-forward svc/camunda-keycloak       18080:80 --namespace c86-mini 1> c86-port-fwd-out.log 2> c86-port-fwd-out.log &
 
 kubectl port-forward svc/camunda-identity       8080:80  --namespace c86-mini 1> c86-port-fwd-out.log 2> c86-port-fwd-out.log &
