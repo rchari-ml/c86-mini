@@ -1,3 +1,9 @@
+# To check the status of a specific service, use this command
+# ps aux | grep svc/camunda-zeebe-gateway
+
+# The below set of commands help you run all in one go.
+# The logs are redirected to a single file for ease of use.
+
 kubectl port-forward svc/camunda-keycloak       18080:80 --namespace c86-mini 1> c86-port-fwd-out.log 2> c86-port-fwd-out.log &
 
 kubectl port-forward svc/camunda-identity       8080:80  --namespace c86-mini 1> c86-port-fwd-out.log 2> c86-port-fwd-out.log &
