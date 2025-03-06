@@ -1,5 +1,7 @@
 # To check the status of a specific service, use this command
 # ps aux | grep svc/camunda-zeebe-gateway
+# ps aux | grep svc/camunda | grep c86-mini
+# ps aux | grep -E 'svc/|service' | grep -E 'elastic|c86-mini'
 
 # The below set of commands help you run all in one go.
 # The logs are redirected to a single file for ease of use.
