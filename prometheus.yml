@@ -19,4 +19,6 @@ extraScrapeConfigs: |
        insecure_skip_verify: true
      static_configs:
      - targets:
-         - 'camunda-zeebe:9600'
+         - 'camunda-zeebe-0.camunda-zeebe.c86-mini.svc.cluster.local:9600'
+         - 'camunda-zeebe-1.camunda-zeebe.c86-mini.svc.cluster.local:9600'
+         - 'camunda-zeebe-2.camunda-zeebe.c86-mini.svc.cluster.local:9600'
