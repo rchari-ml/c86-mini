@@ -2,7 +2,7 @@
 # must be a string so you have to add a | after extraScrapeConfigs:
 
 extraScrapeConfigs: |
-   - job_name: 'zeebe'
+   - job_name: 'zeebe-gateway'
      scrape_interval: 15s
      metrics_path: /zeebe/actuator/prometheus
      scheme: http
@@ -11,3 +11,12 @@ extraScrapeConfigs: |
      static_configs:
      - targets:
          - 'camunda-zeebe-gateway:9600'
+   - job_name: 'zeebe'
+     scrape_interval: 15s
+     metrics_path: /actuator/prometheus
+     scheme: http
+     tls_config:
+       insecure_skip_verify: true
+     static_configs:
+     - targets:
+         - 'camunda-zeebe:9600'
