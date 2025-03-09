@@ -253,7 +253,7 @@ zeebe:
       value: "fine"
   clusterSize: 3
   partitionCount: 7
-  replicationFactor: 3
+  replicationFactor: 1
   pvcSize: 3Gi
   # refer to partitioning docs. https://docs.camunda.io/docs/self-managed/zeebe-deployment/configuration/fixed-partitioning/
 
