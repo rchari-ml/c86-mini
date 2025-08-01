@@ -3,9 +3,9 @@ kind: Namespace
 metadata:
   annotations:
     field.cattle.io/containerDefaultResourceLimit: '{"limitsCpu":"2000m","limitsMemory":"2048Mi","requestsCpu":"1000m","requestsMemory":"1024Mi"}'
-  creationTimestamp: "2025-02-18T11:21:40Z"
+  creationTimestamp: "2025-07-31T00:21:40Z"
   labels:
-    kubernetes.io/metadata.name: c86-mini
+    kubernetes.io/metadata.name: c8-labs-31
   managedFields:
   - apiVersion: v1
     fieldsType: FieldsV1
@@ -20,7 +20,7 @@ metadata:
     manager: raghu
     operation: Update
     time: "2025-02-18T11:21:40Z"
-  name: c86-mini
+  name: c8-labs-31
   resourceVersion: "13076"
   uid: 265e8b36-4804-413c-a1a2-fc1e3f377d9f
 spec:

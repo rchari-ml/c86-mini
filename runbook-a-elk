@@ -1,0 +1,87 @@
+# pre-requisites
+# a. Make sure Docker is running
+# b. You have access to GCP Kubernetes Engine (GKE) cluster c8-labs-swati
+# c. Have node pool configured across locations - 1 node in each location. see command below
+# d. Make sure that node pool Provisioning model = Spot
+
+
+# open new terminal and connect to cluster - GKE.
+# Sign in to GCP first using this command
+gcloud auth login
+
+# Note: Need to sign in to GCP first using gcloud auth login
+gcloud container clusters get-credentials c8-labs-swati --region asia-south1 --project c8-labs
+
+# lets create a namespace 
+kubectl apply -f namespace-c86-mini.yaml --namespace c8-labs-31
+
+# Install elastic components - elk certs
+sh elk-makefile
+
+# Install elastic components - elasticsearch
+helm install elasticsearch elastic/elasticsearch -n c8-labs-31 -f elasticsearch.yaml
+# if you see any issues, check the pod status - see command below
+
+# Install elastic components - kibana
+helm install kibana  elastic/kibana -n c8-labs-31  -f kibana.yaml
+
+kubectl apply -f elk-ingress.yaml --namespace c8-labs-31
+
+# Wait for external IP address to be assigned to the ingress
+# example 34.8.27.166
+# attach it to the domain name - elk-c8-labs-31.makelabs.in
+# yay! you can now access elasticsearch using the domain name
+# https://elk-c8-labs-31.makelabs.in
+
+
+# this ends part 1 - elk installation
+
+
+# Useful commands
+kubectl api-resources --verbs=list --namespaced -o name | xargs -n 1 kubectl get --show-kind --ignore-not-found -n c8-labs-31
+
+gcloud config set project c8-labs
+
+# create cluster with necessary configurations (with default node pool)
+gcloud beta container --project "c8-labs" clusters create "c8-labs-31" --region "asia-south1" --tier "standard" --no-enable-basic-auth --cluster-version "1.33.2-gke.1111000" --release-channel "regular" --machine-type "n2-custom-8-10240" --image-type "COS_CONTAINERD" --disk-type "pd-standard" --disk-size "50" --metadata disable-legacy-endpoints=true --spot --num-nodes "1" --logging=SYSTEM,WORKLOAD --monitoring=SYSTEM,STORAGE,POD,DEPLOYMENT,STATEFULSET,DAEMONSET,HPA,JOBSET,CADVISOR,KUBELET,DCGM --enable-private-nodes --enable-ip-alias --network "projects/c8-labs/global/networks/default" --subnetwork "projects/c8-labs/regions/asia-south1/subnetworks/default" --no-enable-intra-node-visibility --default-max-pods-per-node "110" --enable-dns-access --enable-ip-access --security-posture=standard --workload-vulnerability-scanning=disabled --no-enable-google-cloud-access --addons HorizontalPodAutoscaling,HttpLoadBalancing,GcePersistentDiskCsiDriver --enable-autoupgrade --enable-autorepair --max-surge-upgrade 1 --max-unavailable-upgrade 0 --binauthz-evaluation-mode=DISABLED --enable-managed-prometheus --enable-shielded-nodes --shielded-integrity-monitoring --no-shielded-secure-boot
+
+
+# create node pool with spot (optional - to add more capacity)
+gcloud container node-pools create node-pool-swati-v2 \
+        --cluster c8-labs-swati \
+        --machine-type n2-standard-2 \
+        --disk-type=pd-standard \
+        --disk-size=50 \
+        --num-nodes=1 --min-nodes=1 --max-nodes=2 \
+        --region asia-south1 \
+        --node-locations=asia-south1-a,asia-south1-b,asia-south1-c \
+        --spot
+
+# check pvs status
+kubectl get pvc -n c8-labs-31
+# check pod status
+kubectl describe pod elasticsearch-master-0 -n c8-labs-31
+
+# check ingress status
+kubectl get pods -n kube-system | grep ingress
+
+# check elasticsearch ingress
+kubectl describe ingress elk-ingress -n c8-labs-31
+
+# check elasticsearch ingress external IP address
+kubectl get ingress elk-ingress -n c8-labs-31
+
+kubectl get service elasticsearch-master -n c8-labs-31
+kubectl describe service elasticsearch-master -n c8-labs-31
+
+kubectl get svc kibana-kibana -n c8-labs-31
+kubectl get endpoints kibana-kibana -n c8-labs-31
+
+
+kubectl port-forward svc/kibana-kibana 5601:5601 -n c8-labs-31
+curl -I http://localhost:5601/
+curl -I http://localhost:5601/login
+
+# Known issue: 
+#(1) You may see an error that backend service status is unhealthy. This is because the health check path is not set correctly in the ingress. 
+# You can fix this by adding the annotation `cloud.google.com/healthcheck-path: "/login"` to the ingress resource. Plus, update in LB health check config as well and update LB details via GCP console. (GCP console -> Network services -> Load balancing -> Edit the backend service -> Health check -> Edit the health check -> Path = /login)

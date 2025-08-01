@@ -6,7 +6,7 @@ docker run --name elastic-helm-charts-certs -i -w /tmp \
 		$ELASTICSEARCH_IMAGE \
 		/bin/sh -c " \
 			elasticsearch-certutil ca --out /tmp/elastic-stack-ca.p12 --pass '' && \
-			elasticsearch-certutil cert --name elasticsearch-master --dns elasticsearch-master,elasticsearch-master.elastic,elasticsearch-master.elastic.svc.cluster.local --ca /tmp/elastic-stack-ca.p12 --pass '' --ca-pass '' --out /tmp/elastic-certificates.p12"
+			elasticsearch-certutil cert --name elasticsearch-master --dns elasticsearch-master,elasticsearch-master.c8-labs-31.svc.cluster.local --ca /tmp/elastic-stack-ca.p12 --pass '' --ca-pass '' --out /tmp/elastic-certificates.p12"
 docker cp elastic-helm-charts-certs:/tmp/elastic-certificates.p12 ./
 
 docker rm -f elastic-helm-charts-certs
@@ -20,12 +20,12 @@ openssl pkcs12 -passin pass:'' -in elastic-certificates.p12 -nodes -cacerts -nok
 #create secret with the p12 file
 #this is required in elastic namespace
 #Secret name given here should match the corresponding entry in elasticsearch.yaml
-kubectl create secret -n elastic generic elastic-certificates --from-file=elastic-certificates.p12
+kubectl create secret -n c8-labs-31 generic elastic-certificates --from-file=elastic-certificates.p12
 
 
 #create certs secret in elastic namespace
 #this will be used in kibana container startup
-kubectl create secret -n elastic generic elasticsearch-master-certs  --from-file=tls.crt  --from-file=tls.key --from-file=ca.crt --type=kubernetes.io/tls
+kubectl create secret -n c8-labs-31 generic elasticsearch-master-certs  --from-file=tls.crt  --from-file=tls.key --from-file=ca.crt --type=kubernetes.io/tls
 
 #If this step returns an error, that can be safely ignored
 keytool -delete -alias elasticsearch -keystore externaldb.jks
@@ -36,7 +36,7 @@ openssl x509 -outform der -in ./nginx/cf-tls.pem -out ./nginx/cf-tls.crt
 keytool -import -alias camunda       -keystore externaldb.jks -storetype jks -file ./nginx/cf-tls.crt      -storepass changeit -noprompt
 
 #The jks file is needed by camunda install. Keep it in the camunda namespace
-kubectl  create secret -n c86-mini generic elastic-jks --from-file=externaldb.jks
+kubectl  create secret -n c8-labs-31 generic elastic-jks --from-file=externaldb.jks
 
 rm -f elastic-certificates.p12 elastic-certificate.pem elastic-certificate.crt  externaldb.jks
 rm -f tls.crt ca.crt tls.key

@@ -17,4 +17,4 @@ camunda:
       # include secret from the camunda env
       client-secret: put-correct-secret-value-here
       # include issuer endpoint from the camunda env
-      issuer: https://c86-mini.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token
+      issuer: https://c8-labs-31.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token

@@ -1,0 +1,71 @@
+# include user account pwd as secrets
+kubectl apply -f identity-secret.yaml --namespace c8-labs-31
+
+# replace user id, email, token appropriately
+kubectl create secret docker-registry registry-camunda-cloud  \
+  --namespace=c8-labs-31 \
+  --docker-server=registry.camunda.cloud \
+  --docker-username=your-docker-account-uid \
+  --docker-password=your-docker-account-token \
+  --docker-email=your-docker-account-email
+
+# replace user id, email, token appropriately
+kubectl create secret docker-registry registry-docker-hub  \
+    --namespace=c8-labs-31 \
+    --docker-server=hub.docker.com \
+    --docker-username=your-docker-account-uid \
+    --docker-password=your-docker-account-token \
+    --docker-email=your-docker-account-email
+
+# Make sure the elasticsearch endpoint config is correct in values-combined-ingress.yaml.
+# elasticsearch-master.c8-labs-31.svc.cluster.local
+
+
+# Install camunda
+# 12.0.0-alpha4 or 12.3.0 version in the 8.7.x series is verified as of 01 Aug 2025
+helm install camunda camunda/camunda-platform -f values-combined-ingress.yaml -f values-connectors-env.yaml --set zeebe.prometheusServiceMonitor.enabled=true  --version 12.0.0-alpha4 --namespace c8-labs-31
+
+# The file "c8-ingress.yaml" is NOT required as we ae using built in GCE Ingress Controller which provisions a GCP external LB.
+kubectl apply -f c8-ingress.yaml --namespace c8-labs-31
+
+# Update health check endpoints as noted in Known Issue (1) below.
+# this is required for External LB IP address to be issued by GCE.
+
+# wait for 5 minutes
+
+# Once IP address is available, go ahead and map it with domain.
+# c8-labs-31.makelabs.in => output of "ubectl describe ingress c8-ingress -n c8-labs-31"
+
+# login to console and verify things.
+
+# This concludes Camunda setup
+
+
+# Useful Commands
+
+# check ingress status
+kubectl get pods -n c8-labs-31 | grep ingress
+
+kubectl describe ingress camunda-camunda-platform -n c8-labs-31
+
+# To uninstall camunda - at the end of the lab exercise, to get rid of things / wind down etc
+helm uninstall camunda -n c8-labs-31
+
+
+kubectl describe ingress camunda-camunda-platform -n c8-labs-31
+kubectl get ingress camunda-camunda-platform -n c8-labs-31
+
+# Under path, you should see 6 entries listed: console, identity, operate, tasklist, optimize and auth.
+kubectl describe ingress c8-ingress -n c8-labs-31
+
+kubectl get ingress c8-ingress -n c8-labs-31
+
+
+# Known issue (1)
+# Ensure the health check endpoint for below items
+# keycloak => /auth/realms/master (VERIFIED)
+# console => /console (VERIFIED)
+# operate => /operate/swagger-ui/index.html (VERIFIED)
+# tasklist => /tasklist/swagger-ui/index.html (VERIFIED)
+# optimize => /optimize/api/readyz (VERIFIED)
+# identity => /identity (did not work with /auth/realms/camunda-platform, /actuator/health/readiness)
