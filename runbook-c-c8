@@ -34,7 +34,7 @@ kubectl apply -f c8-ingress.yaml --namespace c8-labs-31
 # wait for 5 minutes
 
 # Once IP address is available, go ahead and map it with domain.
-# c8-labs-31.makelabs.in => output of "ubectl describe ingress c8-ingress -n c8-labs-31"
+# c8-labs-31.makelabs.in => output of "kubectl describe ingress c8-ingress -n c8-labs-31"
 
 # login to console and verify things.
 
@@ -63,9 +63,17 @@ kubectl get ingress c8-ingress -n c8-labs-31
 
 # Known issue (1)
 # Ensure the health check endpoint for below items
-# keycloak => /auth/realms/master (VERIFIED)
 # console => /console (VERIFIED)
+# keycloak => /auth/realms/master (VERIFIED)
 # operate => /operate/swagger-ui/index.html (VERIFIED)
 # tasklist => /tasklist/swagger-ui/index.html (VERIFIED)
 # optimize => /optimize/api/readyz (VERIFIED)
-# identity => /identity (did not work with /auth/realms/camunda-platform, /actuator/health/readiness)
+# identity => as defined in c8-ingress.yaml (VERIFIED)
+
+# this works for tasklist - service config
+curl -v  http://camunda-tasklist:80/tasklist/swagger-ui/index.html
+curl -v  http://camunda-tasklist:9600/tasklist/actuator/health
+
+
+# To delete below items at the end of the lab exercise
+# GCP > Security > Certificate Manager > Classic Certificates > Delete entries for the env.

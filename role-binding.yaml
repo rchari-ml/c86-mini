@@ -1,0 +1,31 @@
+# role.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: c8-labs-31
+  name: team-role
+rules:
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list", "create", "update", "delete"]
+- apiGroups: [""]
+  resources: ["pods", "services", "configmaps", "persistentvolumeclaims"]
+  verbs: ["get", "list", "watch", "create", "update", "delete"]
+- apiGroups: ["storage.k8s.io"] # The storage API group for StorageClasses
+  resources: ["storageclasses"]
+  verbs: ["get", "list", "watch","create"]
+---
+# rolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: team-role-binding
+  namespace: c8-labs-31
+subjects:
+- kind: User
+  name: raghavendra.chari@gmail.com
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: team-role
+  apiGroup: rbac.authorization.k8s.io

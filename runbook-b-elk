@@ -1,29 +1,29 @@
-# pre-requisites
-# a. Make sure Docker is running
-# b. You have access to GCP Kubernetes Engine (GKE) cluster c8-labs-swati
-# c. Have node pool configured across locations - 1 node in each location. see command below
-# d. Make sure that node pool Provisioning model = Spot
 
+################################
+# Using CLI, know current user name
+# Login to GCP console if required
+gcloud config get-value account
 
-# open new terminal and connect to cluster - GKE.
-# Sign in to GCP first using this command
-gcloud auth login
-
-# Note: Need to sign in to GCP first using gcloud auth login
-gcloud container clusters get-credentials c8-labs-swati --region asia-south1 --project c8-labs
-
-# lets create a namespace 
-kubectl apply -f namespace-c86-mini.yaml --namespace c8-labs-31
 
 # Install elastic components - elk certs
 sh elk-makefile
+# After this, you should see secrets created in the namespace c8-labs-31
+# Config => secret/elastic-certificates created
+# Config => secret/elasticsearch-master-certs created
+# Config => secret/elastic-jks created
+
 
 # Install elastic components - elasticsearch
 helm install elasticsearch elastic/elasticsearch -n c8-labs-31 -f elasticsearch.yaml
 # if you see any issues, check the pod status - see command below
+# After this, you should see below
+# Storage: allocated under PersistentVolumeClaims (PVCs) in the namespace c8-labs-31
+# with app elasticsearch-master (Look for Label: app=elasticsearch-master)
+# Pod: elasticsearch-master-0 is running
 
 # Install elastic components - kibana
 helm install kibana  elastic/kibana -n c8-labs-31  -f kibana.yaml
+
 
 kubectl apply -f elk-ingress.yaml --namespace c8-labs-31
 
@@ -49,10 +49,11 @@ gcloud beta container --project "c8-labs" clusters create "c8-labs-31" --region 
 # create node pool with spot (optional - to add more capacity)
 gcloud container node-pools create node-pool-swati-v2 \
         --cluster c8-labs-swati \
-        --machine-type n2-standard-2 \
+        --machine-type n2-standard-4 \
         --disk-type=pd-standard \
         --disk-size=50 \
-        --num-nodes=1 --min-nodes=1 --max-nodes=2 \
+        --enable-autoscaling \
+        --num-nodes=1 --min-nodes=1 --max-nodes=3 \
         --region asia-south1 \
         --node-locations=asia-south1-a,asia-south1-b,asia-south1-c \
         --spot
@@ -82,6 +83,19 @@ kubectl port-forward svc/kibana-kibana 5601:5601 -n c8-labs-31
 curl -I http://localhost:5601/
 curl -I http://localhost:5601/login
 
+# Using CLI, know current user name
+gcloud config get-value account
+
+# Check if the user can see the cluster
+gcloud container clusters describe c8-labs-swati --region asia-south1 --project c8-labs
+
+# Check if the user can create secrets in the namespace
+kubectl auth can-i create secrets -n <namespace>
+
 # Known issue: 
 #(1) You may see an error that backend service status is unhealthy. This is because the health check path is not set correctly in the ingress. 
 # You can fix this by adding the annotation `cloud.google.com/healthcheck-path: "/login"` to the ingress resource. Plus, update in LB health check config as well and update LB details via GCP console. (GCP console -> Network services -> Load balancing -> Edit the backend service -> Health check -> Edit the health check -> Path = /login)
+
+# (2) If you encounter any issue during kibana install and want to manually remove things.
+# Access Control -> service accounts -> delete two items about kibana.
+# configmaps "kibana-kibana-helm-scripts" 

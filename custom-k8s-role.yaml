@@ -1,0 +1,10 @@
+title: "Custom Kubernetes Role Creator"
+description: "Allows creation of Kubernetes Roles and RoleBindings. Required for Kibana install"
+stage: "GA"
+includedPermissions:
+  - container.roles.create
+  - container.roles.get
+  - container.roles.list
+  - container.roleBindings.create
+  - container.roleBindings.get
+  - container.roleBindings.list

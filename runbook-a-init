@@ -1,0 +1,76 @@
+# pre-requisites
+# a. Make sure Docker is running
+# b. You have access to GCP Kubernetes Engine (GKE) cluster c8-labs-swati
+# c. Have node pool configured across locations - 1 node in each location to start with.
+# d. Make sure that node pool Provisioning model = Spot
+
+
+# open new terminal and connect to cluster - GKE.
+# Sign in to GCP first using this command
+gcloud auth login
+
+################################
+# (A) Grant access to the user 
+
+gcloud iam roles create CustomK8sRoleCreator \
+  --project=c8-labs \
+  --file=custom-k8s-role.yaml
+
+gcloud projects add-iam-policy-binding c8-labs \
+  --member="user:raghavendra.chari@gmail.com" \
+  --role="roles/container.clusterViewer"
+
+gcloud projects add-iam-policy-binding c8-labs \
+  --member="user:raghavendra.chari@gmail.com" \
+  --role="roles/container.developer"
+
+gcloud projects add-iam-policy-binding c8-labs \
+  --member="user:raghavendra.chari@gmail.com" \
+  --role="roles/compute.viewer"
+
+gcloud projects add-iam-policy-binding c8-labs \
+  --member="user:raghavendra.chari@gmail.com" \
+  --role="roles/viewer"
+
+
+gcloud projects add-iam-policy-binding c8-labs \
+  --member="user:raghavendra.chari@gmail.com" \
+  --role="projects/c8-labs/roles/CustomK8sRoleCreator"
+
+
+# create cluster with necessary configurations (with default node pool)
+# Remove this tag due to error --tier "standard" --enable-dns-access --enable-ip-access
+# Removed from --monitoring STORAGE,POD,DEPLOYMENT,STATEFULSET,DAEMONSET,HPA,JOBSET,CADVISOR,KUBELET,DCGM
+gcloud beta container --project "c8-labs" clusters create "c8-labs-swati" \
+  --region "asia-south1"  --no-enable-basic-auth \
+  --cluster-version "1.33.2-gke.1111000" --release-channel "regular" \
+  --machine-type "n2-standard-4" --image-type "COS_CONTAINERD" \
+  --disk-type "pd-standard" --disk-size "50" --enable-autoscaling \
+  --metadata disable-legacy-endpoints=true \
+  --node-locations=asia-south1-a,asia-south1-b,asia-south1-c \
+  --spot --num-nodes=1 --max-nodes=1 --max-nodes=3 \
+  --logging=SYSTEM,WORKLOAD \
+  --monitoring=SYSTEM \
+  --enable-private-nodes --enable-ip-alias --network "projects/c8-labs/global/networks/default" \
+  --subnetwork "projects/c8-labs/regions/asia-south1/subnetworks/default" \
+  --no-enable-intra-node-visibility --default-max-pods-per-node "110" \
+  --security-posture=standard \
+  --workload-vulnerability-scanning=disabled --no-enable-google-cloud-access \
+  --addons HorizontalPodAutoscaling,HttpLoadBalancing,GcePersistentDiskCsiDriver \
+  --enable-autoupgrade --enable-autorepair --max-surge-upgrade 1 --max-unavailable-upgrade 0 \
+  --binauthz-evaluation-mode=DISABLED --enable-managed-prometheus --enable-shielded-nodes \
+  --shielded-integrity-monitoring --no-shielded-secure-boot
+
+
+# Note: Need to sign in to GCP first using gcloud auth login
+# After this step, you can use Project Lens UI app to view the cluster details.
+gcloud container clusters get-credentials c8-labs-swati --region asia-south1 --project c8-labs
+
+# lets create a namespace - delete if it exists
+# --namespace c8-labs-31
+kubectl delete namespace c8-labs-31
+kubectl apply -f namespace-c86-mini.yaml 
+
+# Provide "namespace access" to the user
+kubectl apply -f role-binding.yaml 
+
