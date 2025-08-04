@@ -64,6 +64,7 @@ curl -v  http://camunda-tasklist:9600/tasklist/actuator/health
 # GCP > K8S > Delete the cluster c8-labs-swati
 # GCP > Disks to be deleted (PVCs for zeebe, keycloak db, elasticsearch)
 # GCP > Network services > Load balancing > Delete the LB and backend services. Some may be lingering here.
+# GCP > VPC network > default > Firewalls > vpc-firewall-rules > Delete any rules related or matching the cluster.
 # GCP > Security > Certificate Manager > Classic Certificates > Delete entries for the env.
 # GCP > IAM > Delete any users created.
 # Remove any external DNS entries created for the env.
