@@ -1,8 +1,9 @@
 # pre-requisites
 # a. Make sure Docker is running
-# b. You have access to GCP Kubernetes Engine (GKE) cluster c8-labs-swati
-# c. Have node pool configured across locations - 1 node in each location to start with.
+# b. You have access to GCP Kubernetes Engine (GKE) - to create cluster c8-labs-swati
+# c. Have node pool configured across locations - 1 node in each zone to start with.
 # d. Make sure that node pool Provisioning model = Spot
+# e. Make sure Cloud NAT is configured for the region where you are creating the cluster.
 
 
 # open new terminal and connect to cluster - GKE.

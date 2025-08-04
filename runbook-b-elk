@@ -47,11 +47,10 @@ helm install elasticsearch elastic/elasticsearch -n c8-labs-31 -f elasticsearch.
 # with app elasticsearch-master (Look for Label: app=elasticsearch-master)
 # Pod: elasticsearch-master-0 is running
 
+#Note: kibana is currently not validated. Skip this section.
 # Install elastic components - kibana
-helm install kibana  elastic/kibana -n c8-labs-31  -f kibana.yaml
-
-
-kubectl apply -f elk-ingress.yaml --namespace c8-labs-31
+#helm install kibana  elastic/kibana -n c8-labs-31  -f kibana.yaml
+#kubectl apply -f elk-ingress.yaml --namespace c8-labs-31
 
 # Wait for external IP address to be assigned to the ingress
 # example 34.8.27.166
@@ -85,6 +84,7 @@ kubectl get ingress elk-ingress -n c8-labs-31
 
 kubectl get service elasticsearch-master -n c8-labs-31
 kubectl describe service elasticsearch-master -n c8-labs-31
+
 
 kubectl get svc kibana-kibana -n c8-labs-31
 kubectl get endpoints kibana-kibana -n c8-labs-31

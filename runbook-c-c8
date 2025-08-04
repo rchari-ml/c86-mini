@@ -8,7 +8,9 @@ kubectl apply -f identity-secret.yaml --namespace c8-labs-31
 
 # Install camunda
 # 12.0.0-alpha4 or 12.3.0 version in the 8.7.x series is verified as of 01 Aug 2025
-helm install camunda camunda/camunda-platform -f values-combined-ingress.yaml -f values-connectors-env.yaml --set zeebe.prometheusServiceMonitor.enabled=true  --version 12.0.0-alpha4 --namespace c8-labs-31
+helm install camunda camunda/camunda-platform -f values-combined-ingress.yaml \
+  -f values-connectors-env.yaml --set zeebe.prometheusServiceMonitor.enabled=true  \
+  --version 12.2.0 --namespace c8-labs-31
 
 # The file "c8-ingress.yaml" is NOT required as we ae using built in GCE Ingress Controller which provisions a GCP external LB.
 kubectl apply -f c8-ingress.yaml --namespace c8-labs-31
@@ -45,6 +47,8 @@ kubectl describe ingress c8-ingress -n c8-labs-31
 
 kubectl get ingress c8-ingress -n c8-labs-31
 
+kubectl describe service camunda-identity -n c8-labs-31
+kubectl describe service camunda-connectors -n c8-labs-31
 
 # Known issue (1)
 # Ensure the health check endpoint for below items
@@ -58,6 +62,8 @@ kubectl get ingress c8-ingress -n c8-labs-31
 # this works for tasklist - service config
 curl -v  http://camunda-tasklist:80/tasklist/swagger-ui/index.html
 curl -v  http://camunda-tasklist:9600/tasklist/actuator/health
+
+curl -v http://camunda-identity:82/actuator/health
 
 
 # To delete below items at the end of the lab exercise
