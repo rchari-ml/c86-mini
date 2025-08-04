@@ -10,7 +10,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: c8-ingress
+  name: c8-labs-31-ingress
   namespace: c8-labs-31
   annotations:
     kubernetes.io/ingress.class: "gce"
@@ -27,49 +27,49 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: camunda-console
+                name: c8-labs-31-console
                 port:
                   number: 80
           - path: /operate
             pathType: Prefix
             backend:
               service:
-                name: camunda-operate
+                name: c8-labs-31-operate
                 port:
                   number: 80
           - path: /tasklist
             pathType: Prefix
             backend:
               service:
-                name: camunda-tasklist
+                name: c8-labs-31-tasklist
                 port:
                   number: 80
           - path: /optimize
             pathType: Prefix
             backend:
               service:
-                name: camunda-optimize
+                name: c8-labs-31-optimize
                 port:
                   number: 80
           - path: /auth/
             pathType: Prefix
             backend:
               service:
-                name: camunda-keycloak
+                name: c8-labs-31-keycloak
                 port:
                   number: 80
           - path: /identity
             pathType: Prefix
             backend:
               service:
-                name: camunda-identity
+                name: c8-labs-31-identity
                 port:
                   number: 80
           - path: /connectors
             pathType: Prefix
             backend:
               service:
-                name: camunda-connectors
+                name: c8-labs-31-connectors
                 port:
                   number: 8080
 ---
@@ -87,7 +87,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: camunda-identity
+  name: c8-labs-31-identity
   namespace: c8-labs-31
   annotations:
     cloud.google.com/backend-config: '{"default": "identity-backendconfig"}'
@@ -116,7 +116,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: camunda-connectors
+  name: c8-labs-31-connectors
   namespace: c8-labs-31
   annotations:
     cloud.google.com/backend-config: '{"default": "connectors-backendconfig"}'

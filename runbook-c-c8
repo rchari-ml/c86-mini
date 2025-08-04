@@ -8,9 +8,9 @@ kubectl apply -f identity-secret.yaml --namespace c8-labs-31
 
 # Install camunda
 # 12.0.0-alpha4 or 12.3.0 version in the 8.7.x series is verified as of 01 Aug 2025
-helm install camunda camunda/camunda-platform -f values-combined-ingress.yaml \
+helm install c8-labs-31 camunda/camunda-platform -f values-combined-ingress.yaml \
   -f values-connectors-env.yaml --set zeebe.prometheusServiceMonitor.enabled=true  \
-  --version 12.2.0 --namespace c8-labs-31
+  --version 12.0.0-alpha4 --namespace c8-labs-31
 
 # The file "c8-ingress.yaml" is NOT required as we ae using built in GCE Ingress Controller which provisions a GCP external LB.
 kubectl apply -f c8-ingress.yaml --namespace c8-labs-31
@@ -38,14 +38,10 @@ kubectl describe ingress camunda-camunda-platform -n c8-labs-31
 # To uninstall camunda - at the end of the lab exercise, to get rid of things / wind down etc
 helm uninstall camunda -n c8-labs-31
 
-
-kubectl describe ingress camunda-camunda-platform -n c8-labs-31
-kubectl get ingress camunda-camunda-platform -n c8-labs-31
-
 # Under path, you should see 6 entries listed: console, identity, operate, tasklist, optimize and auth.
-kubectl describe ingress c8-ingress -n c8-labs-31
+kubectl describe ingress c8-labs-31-ingress -n c8-labs-31
 
-kubectl get ingress c8-ingress -n c8-labs-31
+kubectl get ingress c8-labs-31-ingress -n c8-labs-31
 
 kubectl describe service camunda-identity -n c8-labs-31
 kubectl describe service camunda-connectors -n c8-labs-31
