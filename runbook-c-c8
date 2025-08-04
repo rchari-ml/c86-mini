@@ -1,21 +1,6 @@
 # include user account pwd as secrets
 kubectl apply -f identity-secret.yaml --namespace c8-labs-31
 
-# replace user id, email, token appropriately
-kubectl create secret docker-registry registry-camunda-cloud  \
-  --namespace=c8-labs-31 \
-  --docker-server=registry.camunda.cloud \
-  --docker-username=your-docker-account-uid \
-  --docker-password=your-docker-account-token \
-  --docker-email=your-docker-account-email
-
-# replace user id, email, token appropriately
-kubectl create secret docker-registry registry-docker-hub  \
-    --namespace=c8-labs-31 \
-    --docker-server=hub.docker.com \
-    --docker-username=your-docker-account-uid \
-    --docker-password=your-docker-account-token \
-    --docker-email=your-docker-account-email
 
 # Make sure the elasticsearch endpoint config is correct in values-combined-ingress.yaml.
 # elasticsearch-master.c8-labs-31.svc.cluster.local

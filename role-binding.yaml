@@ -23,7 +23,7 @@ metadata:
   namespace: c8-labs-31
 subjects:
 - kind: User
-  name: raghavendra.chari@gmail.com
+  name: "raghavendra.chari@gmail.com"
   apiGroup: rbac.authorization.k8s.io
 roleRef:
   kind: Role

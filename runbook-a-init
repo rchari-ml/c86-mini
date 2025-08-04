@@ -18,6 +18,10 @@ gcloud iam roles create CustomK8sRoleCreator \
 
 gcloud projects add-iam-policy-binding c8-labs \
   --member="user:raghavendra.chari@gmail.com" \
+  --role="projects/c8-labs/roles/CustomK8sRoleCreator"
+
+gcloud projects add-iam-policy-binding c8-labs \
+  --member="user:raghavendra.chari@gmail.com" \
   --role="roles/container.clusterViewer"
 
 gcloud projects add-iam-policy-binding c8-labs \
@@ -33,26 +37,22 @@ gcloud projects add-iam-policy-binding c8-labs \
   --role="roles/viewer"
 
 
-gcloud projects add-iam-policy-binding c8-labs \
-  --member="user:raghavendra.chari@gmail.com" \
-  --role="projects/c8-labs/roles/CustomK8sRoleCreator"
-
 
 # create cluster with necessary configurations (with default node pool)
 # Remove this tag due to error --tier "standard" --enable-dns-access --enable-ip-access
 # Removed from --monitoring STORAGE,POD,DEPLOYMENT,STATEFULSET,DAEMONSET,HPA,JOBSET,CADVISOR,KUBELET,DCGM
 gcloud beta container --project "c8-labs" clusters create "c8-labs-swati" \
-  --region "asia-south1"  --no-enable-basic-auth \
+  --region "asia-south2"  --no-enable-basic-auth \
   --cluster-version "1.33.2-gke.1111000" --release-channel "regular" \
   --machine-type "n2-standard-4" --image-type "COS_CONTAINERD" \
   --disk-type "pd-standard" --disk-size "50" --enable-autoscaling \
   --metadata disable-legacy-endpoints=true \
-  --node-locations=asia-south1-a,asia-south1-b,asia-south1-c \
-  --spot --num-nodes=1 --max-nodes=1 --max-nodes=3 \
+  --node-locations=asia-south2-a,asia-south2-b,asia-south2-c \
+  --spot --num-nodes=1 --min-nodes=1 --max-nodes=3 \
   --logging=SYSTEM,WORKLOAD \
   --monitoring=SYSTEM \
   --enable-private-nodes --enable-ip-alias --network "projects/c8-labs/global/networks/default" \
-  --subnetwork "projects/c8-labs/regions/asia-south1/subnetworks/default" \
+  --subnetwork "projects/c8-labs/regions/asia-south2/subnetworks/default" \
   --no-enable-intra-node-visibility --default-max-pods-per-node "110" \
   --security-posture=standard \
   --workload-vulnerability-scanning=disabled --no-enable-google-cloud-access \
@@ -61,10 +61,11 @@ gcloud beta container --project "c8-labs" clusters create "c8-labs-swati" \
   --binauthz-evaluation-mode=DISABLED --enable-managed-prometheus --enable-shielded-nodes \
   --shielded-integrity-monitoring --no-shielded-secure-boot
 
+gcloud container clusters update c8-labs-swati --region "asia-south2" --enable-image-streaming
 
 # Note: Need to sign in to GCP first using gcloud auth login
 # After this step, you can use Project Lens UI app to view the cluster details.
-gcloud container clusters get-credentials c8-labs-swati --region asia-south1 --project c8-labs
+gcloud container clusters get-credentials c8-labs-swati --region asia-south2 --project c8-labs
 
 # lets create a namespace - delete if it exists
 # --namespace c8-labs-31
@@ -74,3 +75,18 @@ kubectl apply -f namespace-c86-mini.yaml
 # Provide "namespace access" to the user
 kubectl apply -f role-binding.yaml 
 
+# End of this part of runboook
+########
+
+# Useful commands
+# create node pool with spot (optional - to add more capacity as necessary)
+gcloud container node-pools create node-pool-swati-v2 \
+        --cluster c8-labs-swati \
+        --machine-type n2-standard-4 \
+        --disk-type=pd-standard \
+        --disk-size=50 \
+        --enable-autoscaling \
+        --num-nodes=1 --min-nodes=1 --max-nodes=3 \
+        --region asia-south2 \
+        --node-locations=asia-south2-a,asia-south2-b,asia-south2-c \
+        --spot

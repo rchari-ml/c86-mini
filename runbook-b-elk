@@ -1,8 +1,34 @@
-
+# Participant to follow these steps
 ################################
-# Using CLI, know current user name
+# NOTE: Require Docker account to download images
+####
+# Let's begin!
+####
 # Login to GCP console if required
+gcloud auth login
+
+# Using CLI, know current user name
 gcloud config get-value account
+
+# Check if the user can see the cluster - via Project Lens UI app
+gcloud container clusters describe c8-labs-swati --region asia-south2 --project c8-labs
+gcloud container clusters get-credentials c8-labs-swati --region asia-south2 --project c8-labs
+
+# replace user id, email, token appropriately
+kubectl create secret docker-registry registry-camunda-cloud  \
+  --namespace=c8-labs-31 \
+  --docker-server=registry.camunda.cloud \
+  --docker-username=your-docker-account-uid \
+  --docker-password=your-docker-account-token \
+  --docker-email=your-docker-account-email
+
+# replace user id, email, token appropriately
+kubectl create secret docker-registry registry-docker-hub  \
+    --namespace=c8-labs-31 \
+    --docker-server=hub.docker.com \
+    --docker-username=your-docker-account-uid \
+    --docker-password=your-docker-account-token \
+    --docker-email=your-docker-account-email
 
 
 # Install elastic components - elk certs
@@ -42,21 +68,6 @@ kubectl api-resources --verbs=list --namespaced -o name | xargs -n 1 kubectl get
 
 gcloud config set project c8-labs
 
-# create cluster with necessary configurations (with default node pool)
-gcloud beta container --project "c8-labs" clusters create "c8-labs-31" --region "asia-south1" --tier "standard" --no-enable-basic-auth --cluster-version "1.33.2-gke.1111000" --release-channel "regular" --machine-type "n2-custom-8-10240" --image-type "COS_CONTAINERD" --disk-type "pd-standard" --disk-size "50" --metadata disable-legacy-endpoints=true --spot --num-nodes "1" --logging=SYSTEM,WORKLOAD --monitoring=SYSTEM,STORAGE,POD,DEPLOYMENT,STATEFULSET,DAEMONSET,HPA,JOBSET,CADVISOR,KUBELET,DCGM --enable-private-nodes --enable-ip-alias --network "projects/c8-labs/global/networks/default" --subnetwork "projects/c8-labs/regions/asia-south1/subnetworks/default" --no-enable-intra-node-visibility --default-max-pods-per-node "110" --enable-dns-access --enable-ip-access --security-posture=standard --workload-vulnerability-scanning=disabled --no-enable-google-cloud-access --addons HorizontalPodAutoscaling,HttpLoadBalancing,GcePersistentDiskCsiDriver --enable-autoupgrade --enable-autorepair --max-surge-upgrade 1 --max-unavailable-upgrade 0 --binauthz-evaluation-mode=DISABLED --enable-managed-prometheus --enable-shielded-nodes --shielded-integrity-monitoring --no-shielded-secure-boot
-
-
-# create node pool with spot (optional - to add more capacity)
-gcloud container node-pools create node-pool-swati-v2 \
-        --cluster c8-labs-swati \
-        --machine-type n2-standard-4 \
-        --disk-type=pd-standard \
-        --disk-size=50 \
-        --enable-autoscaling \
-        --num-nodes=1 --min-nodes=1 --max-nodes=3 \
-        --region asia-south1 \
-        --node-locations=asia-south1-a,asia-south1-b,asia-south1-c \
-        --spot
 
 # check pvs status
 kubectl get pvc -n c8-labs-31
@@ -83,11 +94,6 @@ kubectl port-forward svc/kibana-kibana 5601:5601 -n c8-labs-31
 curl -I http://localhost:5601/
 curl -I http://localhost:5601/login
 
-# Using CLI, know current user name
-gcloud config get-value account
-
-# Check if the user can see the cluster
-gcloud container clusters describe c8-labs-swati --region asia-south1 --project c8-labs
 
 # Check if the user can create secrets in the namespace
 kubectl auth can-i create secrets -n <namespace>

@@ -264,7 +264,8 @@ clusterHealthCheckParams: "wait_for_status=yellow&timeout=5s"
 ##
 schedulerName: ""
 
-imagePullSecrets: []
+imagePullSecrets:
+  - name: registry-docker-hub
 nodeSelector: {}
 tolerations: []
 

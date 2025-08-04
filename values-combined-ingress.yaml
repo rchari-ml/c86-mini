@@ -299,7 +299,7 @@ postgresql:
     pullSecrets:
       - name: registry-docker-hub
 
-# lets use existing elk - we have it running with another namespace. check the config.
+# lets use existing elk - we have it running already. check the config.
 elasticsearch:
   enabled: false
 #  image:
