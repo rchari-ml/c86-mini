@@ -40,8 +40,7 @@ gcloud projects add-iam-policy-binding c8-labs \
 
 
 # create cluster with necessary configurations (with default node pool)
-# Remove this tag due to error --tier "standard" --enable-dns-access --enable-ip-access
-# Removed from --monitoring STORAGE,POD,DEPLOYMENT,STATEFULSET,DAEMONSET,HPA,JOBSET,CADVISOR,KUBELET,DCGM
+# 
 gcloud beta container --project "c8-labs" clusters create "c8-labs-swati" \
   --region "asia-south2"  --no-enable-basic-auth \
   --cluster-version "1.33.2-gke.1111000" --release-channel "regular" \
@@ -49,7 +48,7 @@ gcloud beta container --project "c8-labs" clusters create "c8-labs-swati" \
   --disk-type "pd-standard" --disk-size "50" --enable-autoscaling \
   --metadata disable-legacy-endpoints=true \
   --node-locations=asia-south2-a,asia-south2-b,asia-south2-c \
-  --spot --num-nodes=1 --min-nodes=1 --max-nodes=3 \
+  --spot --num-nodes=1 --total-min-nodes=1 --total-max-nodes=12 \
   --logging=SYSTEM,WORKLOAD \
   --monitoring=SYSTEM \
   --enable-private-nodes --enable-ip-alias --network "projects/c8-labs/global/networks/default" \
@@ -62,6 +61,7 @@ gcloud beta container --project "c8-labs" clusters create "c8-labs-swati" \
   --binauthz-evaluation-mode=DISABLED --enable-managed-prometheus --enable-shielded-nodes \
   --shielded-integrity-monitoring --no-shielded-secure-boot
 
+# optional config
 gcloud container clusters update c8-labs-swati --region "asia-south2" --enable-image-streaming
 
 # Note: Need to sign in to GCP first using gcloud auth login
