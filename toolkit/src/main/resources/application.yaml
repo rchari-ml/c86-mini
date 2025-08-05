@@ -5,16 +5,36 @@ spring:
 server:
   port: 9010
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  health:
+    livenessState:
+      enabled: true
+    readinessState:
+      enabled: true
+
 camunda:
   client:
     mode: self-managed
     zeebe:
       enabled: true
-      grpc-address: http://127.0.0.1:26500
-      rest-address: http://127.0.0.1:8088
+      # grpc-address: http://localhost:26500
+      # rest-address: http://localhost:8080
+      oauth:
+        issuer: https://c8-labs-31.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token
+        client-id: zeebe-api
+        client-secret: ${ZEEBE_API_TOKEN_SECRET}
+        audience: zeebe-api      
     auth:
       client-id: tasklist-api
       # include secret from the camunda env
-      client-secret: put-correct-secret-value-here
+      client-secret: ${TASKLIST_API_TOKEN_SECRET}
       # include issuer endpoint from the camunda env
       issuer: https://c8-labs-31.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token

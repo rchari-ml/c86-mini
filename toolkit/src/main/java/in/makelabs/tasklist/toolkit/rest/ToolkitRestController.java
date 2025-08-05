@@ -54,6 +54,8 @@ public class ToolkitRestController {
 
     public Topology fetchTopology() {
 
+        System.out.println("client " + client.getConfiguration().getGatewayAddress() );
+
         io.camunda.zeebe.client.api.ZeebeFuture<Topology> zf =
         client.newTopologyRequest().send();
         return zf.join();

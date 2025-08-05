@@ -23,6 +23,13 @@ spec:
     - host: c8-labs-31.makelabs.in
       http:
         paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nginx-landing-page-service
+                port:
+                  number: 80
           - path: /console
             pathType: Prefix
             backend:
@@ -72,6 +79,13 @@ spec:
                 name: c8-labs-31-connectors
                 port:
                   number: 8080
+          - path: /ml-api
+            pathType: Prefix
+            backend:
+              service:
+                name: toolkit-service
+                port:
+                  number: 80
 ---
 # The following is for the identity service
 apiVersion: cloud.google.com/v1
@@ -126,3 +140,25 @@ spec:
       protocol: TCP
       port: 8080
       targetPort: 8080
+---
+# The following is for the operate service
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: operate-backendconfig
+  namespace: c8-labs-31
+spec:
+  healthCheck:
+    requestPath: /operate/actuator/health/readiness
+    port: 9600
+---
+# The following is for the operate service
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: tasklist-backendconfig
+  namespace: c8-labs-31
+spec:
+  healthCheck:
+    requestPath: /tasklist/actuator/health/readiness
+    port: 9600

@@ -1,0 +1,29 @@
+# Build "toolkit" maven java project 
+cd toolkit
+mvn clean package
+
+# Build docker image
+docker build -t asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo/toolkit-c8-labs-31:v1 .
+
+
+# Authenticate docker to push to GCR
+#gcloud auth configure-docker asia-south2-docker.pkg.dev
+#docker tag  toolkit-c8-labs-31 asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo/toolkit-c8-labs-31:v1
+docker push                   asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo/toolkit-c8-labs-31:v1
+
+
+#################
+# Lets come back to the home folder and run deploy script to GKE
+kubectl apply -f deploy-worker-toolkit.yaml -n c8-labs-31
+
+kubectl describe service toolkit-service -n c8-labs-31
+
+
+
+### Useful commands
+kubectl delete deployment toolkit-app  -n c8-labs-31 
+kubectl delete service toolkit-service  -n c8-labs-31
+
+# Known issue (1)
+# GCP load balancer may show an error where health check fails for backend service (one or more).
+# Health check for "toolkit-app" -> /actuator/health/readiness

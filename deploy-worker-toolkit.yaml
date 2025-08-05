@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: toolkit-app
+  namespace: c8-labs-31
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: toolkit-app
+  template:
+    metadata:
+      labels:
+        app: toolkit-app
+    spec:
+      containers:
+      - name: toolkit-app
+        image: asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo/toolkit-c8-labs-31:v1
+        ports:
+        - containerPort: 9010
+        env:
+            - name: TASKLIST_API_TOKEN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: identity-secret-for-components
+                  key: tasklist-api-secret
+            - name: ZEEBE_API_TOKEN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: identity-secret-for-components
+                  key: zeebe-api-secret
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: 9010
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"          
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: toolkit-service
+  namespace: c8-labs-31
+spec:
+  type: LoadBalancer
+  selector:
+    app: toolkit-app
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 9010

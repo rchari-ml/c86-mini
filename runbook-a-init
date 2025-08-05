@@ -37,6 +37,9 @@ gcloud projects add-iam-policy-binding c8-labs \
   --member="user:raghavendra.chari@gmail.com" \
   --role="roles/viewer"
 
+gcloud projects add-iam-policy-binding c8-labs \
+  --member="user:raghavendra.chari@gmail.com" \
+  --role="roles/artifactregistry.writer"
 
 
 # create cluster with necessary configurations (with default node pool)
@@ -91,3 +94,7 @@ gcloud container node-pools create node-pool-swati-v2 \
         --region asia-south2 \
         --node-locations=asia-south2-a,asia-south2-b,asia-south2-c \
         --spot
+
+# Cluster optimize utilization profile 
+# This is optional, but recommended to optimize the cluster utilization.
+gcloud container clusters update c8-labs-swati --region asia-south2 --autoscaling-profile optimize-utilization

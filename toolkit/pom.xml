@@ -52,6 +52,11 @@
 			<scope>test</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>		
+
 		<!-- this is deprecated since Camunda 8.6.x. See here: https://docs.camunda.io/docs/apis-tools/spring-zeebe-sdk/getting-started/
 		<dependency>
 			<groupId>io.camunda</groupId>
