@@ -1,6 +1,9 @@
 # Participant to follow these steps
 ################################
-# NOTE: Require Docker account to download images
+# NOTE: 
+#      Docker Desktop installed on your laptop/workstation. Have your account with docker.com
+#      Project Lens UI app to view the K8s cluster and elements
+#      Gmail user account (@gmail.com)
 ####
 # Let's begin!
 ####
@@ -51,7 +54,6 @@ helm install elasticsearch elastic/elasticsearch -n c8-labs-31 -f elasticsearch.
 # Install elastic components - kibana
 #helm install kibana  elastic/kibana -n c8-labs-31  -f kibana.yaml
 #kubectl apply -f elk-ingress.yaml --namespace c8-labs-31
-
 # Wait for external IP address to be assigned to the ingress
 # example 34.8.27.166
 # attach it to the domain name - elk-c8-labs-31.makelabs.in

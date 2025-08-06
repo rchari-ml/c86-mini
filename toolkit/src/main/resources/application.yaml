@@ -20,21 +20,10 @@ management:
     readinessState:
       enabled: true
 
-camunda:
+# Below is insecure config that works
+zeebe:
   client:
-    mode: self-managed
-    zeebe:
-      enabled: true
-      # grpc-address: http://localhost:26500
-      # rest-address: http://localhost:8080
-      oauth:
-        issuer: https://c8-labs-31.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token
-        client-id: zeebe-api
-        client-secret: ${ZEEBE_API_TOKEN_SECRET}
-        audience: zeebe-api      
-    auth:
-      client-id: tasklist-api
-      # include secret from the camunda env
-      client-secret: ${TASKLIST_API_TOKEN_SECRET}
-      # include issuer endpoint from the camunda env
-      issuer: https://c8-labs-31.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token
+    broker:
+      gateway-address: zeebe-c8-labs-31.makelabs.in:80
+    security:
+      plaintext: true

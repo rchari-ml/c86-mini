@@ -15,8 +15,8 @@ import io.camunda.zeebe.spring.client.annotation.Variable;
 public class NewLeadRecordWorker {
 
     private final static Logger LOG = LoggerFactory.getLogger(NewLeadRecordWorker.class);
-
-    @JobWorker(type = "new-lead-record", autoComplete = false)
+    /**
+    @JobWorker(type = "new-lead-record", autoComplete = false, maxRetries = 2)
     public Map<String, String> handle(
             final JobClient client, final ActivatedJob job,
             @Variable(name = "companyName")         String companyName,
@@ -69,4 +69,5 @@ public class NewLeadRecordWorker {
         return Map.of("status", "success");
 
     } // end of handler method
+     */
 }

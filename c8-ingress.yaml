@@ -14,11 +14,12 @@ metadata:
   namespace: c8-labs-31
   annotations:
     kubernetes.io/ingress.class: "gce"
-    kubernetes.io/ingress.allow-http: "false" 
+    kubernetes.io/ingress.allow-http: "false"  # on ingress, we only allow HTTPS. http is for /zeebe let it be.
     networking.gke.io/managed-certificates: c8-managed-cert
     networking.gke.io/backend-protocol: "HTTP"  # Tell GKE to use HTTP to backend
     cloud.google.com/healthcheck-path: "/console"
 spec:
+  ingressClassName: "gce"
   rules:
     - host: c8-labs-31.makelabs.in
       http:
@@ -77,6 +78,13 @@ spec:
             backend:
               service:
                 name: c8-labs-31-connectors
+                port:
+                  number: 8080
+          - path: /zeebe
+            pathType: Prefix
+            backend:
+              service:
+                name: c8-labs-31-zeebe-gateway
                 port:
                   number: 8080
           - path: /ml-api
@@ -152,7 +160,25 @@ spec:
     requestPath: /operate/actuator/health/readiness
     port: 9600
 ---
-# The following is for the operate service
+apiVersion: v1
+kind: Service
+metadata:
+  name: c8-labs-31-operate
+  namespace: c8-labs-31
+  annotations:
+    cloud.google.com/backend-config: '{"default": "operate-backendconfig"}'
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8080
+    - name: metrics
+      protocol: TCP
+      port: 9600
+      targetPort: 9600
+---
+# The following is for the tasklist service
 apiVersion: cloud.google.com/v1
 kind: BackendConfig
 metadata:
@@ -162,3 +188,51 @@ spec:
   healthCheck:
     requestPath: /tasklist/actuator/health/readiness
     port: 9600
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: c8-labs-31-tasklist
+  namespace: c8-labs-31
+  annotations:
+    cloud.google.com/backend-config: '{"default": "tasklist-backendconfig"}'
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8080
+    - name: metrics
+      protocol: TCP
+      port: 9600
+      targetPort: 9600
+---
+# The following is for the console service
+# console readiness -> http://c8-labs-31-console.c8-labs-31:9100/health/readiness
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: console-backendconfig
+  namespace: c8-labs-31
+spec:
+  healthCheck:
+    requestPath: /health/readiness
+    port: 9100
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: c8-labs-31-console
+  namespace: c8-labs-31
+  annotations:
+    cloud.google.com/backend-config: '{"default": "console-backendconfig"}'
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8080
+    - name: metrics
+      protocol: TCP
+      port: 9100
+      targetPort: 9100

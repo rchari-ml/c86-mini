@@ -5,7 +5,6 @@ kubectl apply -f identity-secret.yaml --namespace c8-labs-31
 # Make sure the elasticsearch endpoint config is correct in values-combined-ingress.yaml.
 # elasticsearch-master.c8-labs-31.svc.cluster.local
 
-
 # Install camunda
 # 12.0.0-alpha4 or 12.3.0 version in the 8.7.x series is verified as of 01 Aug 2025
 helm install c8-labs-31 camunda/camunda-platform -f values-combined-ingress.yaml \
@@ -18,7 +17,14 @@ kubectl apply -f c8-ingress.yaml --namespace c8-labs-31
 # Update health check endpoints as noted in Known Issue (1) below.
 # this is required for External LB IP address to be issued by GCE.
 
-# wait for 5 minutes
+# wait for 5 minutes or so. use this command to check external IP address is assigned.
+kubectl describe ingress c8-labs-31-ingress -n c8-labs-31
+
+kubectl apply -f c8-zeebe-ingress.yaml --namespace c8-labs-31
+kubectl describe ingress c8-labs-31-zeebe-gateway-grpc -n c8-labs-31 
+
+# Useful command - delete if you wish to recreate it.
+kubectl delete ingress c8-labs-31-zeebe-gateway-grpc -n c8-labs-31 
 
 # Once IP address is available, go ahead and map it with domain.
 # c8-labs-31.makelabs.in => output of "kubectl describe ingress c8-ingress -n c8-labs-31"
@@ -60,6 +66,9 @@ curl -v  http://camunda-tasklist:80/tasklist/swagger-ui/index.html
 curl -v  http://camunda-tasklist:9600/tasklist/actuator/health
 
 curl -v http://camunda-identity:82/actuator/health
+
+# grp curl command to test zeebe gateway gRPC service
+grpcurl -plaintext zeebe-c8-labs-31.makelabs.in:80 list
 
 
 # To delete below items at the end of the lab exercise

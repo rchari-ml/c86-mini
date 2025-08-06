@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Welcome to Camunda 8.6 Cluster Setup Hands On Lab!</title>
+<title>Welcome to Camunda 8.7 Cluster Setup on GKE - Hands On Lab!</title>
 
     <style media="screen">
       body { background: white; color: rgba(0,0,0,0.87); font-family: "Manrope", sans-serif; margin: 0; padding: 0; }
@@ -42,20 +42,20 @@
     </div>
     <div id="message">
           <h1>Welcome to Enablement Program</h1>
-          <h2>Camunda 8.6+ Cluster Setup Hands On Lab</h2>
+          <h2>Camunda 8.7 Cluster Setup Hands On Lab</h2>
           <h4>MakeLabs.in</h4>
           <p>
-            Camunda 8.6 (or higher) cluster is setup on Kubernetes cluster running on Ubuntu Pro.
-            The cluster nodes are managed by Rancher Desktop by SUSE. The setup includes below components.
+            Camunda 8.7 (or higher) cluster is setup on GKE cluster running on GCP.
+            The cluster nodes are distributed across 3 zones in the Asia region. The setup includes below components.
             <br/>
               <ul>
-                <li>Camunda setup via Helm charts - latest release 8.7 alpha </li>
-                <li>Elastic and Kibana</li>
-                <li>Prometheus and Grafana</li>
+                <li>Camunda setup via Helm charts - release 8.7 alpha or higher</li>
+                <li>Elastic and Kibana as supporting components</li>
+                <li>Prometheus and Grafana as optional components</li>
               </ul>
           </p>
           <p>
-            More about the official documentation <a href="https://github.com/camunda/camunda-platform-helm/tree/main/charts/camunda-platform-8.6">here</a>.
+            More about the official documentation <a href="https://github.com/camunda/camunda-platform-helm/tree/main/charts/camunda-platform-8.7">here</a>.
           </p>
 
           <p>
@@ -72,12 +72,11 @@
             <br/>
             <a target="_blank"  href="/auth/">Admin Console</a>&nbsp;&nbsp;
             <a target="_blank" href="/auth/realms/camunda-platform/.well-known/openid-configuration">Open ID Config</a>&nbsp;&nbsp;
-            <a target="_blank" href="/camunda-pods-status.png">Pods Infra Status</a>&nbsp;&nbsp;
             <a target="_blank" href="/ml-api/fetchTopology">Topology</a>&nbsp;&nbsp;
           </p>
 
           <p><em>Visit the <a target="_blank" href="https://cep-now.makelabs.in">Enablement Program portal</a> here.</em></p>
-          <p><em>Note: This site is built using Cloudflare Access and Zero Trust components.</em></p>
+          <p><em>Note: The cep-now site is built using Cloudflare Access and Zero Trust components.</em></p>
       </div>
   </div>
 </body>
