@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: toolkit-app
-  namespace: c8-labs-31
+  namespace: c8-labs-32
 spec:
   replicas: 1
   selector:
@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: toolkit-app
-        image: asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo/toolkit-c8-labs-31:v1
+        image: asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo/toolkit-c8-labs-32:v1
         imagePullPolicy: Always
         ports:
         - containerPort: 9010
@@ -38,19 +38,18 @@ spec:
           periodSeconds: 10
         resources:
           requests:
-            memory: "512Mi"
-            cpu: "250m"
+            memory: "256Mi"
+            cpu: "100m"
           limits:
             memory: "512Mi"
-            cpu: "500m"          
+            cpu: "200m"          
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: toolkit-service
-  namespace: c8-labs-31
+  namespace: c8-labs-32
 spec:
-  type: LoadBalancer
   selector:
     app: toolkit-app
   ports:

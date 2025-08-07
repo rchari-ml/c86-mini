@@ -2,26 +2,35 @@ apiVersion: networking.gke.io/v1
 kind: ManagedCertificate
 metadata:
   name: c8-managed-cert
-  namespace: c8-labs-31
+  namespace: c8-labs-32
 spec:
   domains:
-    - c8-labs-31.makelabs.in
+    - c8-labs-32.makelabs.in
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: c8-labs-31-ingress
-  namespace: c8-labs-31
+  name: c8-labs-32-ingress
+  namespace: c8-labs-32
+  labels:
+    app: camunda-platform
+    app.kubernetes.io/instance: c8-labs-32
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: camunda-platform
+    app.kubernetes.io/part-of: camunda-platform
+    helm.sh/chart: camunda-platform-12.0.0-alpha4  
   annotations:
-    kubernetes.io/ingress.class: "gce"
-    kubernetes.io/ingress.allow-http: "false"  # on ingress, we only allow HTTPS. http is for /zeebe let it be.
+    kubernetes.io/ingress.class: "nginx"
+    meta.helm.sh/release-name: c8-labs-32
+    meta.helm.sh/release-namespace: c8-labs-32
+    kubernetes.io/ingress.allow-http: "false"  # on ingress, we only allow HTTPS. 
     networking.gke.io/managed-certificates: c8-managed-cert
     networking.gke.io/backend-protocol: "HTTP"  # Tell GKE to use HTTP to backend
-    cloud.google.com/healthcheck-path: "/console"
+    #cloud.google.com/healthcheck-path: "/console"
 spec:
-  ingressClassName: "gce"
+  ingressClassName: "nginx"
   rules:
-    - host: c8-labs-31.makelabs.in
+    - host: c8-labs-32.makelabs.in
       http:
         paths:
           - path: /
@@ -35,56 +44,56 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: c8-labs-31-console
+                name: c8-labs-32-console
                 port:
                   number: 80
           - path: /operate
             pathType: Prefix
             backend:
               service:
-                name: c8-labs-31-operate
+                name: c8-labs-32-operate
                 port:
                   number: 80
           - path: /tasklist
             pathType: Prefix
             backend:
               service:
-                name: c8-labs-31-tasklist
+                name: c8-labs-32-tasklist
                 port:
                   number: 80
           - path: /optimize
             pathType: Prefix
             backend:
               service:
-                name: c8-labs-31-optimize
+                name: c8-labs-32-optimize
                 port:
                   number: 80
           - path: /auth/
             pathType: Prefix
             backend:
               service:
-                name: c8-labs-31-keycloak
+                name: c8-labs-32-keycloak
                 port:
                   number: 80
           - path: /identity
             pathType: Prefix
             backend:
               service:
-                name: c8-labs-31-identity
+                name: c8-labs-32-identity
                 port:
                   number: 80
           - path: /connectors
             pathType: Prefix
             backend:
               service:
-                name: c8-labs-31-connectors
+                name: c8-labs-32-connectors
                 port:
                   number: 8080
           - path: /zeebe
             pathType: Prefix
             backend:
               service:
-                name: c8-labs-31-zeebe-gateway
+                name: c8-labs-32-zeebe-gateway
                 port:
                   number: 8080
           - path: /ml-api
@@ -100,7 +109,7 @@ apiVersion: cloud.google.com/v1
 kind: BackendConfig
 metadata:
   name: identity-backendconfig
-  namespace: c8-labs-31
+  namespace: c8-labs-32
 spec:
   healthCheck:
     requestPath: /actuator/health
@@ -109,8 +118,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: c8-labs-31-identity
-  namespace: c8-labs-31
+  name: c8-labs-32-identity
+  namespace: c8-labs-32
   annotations:
     cloud.google.com/backend-config: '{"default": "identity-backendconfig"}'
 spec:
@@ -129,7 +138,7 @@ apiVersion: cloud.google.com/v1
 kind: BackendConfig
 metadata:
   name: connectors-backendconfig
-  namespace: c8-labs-31
+  namespace: c8-labs-32
 spec:
   healthCheck:
     requestPath: /connectors/actuator/health/readiness
@@ -138,8 +147,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: c8-labs-31-connectors
-  namespace: c8-labs-31
+  name: c8-labs-32-connectors
+  namespace: c8-labs-32
   annotations:
     cloud.google.com/backend-config: '{"default": "connectors-backendconfig"}'
 spec:
@@ -154,7 +163,7 @@ apiVersion: cloud.google.com/v1
 kind: BackendConfig
 metadata:
   name: operate-backendconfig
-  namespace: c8-labs-31
+  namespace: c8-labs-32
 spec:
   healthCheck:
     requestPath: /operate/actuator/health/readiness
@@ -163,8 +172,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: c8-labs-31-operate
-  namespace: c8-labs-31
+  name: c8-labs-32-operate
+  namespace: c8-labs-32
   annotations:
     cloud.google.com/backend-config: '{"default": "operate-backendconfig"}'
 spec:
@@ -183,7 +192,7 @@ apiVersion: cloud.google.com/v1
 kind: BackendConfig
 metadata:
   name: tasklist-backendconfig
-  namespace: c8-labs-31
+  namespace: c8-labs-32
 spec:
   healthCheck:
     requestPath: /tasklist/actuator/health/readiness
@@ -192,8 +201,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: c8-labs-31-tasklist
-  namespace: c8-labs-31
+  name: c8-labs-32-tasklist
+  namespace: c8-labs-32
   annotations:
     cloud.google.com/backend-config: '{"default": "tasklist-backendconfig"}'
 spec:
@@ -208,12 +217,12 @@ spec:
       targetPort: 9600
 ---
 # The following is for the console service
-# console readiness -> http://c8-labs-31-console.c8-labs-31:9100/health/readiness
+# console readiness -> http://c8-labs-32-console.c8-labs-32:9100/health/readiness
 apiVersion: cloud.google.com/v1
 kind: BackendConfig
 metadata:
   name: console-backendconfig
-  namespace: c8-labs-31
+  namespace: c8-labs-32
 spec:
   healthCheck:
     requestPath: /health/readiness
@@ -222,8 +231,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: c8-labs-31-console
-  namespace: c8-labs-31
+  name: c8-labs-32-console
+  namespace: c8-labs-32
   annotations:
     cloud.google.com/backend-config: '{"default": "console-backendconfig"}'
 spec:

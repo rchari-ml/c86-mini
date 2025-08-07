@@ -1,28 +1,28 @@
 global:
   ingress:
     enabled: true
-    className: gce
-    host: "c8-labs-31.makelabs.in"
+    className: nginx
+    host: "c8-labs-32.makelabs.in"
 #    tls:
 #      enabled: true
 #      secretName: tls-grpc-secret
   identity:
     auth:
-      publicIssuerUrl: "https://c8-labs-31.makelabs.in/auth/realms/camunda-platform"
+      publicIssuerUrl: "https://c8-labs-32.makelabs.in/auth/realms/camunda-platform"
       operate:
-        redirectUrl: "https://c8-labs-31.makelabs.in/operate"
+        redirectUrl: "https://c8-labs-32.makelabs.in/operate"
         existingSecret:
           name: identity-secret-for-components
         existingSecretKey: operate-secret
 
       tasklist:
-        redirectUrl: "https://c8-labs-31.makelabs.in/tasklist"
+        redirectUrl: "https://c8-labs-32.makelabs.in/tasklist"
         existingSecret:
           name: identity-secret-for-components
         existingSecretKey: tasklist-secret
 
       optimize:
-        redirectUrl: "https://c8-labs-31.makelabs.in/optimize"
+        redirectUrl: "https://c8-labs-32.makelabs.in/optimize"
         existingSecret:
           name: identity-secret-for-components
         existingSecretKey: optimize-secret
@@ -38,7 +38,7 @@ global:
         existingSecretKey: connectors-secret
 
       console:
-        redirectUrl: "https://c8-labs-31.makelabs.in/console"
+        redirectUrl: "https://c8-labs-32.makelabs.in/console"
         existingSecret:
           name: identity-secret-for-components
         existingSecretKey: console-secret
@@ -59,7 +59,7 @@ global:
       password: makelabs
     url:
       protocol: https
-      host: elasticsearch-master.c8-labs-31.svc.cluster.local
+      host: elasticsearch-master.c8-labs-32.svc.cluster.local
       port: 9200
     clusterName: elasticsearch
     prefix: zeebe-record
@@ -69,7 +69,7 @@ identity:
     pullSecrets:
       - name: registry-docker-hub
   contextPath: "/identity"
-  fullURL: "https://c8-labs-31.makelabs.in/identity"
+  fullURL: "https://c8-labs-32.makelabs.in/identity"
   firstUser:
     username: demo
     password: makelabs
@@ -83,7 +83,7 @@ identity:
       - name: KEYCLOAK_PROXY_ADDRESS_FORWARDING
         value: "true"
       - name: KEYCLOAK_FRONTEND_URL
-        value: "https://c8-labs-31.makelabs.in/auth"
+        value: "https://c8-labs-32.makelabs.in/auth"
 
 
 identityKeycloak:
@@ -156,12 +156,12 @@ console:
     pullSecrets:
       - name: registry-camunda-cloud
   ingress:
-    host: "c8-labs-31.makelabs.in"
+    host: "c8-labs-32.makelabs.in"
     path: "/"
     pathType: Prefix
   env:
     - name: KEYCLOAK_BASE_URL
-      value: "https://c8-labs-31.makelabs.in/auth"
+      value: "https://c8-labs-32.makelabs.in/auth"
     - name: KEYCLOAK_INTERNAL_BASE_URL
       value: "http://camunda.makelabs.in/auth"
     - name: CAMUNDA_CONSOLE_CONTEXT_PATH
@@ -173,7 +173,7 @@ console:
     - name: CAMUNDA_CONSOLE_CUSTOMERID
       value: makelabs-in
     - name: CAMUNDA_CONSOLE_INSTALLATIONID
-      value: makelabs-in-c8-labs-31-deployment
+      value: makelabs-in-c8-labs-32-deployment
     - name: CAMUNDA_CONSOLE_TELEMETRY
       value: online
     - name: KEYCLOAK_REALM
@@ -194,7 +194,7 @@ connectors:
   contextPath: "/connectors"
   enabled: true
   ingress:
-    host: "c8-labs-31.makelabs.in"
+    host: "c8-labs-32.makelabs.in"
   replicas: 1
   metrics:
     prometheus: /actuator/prometheus
@@ -218,11 +218,11 @@ zeebeGateway:
     grpc:
       enabled: true
       className: nginx
-      host: "zeebe.c8-labs-31.makelabs.in"
+      host: "zeebe.c8-labs-32.makelabs.in"
     rest:
       enabled: true
       className: nginx
-      host: "c8-labs-31.makelabs.in"
+      host: "c8-labs-32.makelabs.in"
       path: "/zeebe"
   replicas: 1
 #  resources:
@@ -276,7 +276,7 @@ zeebe:
     elasticsearch:
       className: io.camunda.zeebe.exporter.ElasticsearchExporter
       args:
-        url: https://elasticsearch-master.c8-labs-31.svc.cluster.local:9200
+        url: https://elasticsearch-master.c8-labs-32.svc.cluster.local:9200
         bulk:
           delay: 5
           size: 1000

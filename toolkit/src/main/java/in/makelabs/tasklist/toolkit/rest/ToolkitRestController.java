@@ -33,7 +33,7 @@ public class ToolkitRestController {
     private String recipientDemoEmail;
 
     @GetMapping("/fetchTopology")
-    public ResponseEntity<Topology> fetchTopology(ServerWebExchange exchange) {
+    public ResponseEntity<String> fetchTopology(ServerWebExchange exchange) {
 
         return ResponseEntity
                 .accepted()
@@ -52,13 +52,21 @@ public class ToolkitRestController {
                 .body(zf.join());
     }
 
-    public Topology fetchTopology() {
+    public String fetchTopology() {
 
-        System.out.println("client " + client.getConfiguration().getGatewayAddress() );
+        try {
+            System.out.println("client " + client.getConfiguration().getGatewayAddress());
 
-        io.camunda.zeebe.client.api.ZeebeFuture<Topology> zf =
-        client.newTopologyRequest().send();
-        return zf.join();
+            io.camunda.zeebe.client.api.ZeebeFuture<Topology> zf =
+                    client.newTopologyRequest().send();
+
+            String output = zf.join().toString();
+            System.out.println("client success");
+            return output;
+        }catch(Exception e){
+            System.out.println("client error " + e.getCause());
+            return "Runtime error: " + e.getLocalizedMessage() + "\nCause: " + e.getCause();
+        }
     }
 
 }

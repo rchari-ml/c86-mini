@@ -2,16 +2,16 @@ apiVersion: networking.gke.io/v1
 kind: ManagedCertificate
 metadata:
   name: elk-managed-cert
-  namespace: c8-labs-31
+  namespace: c8-labs-32
 spec:
   domains:
-    - elk-c8-labs-31.makelabs.in
+    - elk-c8-labs-32.makelabs.in
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: elk-ingress
-  namespace: c8-labs-31
+  namespace: c8-labs-32
   annotations:
     kubernetes.io/ingress.class: "gce"
     #networking.gke.io/ssl-services: "elasticsearch-master" # pass through the SSL certificate

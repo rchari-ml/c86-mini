@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nginx-static-web-app
-  namespace: c8-labs-31
+  namespace: c8-labs-32
 spec:
   replicas: 1
   selector:
@@ -27,18 +27,17 @@ spec:
         resources:
           requests:
             memory: "256Mi"
-            cpu: "250m"
+            cpu: "100m"
           limits:
             memory: "256Mi"
-            cpu: "250m"          
+            cpu: "100m"
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: nginx-landing-page-service
-  namespace: c8-labs-31
+  namespace: c8-labs-32
 spec:
-  type: LoadBalancer
   selector:
     app: nginx-static-web-app
   ports:

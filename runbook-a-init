@@ -1,6 +1,6 @@
 # pre-requisites
 # a. Make sure Docker is running
-# b. You have access to GCP Kubernetes Engine (GKE) - to create cluster c8-labs-swati
+# b. You have access to GCP Kubernetes Engine (GKE) - to create cluster c8-labs-sravana
 # c. Have node pool configured across locations - 1 node in each zone to start with.
 # d. Make sure that node pool Provisioning model = Spot
 # e. Make sure Cloud NAT is configured for the region where you are creating the cluster.
@@ -44,7 +44,7 @@ gcloud projects add-iam-policy-binding c8-labs \
 
 # create cluster with necessary configurations (with default node pool)
 # 
-gcloud beta container --project "c8-labs" clusters create "c8-labs-swati" \
+gcloud beta container --project "c8-labs" clusters create "c8-labs-sravana" \
   --region "asia-south2"  --no-enable-basic-auth \
   --cluster-version "1.33.2-gke.1111000" --release-channel "regular" \
   --machine-type "n2-standard-4" --image-type "COS_CONTAINERD" \
@@ -62,18 +62,19 @@ gcloud beta container --project "c8-labs" clusters create "c8-labs-swati" \
   --addons HorizontalPodAutoscaling,HttpLoadBalancing,GcePersistentDiskCsiDriver \
   --enable-autoupgrade --enable-autorepair --max-surge-upgrade 1 --max-unavailable-upgrade 0 \
   --binauthz-evaluation-mode=DISABLED --enable-managed-prometheus --enable-shielded-nodes \
-  --shielded-integrity-monitoring --no-shielded-secure-boot
+  --shielded-integrity-monitoring --no-shielded-secure-boot \
+  --autoscaling-profile optimize-utilization 
 
 # optional config
-gcloud container clusters update c8-labs-swati --region "asia-south2" --enable-image-streaming
+gcloud container clusters update c8-labs-sravana --region "asia-south2" --enable-image-streaming
 
 # Note: Need to sign in to GCP first using gcloud auth login
 # After this step, you can use Project Lens UI app to view the cluster details.
-gcloud container clusters get-credentials c8-labs-swati --region asia-south2 --project c8-labs
+gcloud container clusters get-credentials c8-labs-sravana --region asia-south2 --project c8-labs
 
 # lets create a namespace - delete if it exists
-# --namespace c8-labs-31
-kubectl delete namespace c8-labs-31
+# --namespace c8-labs-32
+kubectl delete namespace c8-labs-32
 kubectl apply -f namespace-c86-mini.yaml 
 
 # Provide "namespace access" to the user
@@ -82,11 +83,16 @@ kubectl apply -f role-binding.yaml
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo update
 
-helm install nginx-ingress ingress-nginx/ingress-nginx --namespace c8-labs-31  \
+helm install nginx-ingress ingress-nginx/ingress-nginx --namespace c8-labs-32  \
   --set controller.config.enable-http2="true" \
-  --set controller.config.proxy-buffer-size="8k" \
-  --set controller.config.proxy-buffers="4 8k" \
-  --set controller.config.proxy-busy-buffers-size="24k"
+  --set-string controller.config.proxy-buffer-size="16K" \
+  --set-string controller.config.proxy-buffers="3 8K" \
+  --set-string controller.config.proxy-busy-buffers-size="32K"
+
+# try this one perhaps -> --set controller.config.ssl-redirect="false"
+
+# [with right pod name] Check the status of the ingress controller pod - look for any config errors 
+kubectl describe pod nginx-ingress-ingress-nginx-controller-75fc9f4654-hwk9z -n c8-labs-32
 
 # End of this part of runboook
 ########
@@ -94,7 +100,7 @@ helm install nginx-ingress ingress-nginx/ingress-nginx --namespace c8-labs-31  \
 # Useful commands
 # create node pool with spot (optional - to add more capacity as necessary)
 gcloud container node-pools create node-pool-swati-v2 \
-        --cluster c8-labs-swati \
+        --cluster c8-labs-sravana \
         --machine-type n2-standard-4 \
         --disk-type=pd-standard \
         --disk-size=50 \
@@ -106,4 +112,7 @@ gcloud container node-pools create node-pool-swati-v2 \
 
 # Cluster optimize utilization profile 
 # This is optional, but recommended to optimize the cluster utilization.
-gcloud container clusters update c8-labs-swati --region asia-south2 --autoscaling-profile optimize-utilization
+gcloud container clusters update c8-labs-sravana --region asia-south2 --autoscaling-profile optimize-utilization
+
+# delete cluster
+gcloud beta container --project "c8-labs" clusters delete "c8-labs-sravana"  --region "asia-south2"

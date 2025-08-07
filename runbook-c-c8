@@ -1,33 +1,35 @@
 # include user account pwd as secrets
-kubectl apply -f identity-secret.yaml --namespace c8-labs-31
+kubectl apply -f identity-secret.yaml --namespace c8-labs-32
 
 
 # Make sure the elasticsearch endpoint config is correct in values-combined-ingress.yaml.
-# elasticsearch-master.c8-labs-31.svc.cluster.local
+# elasticsearch-master.c8-labs-32.svc.cluster.local
 
 # Install camunda
 # 12.0.0-alpha4 or 12.3.0 version in the 8.7.x series is verified as of 01 Aug 2025
-helm install c8-labs-31 camunda/camunda-platform -f values-combined-ingress.yaml \
+helm install c8-labs-32 camunda/camunda-platform -f values-combined-ingress.yaml \
   -f values-connectors-env.yaml --set zeebe.prometheusServiceMonitor.enabled=true  \
-  --version 12.0.0-alpha4 --namespace c8-labs-31
+  --version 12.0.0-alpha4 --namespace c8-labs-32
 
 # The file "c8-ingress.yaml" is NOT required as we ae using built in GCE Ingress Controller which provisions a GCP external LB.
-kubectl apply -f c8-ingress.yaml --namespace c8-labs-31
+kubectl apply -f c8-ingress.yaml --namespace c8-labs-32
 
 # Update health check endpoints as noted in Known Issue (1) below.
 # this is required for External LB IP address to be issued by GCE.
 
 # wait for 5 minutes or so. use this command to check external IP address is assigned.
-kubectl describe ingress c8-labs-31-ingress -n c8-labs-31
+kubectl describe ingress c8-labs-32-ingress -n c8-labs-32
+kubectl get managedcertificate -n c8-labs-32
 
-kubectl apply -f c8-zeebe-ingress.yaml --namespace c8-labs-31
-kubectl describe ingress c8-labs-31-zeebe-gateway-grpc -n c8-labs-31 
+
+kubectl apply -f c8-zeebe-ingress.yaml --namespace c8-labs-32
+kubectl describe ingress c8-labs-32-zeebe-gateway-grpc -n c8-labs-32 
 
 # Useful command - delete if you wish to recreate it.
-kubectl delete ingress c8-labs-31-zeebe-gateway-grpc -n c8-labs-31 
+kubectl delete ingress c8-labs-32-zeebe-gateway-grpc -n c8-labs-32 
 
 # Once IP address is available, go ahead and map it with domain.
-# c8-labs-31.makelabs.in => output of "kubectl describe ingress c8-ingress -n c8-labs-31"
+# c8-labs-32.makelabs.in => output of "kubectl describe ingress c8-ingress -n c8-labs-32"
 
 # login to console and verify things.
 
@@ -37,20 +39,20 @@ kubectl delete ingress c8-labs-31-zeebe-gateway-grpc -n c8-labs-31
 # Useful Commands
 
 # check ingress status
-kubectl get pods -n c8-labs-31 | grep ingress
+kubectl get pods -n c8-labs-32 | grep ingress
 
-kubectl describe ingress camunda-camunda-platform -n c8-labs-31
+kubectl describe ingress camunda-camunda-platform -n c8-labs-32
 
 # To uninstall camunda - at the end of the lab exercise, to get rid of things / wind down etc
-helm uninstall camunda -n c8-labs-31
+helm uninstall camunda -n c8-labs-32
 
 # Under path, you should see 6 entries listed: console, identity, operate, tasklist, optimize and auth.
-kubectl describe ingress c8-labs-31-ingress -n c8-labs-31
+kubectl describe ingress c8-labs-32-ingress -n c8-labs-32
 
-kubectl get ingress c8-labs-31-ingress -n c8-labs-31
+kubectl get ingress c8-labs-32-ingress -n c8-labs-32
 
-kubectl describe service camunda-identity -n c8-labs-31
-kubectl describe service camunda-connectors -n c8-labs-31
+kubectl describe service camunda-identity -n c8-labs-32
+kubectl describe service camunda-connectors -n c8-labs-32
 
 # Known issue (1)
 # Ensure the health check endpoint for below items
@@ -68,11 +70,11 @@ curl -v  http://camunda-tasklist:9600/tasklist/actuator/health
 curl -v http://camunda-identity:82/actuator/health
 
 # grp curl command to test zeebe gateway gRPC service
-grpcurl -plaintext zeebe-c8-labs-31.makelabs.in:80 list
+grpcurl -plaintext zeebe-c8-labs-32.makelabs.in:80 list
 
 
 # To delete below items at the end of the lab exercise
-# GCP > K8S > Delete the cluster c8-labs-swati
+# GCP > K8S > Delete the cluster c8-labs-sravana
 # GCP > Disks to be deleted (PVCs for zeebe, keycloak db, elasticsearch)
 # GCP > Compute Engine > (under Settings menu-sub-group) Network Endpoint Groups
 # GCP > Network services > Load balancing > Delete the LB and backend services. Some may be lingering here.

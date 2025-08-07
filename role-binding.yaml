@@ -2,7 +2,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  namespace: c8-labs-31
+  namespace: c8-labs-32
   name: team-role
 rules:
 - apiGroups: [""]
@@ -20,7 +20,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: team-role-binding
-  namespace: c8-labs-31
+  namespace: c8-labs-32
 subjects:
 - kind: User
   name: "raghavendra.chari@gmail.com"

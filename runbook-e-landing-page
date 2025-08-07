@@ -1,3 +1,5 @@
+# (Optional) The image is already pushed to GCR. 
+# Build image again if you made any changes.
 # Lets build a landing page to help navigate with camunda c8 components
 cd nginx
 
@@ -10,11 +12,11 @@ docker push                   asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo/to
 
 #################
 # Lets come back to the home folder and run deploy nginx static landing page to GKE
-kubectl apply -f deploy-landing-page.yaml -n c8-labs-31
+kubectl apply -f deploy-landing-page.yaml -n c8-labs-32
 
-kubectl describe service nginx-landing-page-service -n c8-labs-31
+kubectl describe service nginx-landing-page-service -n c8-labs-32
 
 ### Useful commands
-kubectl delete deployment nginx-static-web-app -n c8-labs-31 
-kubectl delete service nginx-landing-page-service  -n c8-labs-31
+kubectl delete deployment nginx-static-web-app -n c8-labs-32 
+kubectl delete service nginx-landing-page-service  -n c8-labs-32
 

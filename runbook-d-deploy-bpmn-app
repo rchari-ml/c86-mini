@@ -1,28 +1,33 @@
 # Build "toolkit" maven java project 
 cd toolkit
-mvn clean package
+mvn clean package -DskipTests
 
 # Build docker image
-docker build -t asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo/toolkit-c8-labs-31:v1 .
+docker build -t asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo/toolkit-c8-labs-32:v1 .
 
 
 # Authenticate docker to push to GCR
 #gcloud auth configure-docker asia-south2-docker.pkg.dev
-#docker tag  toolkit-c8-labs-31 asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo/toolkit-c8-labs-31:v1
-docker push                   asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo/toolkit-c8-labs-31:v1
+#docker tag  toolkit-c8-labs-32 asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo/toolkit-c8-labs-32:v1
+docker push                   asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo/toolkit-c8-labs-32:v1
 
 
 #################
 # Lets come back to the home folder and run deploy script to GKE
-kubectl apply -f deploy-worker-toolkit.yaml -n c8-labs-31
+kubectl apply -f deploy-worker-toolkit.yaml -n c8-labs-32
 
-kubectl describe service toolkit-service -n c8-labs-31
+kubectl describe service toolkit-service -n c8-labs-32
 
 
+
+cd 1-lead-to-opportunity-dmn-form-webhook/
+zbctl deploy --address "zeebe-c8-labs-32.makelabs.in:80" --insecure lead-to-opportunity-with-dmn.bpmn
+zbctl deploy --address "zeebe-c8-labs-32.makelabs.in:80" --insecure new-lead-approval.dmn
+zbctl deploy --address "zeebe-c8-labs-32.makelabs.in:80" --insecure lead-to-opportunity-with-webhook-Form.form
 
 ### Useful commands
-kubectl delete deployment toolkit-app  -n c8-labs-31 
-kubectl delete service toolkit-service  -n c8-labs-31
+kubectl delete deployment toolkit-app  -n c8-labs-32 
+kubectl delete service toolkit-service  -n c8-labs-32
 
 # Known issue (1)
 # GCP load balancer may show an error where health check fails for backend service (one or more).
