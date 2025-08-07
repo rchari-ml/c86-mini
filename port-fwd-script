@@ -33,7 +33,7 @@ kubectl port-forward svc/camunda-console        8087:80   --namespace c8-labs-32
 
 kubectl port-forward svc/camunda-zeebe-gateway  8088:8080 --namespace c8-labs-32  1> c86-port-fwd-zeebegateway-out10.log 2> c86-port-fwd-zeebegateway-out10.log &
 
-kubectl port-forward svc/camunda-zeebe-gateway  26500:26500 --namespace c8-labs-32 1> c86-port-fwd-zeebegateway-out11.log 2> c86-port-fwd-zeebegateway-out11.log &
+kubectl port-forward svc/c8-labs-32-zeebe-gateway  26500:26500 --namespace c8-labs-32 1> c86-port-fwd-zeebegateway-out11.log 2> c86-port-fwd-zeebegateway-out11.log &
 
 kubectl port-forward svc/camunda-zeebe-gateway  9600:9600 --namespace c8-labs-32  1> c86-port-fwd-zeebegateway-out12.log 2> c86-port-fwd-zeebegateway-out12.log &
 

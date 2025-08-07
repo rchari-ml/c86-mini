@@ -92,7 +92,7 @@ helm install nginx-ingress ingress-nginx/ingress-nginx --namespace c8-labs-32  \
 # try this one perhaps -> --set controller.config.ssl-redirect="false"
 
 # [with right pod name] Check the status of the ingress controller pod - look for any config errors 
-kubectl describe pod nginx-ingress-ingress-nginx-controller-75fc9f4654-hwk9z -n c8-labs-32
+kubectl describe pod nginx-ingress-ingress-nginx-controller-75fc9f4654-68d5x -n c8-labs-32
 
 # End of this part of runboook
 ########

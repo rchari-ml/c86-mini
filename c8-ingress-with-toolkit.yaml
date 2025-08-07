@@ -96,6 +96,13 @@ spec:
                 name: c8-labs-32-zeebe-gateway
                 port:
                   number: 8080
+          - path: /ml-api
+            pathType: Prefix
+            backend:
+              service:
+                name: toolkit-service
+                port:
+                  number: 80
 ---
 # The following is for the identity service
 apiVersion: cloud.google.com/v1
