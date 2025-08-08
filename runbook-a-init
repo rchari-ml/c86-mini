@@ -13,34 +13,38 @@ gcloud auth login
 ################################
 # (A) Grant access to the user 
 
+export UNAME=Raghavendra.chari@gmail.com
+
 gcloud iam roles create CustomK8sRoleCreator \
   --project=c8-labs \
   --file=custom-k8s-role.yaml
 
 gcloud projects add-iam-policy-binding c8-labs \
-  --member="user:raghavendra.chari@gmail.com" \
+  --member="user:${UNAME}" \
   --role="projects/c8-labs/roles/CustomK8sRoleCreator"
 
 gcloud projects add-iam-policy-binding c8-labs \
-  --member="user:raghavendra.chari@gmail.com" \
+  --member="user:${UNAME}" \
   --role="roles/container.clusterViewer"
 
 gcloud projects add-iam-policy-binding c8-labs \
-  --member="user:raghavendra.chari@gmail.com" \
+  --member="user:${UNAME}" \
   --role="roles/container.developer"
 
 gcloud projects add-iam-policy-binding c8-labs \
-  --member="user:raghavendra.chari@gmail.com" \
+  --member="user:${UNAME}" \
   --role="roles/compute.viewer"
 
 gcloud projects add-iam-policy-binding c8-labs \
-  --member="user:raghavendra.chari@gmail.com" \
+  --member="user:${UNAME}" \
   --role="roles/viewer"
 
 gcloud projects add-iam-policy-binding c8-labs \
-  --member="user:raghavendra.chari@gmail.com" \
+  --member="user:${UNAME}" \
   --role="roles/artifactregistry.writer"
 
+################################
+# (B) Create the cluster
 
 # create cluster with necessary configurations (with default node pool)
 # 
@@ -72,18 +76,28 @@ gcloud container clusters update c8-labs-sravana --region "asia-south2" --enable
 # After this step, you can use Project Lens UI app to view the cluster details.
 gcloud container clusters get-credentials c8-labs-sravana --region asia-south2 --project c8-labs
 
+
+################################
+# (C) Create the namespace and role binding
+
 # lets create a namespace - delete if it exists
 # --namespace c8-labs-32
 kubectl delete namespace c8-labs-32
 kubectl apply -f namespace-c86-mini.yaml 
 
 # Provide "namespace access" to the user
-kubectl apply -f role-binding.yaml 
+export UNAME=Raghavendra.chari@gmail.com
+envsubst '${UNAME}' < role-binding.yaml  | kubectl apply -f -
+
 
 # Add cert files as secrets
 kubectl create secret tls cf-origin-cert \
   --cert=cert-public-c8-labs.key \
   --key=cert-key-c8-labs.key -n c8-labs-32
+
+################################
+# (D) Ngnix Ingress Controller - common for the cluster 
+#     Normally shared with all namespaces 
 
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo update
