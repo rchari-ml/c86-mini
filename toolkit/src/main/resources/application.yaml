@@ -36,5 +36,5 @@ camunda:
 
 logging:
   level:
-    io.camunda: DEBUG
-    io.grpc: DEBUG
+    io.camunda: ERROR
+    io.grpc: ERROR

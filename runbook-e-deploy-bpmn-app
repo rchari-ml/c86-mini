@@ -39,3 +39,6 @@ kubectl delete service toolkit-service  -n c8-labs-32
 # Known issue (1)
 # GCP load balancer may show an error where health check fails for backend service (one or more).
 # Health check for "toolkit-app" -> /actuator/health/readiness
+
+# Reference
+https://docs.camunda.io/docs/apis-tools/spring-zeebe-sdk/getting-started/
