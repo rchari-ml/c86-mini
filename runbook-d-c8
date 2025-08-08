@@ -14,9 +14,6 @@ helm install c8-labs-32 camunda/camunda-platform -f values-combined-ingress.yaml
 # The file "c8-ingress.yaml" is NOT required as we ae using built in GCE Ingress Controller which provisions a GCP external LB.
 kubectl apply -f c8-ingress.yaml --namespace c8-labs-32
 
-# Run this when you are ready to deploy the toolkit app.
-kubectl apply -f c8-ingress-with-toolkit.yaml --namespace c8-labs-32
-
 # Update health check endpoints as noted in Known Issue (1) below.
 # this is required for External LB IP address to be issued by GCE.
 
@@ -33,9 +30,12 @@ kubectl describe ingress c8-labs-32-zeebe-gateway-grpc -n c8-labs-32
 kubectl delete ingress c8-labs-32-zeebe-gateway-grpc -n c8-labs-32 
 
 # Once IP address is available, go ahead and map it with domain.
-# c8-labs-32.makelabs.in => output of "kubectl describe ingress c8-ingress -n c8-labs-32"
+# c8-labs-32.makelabs.in => output of "kubectl describe ingress c8-labs-32-ingress -n c8-labs-32"
+# c8-labs-32-zeebe-gw.makelabs.in => output of "kubectl describe ingress c8-labs-32-zeebe-gateway-grpc -n c8-labs-32"
 
-# login to console and verify things.
+# login to Camunda app console and verify things.
+
+
 
 # This concludes Camunda setup
 
@@ -77,13 +77,15 @@ curl -v http://camunda-identity:82/actuator/health
 # Known issue (2)
 # Debug if you are able to connect on gRPC port 
 # grp curl command to test zeebe gateway gRPC service
-grpcurl -plaintext zeebe-c8-labs-32.makelabs.in:80 list
+grpcurl -plaintext c8-labs-32-zeebe-gw.makelabs.in:80 list
+grpcurl -plaintext c8-labs-32-zeebe-gateway.c8-labs-32.svc.cluster.local:26500 list
 
 # check to see if http2 is working. you should see somethingg around http2 and not fallback to http1.1
 curl -v --http2-prior-knowledge http://c8-labs-32-zeebe-gw.makelabs.in
 
 kubectl run curl-test --image=curlimages/curl -it --rm --restart=Never -- \
   curl -v --http2-prior-knowledge c8-labs-32-zeebe-gateway.c8-labs-32.svc.cluster.local:26500
+
 
 kubectl exec -it toolkit-app-5c6d7b6449-c62w8 -n c8-labs-32 -- nslookup c8-labs-32-zeebe-gateway.c8-labs-32.svc.cluster.local
 

@@ -24,6 +24,6 @@ management:
 zeebe:
   client:
     broker:
-      gateway-address: zeebe-c8-labs-32.makelabs.in:80
+      gateway-address: c8-labs-32-zeebe-gateway.c8-labs-32.svc.cluster.local:26500
     security:
       plaintext: true
