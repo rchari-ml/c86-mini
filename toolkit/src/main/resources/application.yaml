@@ -20,10 +20,21 @@ management:
     readinessState:
       enabled: true
 
-# Below is insecure config that works
-zeebe:
+# Below is oauth config for self managed
+camunda:
   client:
-    broker:
-      gateway-address: c8-labs-32-zeebe-gateway.c8-labs-32.svc.cluster.local:26500
-    security:
-      plaintext: true
+    mode: self-managed
+    auth:
+      client-id: zeebe-api
+      client-secret: ${ZEEBE_API_TOKEN_SECRET}
+      token-url: https://c8-labs-32.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token
+    zeebe:
+      enabled: true
+      grpc-address: http://c8-labs-32-zeebe-gateway.c8-labs-32.svc.cluster.local:26500
+      prefer-rest-over-grpc: false
+      audience: zeebe-api
+
+logging:
+  level:
+    io.camunda: DEBUG
+    io.grpc: DEBUG

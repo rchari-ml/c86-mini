@@ -7,7 +7,6 @@ import io.camunda.zeebe.client.api.response.Topology;
 import io.camunda.zeebe.client.api.search.filter.UserTaskFilter;
 import io.camunda.zeebe.client.api.search.response.SearchQueryResponse;
 import io.camunda.zeebe.client.api.search.response.UserTask;
-import io.camunda.zeebe.client.protocol.rest.UserTaskVariableFilterRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
