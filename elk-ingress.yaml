@@ -13,7 +13,7 @@ metadata:
   name: elk-ingress
   namespace: c8-labs-32
   annotations:
-    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.class: "nginx"
     #networking.gke.io/ssl-services: "elasticsearch-master" # pass through the SSL certificate
     networking.gke.io/managed-certificates: elk-managed-cert
     networking.gke.io/backend-protocol: "HTTP"  # Tell GKE to use HTTP to backend

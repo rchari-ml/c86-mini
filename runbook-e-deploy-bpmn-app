@@ -13,6 +13,11 @@ docker push                   asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo/to
 cd ..
 
 #################
+
+# IMPORTANT: Ensure the api secret is updated: identity-secret-for-components -> zeebe-api-secret (from Keycloak Admin UI)
+# Do not deploy toolkit app before updating the secret. You may need to restart this service "toolkit-app" otherwise.
+<update-secret-step>
+
 # Lastly, install toolkit app and bpmn solution artifacts -bpmn, dmn, form
 # Lets come back to the home folder and run deploy script to GKE
 kubectl apply -f deploy-worker-toolkit.yaml -n c8-labs-32
@@ -24,7 +29,17 @@ cd 1-lead-to-opportunity-dmn-form-webhook/
 zbctl deploy --address "c8-labs-32-zeebe-gw.makelabs.in:80" --insecure lead-to-opportunity-with-dmn.bpmn
 zbctl deploy --address "c8-labs-32-zeebe-gw.makelabs.in:80" --insecure new-lead-approval.dmn
 zbctl deploy --address "c8-labs-32-zeebe-gw.makelabs.in:80" --insecure lead-to-opportunity-with-webhook-Form.form
+
+# if secure channel - this is still not working need to debug
+zbctl --authzUrl https://c8-labs-32.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token \
+      --clientId zeebe-api \
+      --clientSecret $ZEEBE_API_TOKEN_SECRET \
+      --audience zeebe-api \
+      --address c8-labs-32-zeebe-gw.makelabs.in \
+      --insecure=false \
+      deploy new-lead-approval.dmn
 cd ..
+# finally, lets go to home folder
 
 # Run this when you are ready to deploy the toolkit app.
 kubectl apply -f c8-ingress-with-toolkit.yaml --namespace c8-labs-32

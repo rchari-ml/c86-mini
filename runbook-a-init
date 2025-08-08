@@ -80,17 +80,22 @@ kubectl apply -f namespace-c86-mini.yaml
 # Provide "namespace access" to the user
 kubectl apply -f role-binding.yaml 
 
+# Add cert files as secrets
+kubectl create secret tls cf-origin-cert \
+  --cert=cert-public-c8-labs.key \
+  --key=cert-key-c8-labs.key -n c8-labs-32
+
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo update
 
 # Use one of the following two options.
-helm install nginx-ingress ingress-nginx/ingress-nginx --namespace c8-labs-32  \
+helm install nginx-ingress ingress-nginx/ingress-nginx --namespace c8-labs-ingress-nginx --create-namespace  \
   --set controller.config.enable-http2="true" \
   --set-string controller.config.proxy-buffer-size="16K" \
   --set-string controller.config.proxy-buffers="3 8K" \
   --set-string controller.config.proxy-busy-buffers-size="32K"
 
-helm install nginx-ingress ingress-nginx/ingress-nginx --namespace c8-labs-32  \
+helm install nginx-ingress ingress-nginx/ingress-nginx --namespace c8-labs-ingress-nginx --create-namespace  \
   --set controller.config.enable-http2="true" \
   --set-string controller.config.proxy-buffer-size="128K" \
   --set-string controller.config.proxy-buffers="4 64K" \

@@ -11,7 +11,7 @@ helm install c8-labs-32 camunda/camunda-platform -f values-combined-ingress.yaml
   -f values-connectors-env.yaml --set zeebe.prometheusServiceMonitor.enabled=true  \
   --version 12.0.0-alpha4 --namespace c8-labs-32
 
-# The file "c8-ingress.yaml" is NOT required as we ae using built in GCE Ingress Controller which provisions a GCP external LB.
+# The file controls ingress access
 kubectl apply -f c8-ingress.yaml --namespace c8-labs-32
 
 # Update health check endpoints as noted in Known Issue (1) below.
@@ -20,6 +20,7 @@ kubectl apply -f c8-ingress.yaml --namespace c8-labs-32
 # wait for 5 minutes or so. use this command to check external IP address is assigned.
 kubectl describe ingress c8-labs-32-ingress -n c8-labs-32
 
+# this command is required only if we use gce controller
 kubectl get managedcertificate -n c8-labs-32
 
 

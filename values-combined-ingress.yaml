@@ -1,7 +1,7 @@
 global:
   ingress:
     enabled: true
-    className: gce
+    className: "nginx"
     host: "c8-labs-32.makelabs.in"
 #    tls:
 #      enabled: true

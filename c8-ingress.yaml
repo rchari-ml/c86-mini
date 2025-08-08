@@ -1,12 +1,12 @@
-apiVersion: networking.gke.io/v1
-kind: ManagedCertificate
-metadata:
-  name: c8-managed-cert
-  namespace: c8-labs-32
-spec:
-  domains:
-    - c8-labs-32.makelabs.in
----
+#apiVersion: networking.gke.io/v1
+#kind: ManagedCertificate
+#metadata:
+#  name: c8-managed-cert
+#  namespace: c8-labs-32
+#spec:
+#  domains:
+#    - c8-labs-32.makelabs.in
+#---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -20,15 +20,19 @@ metadata:
     app.kubernetes.io/part-of: camunda-platform
     helm.sh/chart: camunda-platform-12.0.0-alpha4  
   annotations:
-    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.class: "nginx"
     meta.helm.sh/release-name: c8-labs-32
     meta.helm.sh/release-namespace: c8-labs-32
     kubernetes.io/ingress.allow-http: "false"  # on ingress, we only allow HTTPS. 
-    networking.gke.io/managed-certificates: c8-managed-cert
+    #networking.gke.io/managed-certificates: c8-managed-cert # shift to cf origin cert
     networking.gke.io/backend-protocol: "HTTP"  # Tell GKE to use HTTP to backend
     #cloud.google.com/healthcheck-path: "/console"
 spec:
-  ingressClassName: "gce"
+  tls:
+    - hosts:
+        - c8-labs-32.makelabs.in
+      secretName: cf-origin-cert
+  ingressClassName: "nginx"
   rules:
     - host: c8-labs-32.makelabs.in
       http:
@@ -82,8 +86,8 @@ spec:
                 name: c8-labs-32-identity
                 port:
                   number: 80
-          - path: /connectors
-            pathType: Prefix
+          - path: /connectors/.*
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: c8-labs-32-connectors

@@ -56,9 +56,14 @@ metadata:
     kubernetes.io/ingress.class: "nginx"
     meta.helm.sh/release-namespace: c8-labs-32
     nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
+    kubernetes.io/ingress.allow-http: "false"  # on ingress, we only allow secure line. 
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     #networking.gke.io/managed-certificates: c8-zeebe-gw-cert # Demo env does not require cert
 spec:
+  tls:
+    - hosts:
+        - c8-labs-32-zeebe-gw.makelabs.in
+      secretName: cf-origin-cert
   ingressClassName: "nginx"
   rules:
     - host: c8-labs-32-zeebe-gw.makelabs.in
