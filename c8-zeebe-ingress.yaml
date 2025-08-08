@@ -5,7 +5,7 @@ metadata:
   namespace: c8-labs-32
 spec:
   domains:
-    - zeebe-gw-c8-labs-32.makelabs.in
+    - c8-labs-32-zeebe-gw.makelabs.in
 ---
 # zeebe gateway readiness > http://c8-labs-32-zeebe-gateway.c8-labs-32:9600/zeebe/actuator/health/readiness
 apiVersion: cloud.google.com/v1
@@ -61,7 +61,7 @@ metadata:
 spec:
   ingressClassName: "nginx"
   rules:
-    - host: zeebe-gw-c8-labs-32.makelabs.in
+    - host: c8-labs-32-zeebe-gw.makelabs.in
       http:
         paths:
           - path: /

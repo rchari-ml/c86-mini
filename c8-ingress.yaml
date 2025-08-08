@@ -20,7 +20,7 @@ metadata:
     app.kubernetes.io/part-of: camunda-platform
     helm.sh/chart: camunda-platform-12.0.0-alpha4  
   annotations:
-    kubernetes.io/ingress.class: "nginx"
+    kubernetes.io/ingress.class: "gce"
     meta.helm.sh/release-name: c8-labs-32
     meta.helm.sh/release-namespace: c8-labs-32
     kubernetes.io/ingress.allow-http: "false"  # on ingress, we only allow HTTPS. 
@@ -28,7 +28,7 @@ metadata:
     networking.gke.io/backend-protocol: "HTTP"  # Tell GKE to use HTTP to backend
     #cloud.google.com/healthcheck-path: "/console"
 spec:
-  ingressClassName: "nginx"
+  ingressClassName: "gce"
   rules:
     - host: c8-labs-32.makelabs.in
       http:
