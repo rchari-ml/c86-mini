@@ -3,9 +3,9 @@ global:
     enabled: true
     className: "nginx"
     host: "c8-labs-32.makelabs.in"
-#    tls:
-#      enabled: true
-#      secretName: tls-grpc-secret
+    tls:
+      enabled: true
+      secretName: cf-origin-cert
   identity:
     auth:
       publicIssuerUrl: "https://c8-labs-32.makelabs.in/auth/realms/camunda-platform"
@@ -218,7 +218,7 @@ zeebeGateway:
     grpc:
       enabled: true
       className: nginx
-      host: "zeebe.c8-labs-32.makelabs.in"
+      host: "c8-labs-32-zeebe-gw.makelabs.in"
     rest:
       enabled: true
       className: nginx
@@ -232,6 +232,18 @@ zeebeGateway:
     limits:
       memory: "2Gi"
       cpu: "500m"
+  security:
+    enabled: true
+    certChainPath: /usr/local/zeebe/certs/tls.crt
+    privateKeyPath: /usr/local/zeebe/certs/tls.key
+  extraVolumeMounts:
+    - name: zeebe-tls
+      mountPath: /usr/local/zeebe/certs
+      readOnly: true
+  extraVolumes:
+    - name: zeebe-tls
+      secret:
+        secretName: cf-origin-cert
 
 zeebe:
   image:
