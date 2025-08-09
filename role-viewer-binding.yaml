@@ -2,8 +2,8 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  namespace: c8-labs-32
-  name: team-role
+  namespace: ${UNAMESPACE}
+  name: team-viewer-role
 rules:
 - apiGroups: [""]
   resources: ["secrets"]
@@ -22,13 +22,13 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: team-rb-${UNAME}
-  namespace: c8-labs-32
+  name: team-viewer-rb-${UNAME}
+  namespace: ${UNAMESPACE}
 subjects:
 - kind: User
   name: "${UNAME}"
   apiGroup: rbac.authorization.k8s.io
 roleRef:
   kind: Role
-  name: team-role
+  name: team-viewer-role
   apiGroup: rbac.authorization.k8s.io

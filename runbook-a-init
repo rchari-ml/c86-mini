@@ -11,7 +11,7 @@
 gcloud auth login
 
 ################################
-# (A.1) Grant access to the user 
+# (A.1) Grant access to the user - Developer or Viewer profile
 
 export UNAME=Raghavendra.chari@gmail.com
 
@@ -65,12 +65,16 @@ gcloud container clusters get-credentials c8-labs-sravana --region asia-south2 -
 # lets create a namespace - delete if it exists
 # --namespace c8-labs-32
 kubectl delete namespace c8-labs-32
-kubectl apply -f namespace-c86-mini.yaml 
+export UNAMESPACE=c8-labs-32
+envsubst '${UNAMESPACE}' < namespace-c86-mini.yaml  | kubectl apply -f -
 
 # Provide "namespace access" to the user
+# These are generally read-only permissions.
 export UNAME=Raghavendra.chari@gmail.com
-envsubst '${UNAME}' < role-binding.yaml  | kubectl apply -f -
+envsubst '${UNAME} ${UNAMESPACE}' < role-viewer-binding.yaml  | kubectl apply -f -
 
+# Whereas these are "developer" permissions.
+envsubst '${UNAME} ${UNAMESPACE}' < role-developer-binding.yaml  | kubectl apply -f -
 
 # Add cert files as secrets
 kubectl create secret tls cf-origin-cert \
