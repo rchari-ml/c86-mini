@@ -105,13 +105,13 @@ operate:
 #  ingress:
 #    enabled: true
   contextPath: "/operate"
-#  resources:
-#    requests:
-#      cpu: "100m"
-#      memory: "512M"
-#    limits:
-#      cpu: "250m"
-#      memory: "1Gi"
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "512M"
+    limits:
+      cpu: "250m"
+      memory: "1Gi"
 
 optimize:
   enabled: true
@@ -121,13 +121,13 @@ optimize:
   contextPath: "/optimize"
 #  ingress:
 #    enabled: true
-#  resources:
-#    requests:
-#      cpu: "100m"
-#      memory: "512M"
-#    limits:
-#      cpu: "250m"
-#      memory: "1Gi"
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "512M"
+    limits:
+      cpu: "250m"
+      memory: "1Gi"
 
 tasklist:
 #  ingress:
@@ -136,13 +136,13 @@ tasklist:
   image:
     pullSecrets:
       - name: registry-docker-hub
-#  resources:
-#    requests:
-#      cpu: "100m"
-#      memory: "512M"
-#    limits:
-#      cpu: "250m"
-#      memory: "1Gi"
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "512M"
+    limits:
+      cpu: "250m"
+      memory: "1Gi"
 
 #webModeler:
   # The context path is used for the web application that will be accessed by users in the browser.
@@ -178,13 +178,13 @@ console:
       value: online
     - name: KEYCLOAK_REALM
       value: camunda-platform
-#  resources:
-#    requests:
-#      cpu: "100m"
-#      memory: "512M"
-#    limits:
-#      cpu: "250m"
-#      memory: "1Gi"
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "512M"
+    limits:
+      cpu: "250m"
+      memory: "1Gi"
 
 
 connectors:
@@ -198,13 +198,13 @@ connectors:
   replicas: 1
   metrics:
     prometheus: /actuator/prometheus
-#  resources:
-#    requests:
-#      cpu: "100m"
-#      memory: "512M"
-#    limits:
-#      cpu: "250m"
-#      memory: "1Gi"
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "512M"
+    limits:
+      cpu: "250m"
+      memory: "1Gi"
 
 zeebeGateway:
   image:
@@ -225,13 +225,13 @@ zeebeGateway:
       host: "c8-labs-32.makelabs.in"
       path: "/zeebe"
   replicas: 1
-#  resources:
-#    requests:
-#      memory: "512Mi"
-#      cpu: "150m"
-#    limits:
-#      memory: "1024Mi"
-#      cpu: "500m"
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1024Mi"
+      cpu: "500m"
 
 zeebe:
   image:
@@ -252,7 +252,7 @@ zeebe:
     - name: ZEEBE_BROKER_EXPERIMENTAL_ROCKSDB_ENABLEACCESSMETRICS
       value: "fine"
   clusterSize: 3
-  partitionCount: 7
+  partitionCount: 5
   replicationFactor: 1
   pvcSize: 3Gi
   # refer to partitioning docs. https://docs.camunda.io/docs/self-managed/zeebe-deployment/configuration/fixed-partitioning/
@@ -264,13 +264,13 @@ zeebe:
         syncRequestTimeout: 5s
         gossipFanout: 2
 
-#  resources:
-#    requests:
-#      cpu: "100m"
-#      memory: "512M"
-#    limits:
-#      cpu: "250m"
-#      memory: "1Gi"
+  resources:
+    requests:
+      cpu: "200m"
+      memory: "512M"
+    limits:
+      cpu: "500m"
+      memory: "1Gi"
 
   exporters:
     elasticsearch:
