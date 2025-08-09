@@ -17,6 +17,10 @@ gcloud config get-value account
 gcloud container clusters describe c8-labs-sravana --region asia-south2 --project c8-labs
 gcloud container clusters get-credentials c8-labs-sravana --region asia-south2 --project c8-labs
 
+############# Instruction
+# At this point, you should be able to view cluster details in the Project Lens UI app.
+
+
 # replace user id, email, token appropriately
 kubectl create secret docker-registry registry-camunda-cloud  \
   --namespace=c8-labs-32 \
@@ -33,7 +37,7 @@ kubectl create secret docker-registry registry-docker-hub  \
     --docker-password=your-docker-account-token \
     --docker-email=your-docker-account-email
 
-
+############### Caution: Make sure Docker Desktop is running
 # Install elastic components - elk certs
 sh elk-makefile
 # After this, you should see secrets created in the namespace c8-labs-32

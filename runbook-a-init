@@ -22,8 +22,8 @@ gcloud projects add-iam-policy-binding c8-labs --member="user:${UNAME}" --role="
 gcloud projects add-iam-policy-binding c8-labs --member="user:${UNAME}" --role="roles/compute.viewer"
 gcloud projects add-iam-policy-binding c8-labs --member="user:${UNAME}" --role="roles/viewer"
 
-#gcloud projects add-iam-policy-binding c8-labs --member="user:${UNAME}" --role="roles/container.developer"
-#gcloud projects add-iam-policy-binding c8-labs --member="user:${UNAME}" --role="roles/artifactregistry.writer"
+gcloud projects add-iam-policy-binding c8-labs --member="user:${UNAME}" --role="roles/container.developer"
+gcloud projects add-iam-policy-binding c8-labs --member="user:${UNAME}" --role="roles/artifactregistry.writer"
 
 ################################
 # (A.2) Create the cluster
@@ -117,7 +117,7 @@ gcloud container node-pools create node-pool-swati-v2 \
         --disk-type=pd-standard \
         --disk-size=50 \
         --enable-autoscaling \
-        --num-nodes=1 --min-nodes=1 --max-nodes=3 \
+        --num-nodes=1 --min-nodes=1 --max-nodes=4  \
         --region asia-south2 \
         --node-locations=asia-south2-a,asia-south2-b,asia-south2-c \
         --spot
