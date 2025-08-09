@@ -1,0 +1,21 @@
+# Ref https://docs.camunda.io/docs/self-managed/zeebe-deployment/security/secure-cluster-communication/
+#
+#
+# 1.a. Generate a pkcs8 key from current private key
+printf "pkcs8 key generation from private key"
+openssl pkcs8 -topk8 -nocrypt -in ./cert-key-c8-labs.key  -out ./c8-labs-32-zeebe-key-pkcs8.pem
+
+# 1.b. Combine public cert + pkcs8 private key into PKCS#12
+# cert-public-c8-labs.key -> this is in pem format
+openssl pkcs12 -export -in cert-public-c8-labs.key -inkey ./c8-labs-32-zeebe-key-pkcs8.pem -name c8-labs-32-zeebe -out c8-labs-32-zeebe.p12  -password pass:changeit
+
+# 2. Import PKCS#12 into a JKS keystore
+keytool -importkeystore -deststorepass changeit -destkeypass changeit -destkeystore c8-labs-32-zeebe.jks -srckeystore c8-labs-32-zeebe.p12 -srcstoretype PKCS12 -srcstorepass changeit   -alias c8-labs-32-zeebe
+
+# 3. Create Kubernetes secret
+kubectl create secret generic c8-labs-32-zeebe-jks --from-file=c8-labs-32-zeebe.jks   -n c8-labs-32
+
+# 4. Create Kubernetes secret - public CA root cert needed for spring-boot ca.crt
+kubectl create secret generic c8-labs-32-zeebe-ca-crt --from-file=ca.crt=./cert-origin_ca_ecc_root.pem   -n c8-labs-32 
+
+rm -f c8-labs-32-zeebe.p12  c8-labs-32-zeebe.jks  ./c8-labs-32-zeebe-key-pkcs8.pem

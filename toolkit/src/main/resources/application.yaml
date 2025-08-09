@@ -33,6 +33,10 @@ camunda:
       grpc-address: http://c8-labs-32-zeebe-gateway.c8-labs-32.svc.cluster.local:26500
       prefer-rest-over-grpc: false
       audience: zeebe-api
+      # using TLS JKS in the deploymenet
+      security:
+        plaintext: true
+        #cert-path: /app/certs/ca.crt
 
 logging:
   level:

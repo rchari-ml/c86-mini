@@ -212,6 +212,12 @@ zeebeGateway:
       - name: registry-docker-hub
   contextPath: "/zeebe"
   env:
+    - name: ZEEBE_BROKER_GATEWAY_SECURITY_ENABLED
+      value: "true"
+    - name: ZEEBE_BROKER_GATEWAY_SECURITY_CERTIFICATECHAINPATH
+      value: "/usr/local/zeebe/certs/tls.crt"
+    - name: ZEEBE_BROKER_GATEWAY_SECURITY_PRIVATEKEYPATH
+      value: "/usr/local/zeebe/certs/tls.key"
     - name: ZEEBE_GATEWAY_SECURITY_AUTHENTICATION_MODE
       value: "none"
   ingress:
@@ -219,11 +225,17 @@ zeebeGateway:
       enabled: true
       className: nginx
       host: "c8-labs-32-zeebe-gw.makelabs.in"
+      tls:
+        enabled: true
+        secretName: cf-origin-cert
     rest:
       enabled: true
       className: nginx
       host: "c8-labs-32.makelabs.in"
       path: "/zeebe"
+      tls:
+        enabled: true
+        secretName: cf-origin-cert      
   replicas: 1
   resources:
     requests:
@@ -236,11 +248,20 @@ zeebeGateway:
     enabled: true
     certChainPath: /usr/local/zeebe/certs/tls.crt
     privateKeyPath: /usr/local/zeebe/certs/tls.key
+    keyStore:
+      filePath: /usr/local/zeebe/jks/c8-labs-32-zeebe.jks
+      password: changeit
   extraVolumeMounts:
+    - name: zeebe-jks
+      mountPath: /usr/local/zeebe/jks
+      readOnly: true  
     - name: zeebe-tls
       mountPath: /usr/local/zeebe/certs
       readOnly: true
   extraVolumes:
+    - name: zeebe-jks
+      secret:
+        secretName: c8-labs-32-zeebe-jks
     - name: zeebe-tls
       secret:
         secretName: cf-origin-cert
@@ -283,6 +304,27 @@ zeebe:
     limits:
       cpu: "500m"
       memory: "2Gi"
+  security:
+    enabled: true
+    certChainPath: /usr/local/zeebe/certs/tls.crt
+    privateKeyPath: /usr/local/zeebe/certs/tls.key
+    keyStore:
+      filePath: /usr/local/zeebe/jks/c8-labs-32-zeebe.jks
+      password: changeit
+  extraVolumeMounts:
+    - name: zeebe-jks
+      mountPath: /usr/local/zeebe/jks
+      readOnly: true  
+    - name: zeebe-tls
+      mountPath: /usr/local/zeebe/certs
+      readOnly: true
+  extraVolumes:
+    - name: zeebe-jks
+      secret:
+        secretName: c8-labs-32-zeebe-jks
+    - name: zeebe-tls
+      secret:
+        secretName: cf-origin-cert
 
   exporters:
     elasticsearch:

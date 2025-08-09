@@ -19,17 +19,21 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 9010
+        volumeMounts:
+          - name: zeebe-ca-crt
+            mountPath: /app/certs
+            readOnly: true
         env:
-            - name: TASKLIST_API_TOKEN_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: identity-secret-for-components
-                  key: tasklist-api-secret
-            - name: ZEEBE_API_TOKEN_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: identity-secret-for-components
-                  key: zeebe-api-secret
+          - name: TASKLIST_API_TOKEN_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: identity-secret-for-components
+                key: tasklist-api-secret
+          - name: ZEEBE_API_TOKEN_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: identity-secret-for-components
+                key: zeebe-api-secret
         readinessProbe:
           httpGet:
             path: /actuator/health/readiness
@@ -42,7 +46,11 @@ spec:
             cpu: "100m"
           limits:
             memory: "512Mi"
-            cpu: "200m"          
+            cpu: "200m"
+      volumes:
+        - name: zeebe-ca-crt
+          secret:
+            secretName: "c8-labs-32-zeebe-ca-crt"
 ---
 apiVersion: v1
 kind: Service

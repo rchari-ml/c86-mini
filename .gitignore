@@ -8,3 +8,4 @@ toolkit/target
 c86-port-fwd-zeebegateway-out11.log
 cert-public-c8-labs.key
 cert-key-c8-labs.key
+cert-origin_ca_ecc_root.pem
