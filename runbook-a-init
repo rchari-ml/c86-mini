@@ -11,40 +11,22 @@
 gcloud auth login
 
 ################################
-# (A) Grant access to the user 
+# (A.1) Grant access to the user 
 
 export UNAME=Raghavendra.chari@gmail.com
 
-gcloud iam roles create CustomK8sRoleCreator \
-  --project=c8-labs \
-  --file=custom-k8s-role.yaml
+#gcloud iam roles create CustomK8sRoleCreator --project=c8-labs --file=custom-k8s-role.yaml
+#gcloud projects add-iam-policy-binding c8-labs --member="user:${UNAME}" --role="projects/c8-labs/roles/CustomK8sRoleCreator"
 
-gcloud projects add-iam-policy-binding c8-labs \
-  --member="user:${UNAME}" \
-  --role="projects/c8-labs/roles/CustomK8sRoleCreator"
+gcloud projects add-iam-policy-binding c8-labs --member="user:${UNAME}" --role="roles/container.clusterViewer"
+gcloud projects add-iam-policy-binding c8-labs --member="user:${UNAME}" --role="roles/compute.viewer"
+gcloud projects add-iam-policy-binding c8-labs --member="user:${UNAME}" --role="roles/viewer"
 
-gcloud projects add-iam-policy-binding c8-labs \
-  --member="user:${UNAME}" \
-  --role="roles/container.clusterViewer"
-
-gcloud projects add-iam-policy-binding c8-labs \
-  --member="user:${UNAME}" \
-  --role="roles/container.developer"
-
-gcloud projects add-iam-policy-binding c8-labs \
-  --member="user:${UNAME}" \
-  --role="roles/compute.viewer"
-
-gcloud projects add-iam-policy-binding c8-labs \
-  --member="user:${UNAME}" \
-  --role="roles/viewer"
-
-gcloud projects add-iam-policy-binding c8-labs \
-  --member="user:${UNAME}" \
-  --role="roles/artifactregistry.writer"
+#gcloud projects add-iam-policy-binding c8-labs --member="user:${UNAME}" --role="roles/container.developer"
+#gcloud projects add-iam-policy-binding c8-labs --member="user:${UNAME}" --role="roles/artifactregistry.writer"
 
 ################################
-# (B) Create the cluster
+# (A.2) Create the cluster
 
 # create cluster with necessary configurations (with default node pool)
 # 
@@ -78,7 +60,7 @@ gcloud container clusters get-credentials c8-labs-sravana --region asia-south2 -
 
 
 ################################
-# (C) Create the namespace and role binding
+# (A.3) Create the namespace and role binding
 
 # lets create a namespace - delete if it exists
 # --namespace c8-labs-32
@@ -96,7 +78,7 @@ kubectl create secret tls cf-origin-cert \
   --key=cert-key-c8-labs.key -n c8-labs-32
 
 ################################
-# (D) Ngnix Ingress Controller - common for the cluster 
+# (A.4) Ngnix Ingress Controller - common for the cluster 
 #     Normally shared with all namespaces 
 
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx

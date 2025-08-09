@@ -26,9 +26,9 @@ kubectl describe service toolkit-service -n c8-labs-32
 
 
 cd 1-lead-to-opportunity-dmn-form-webhook/
-zbctl deploy --address "c8-labs-32-zeebe-gw.makelabs.in:80" --insecure lead-to-opportunity-with-dmn.bpmn
-zbctl deploy --address "c8-labs-32-zeebe-gw.makelabs.in:80" --insecure new-lead-approval.dmn
-zbctl deploy --address "c8-labs-32-zeebe-gw.makelabs.in:80" --insecure lead-to-opportunity-with-webhook-Form.form
+zbctl deploy --address "c8-labs-32-zeebe-gw.makelabs.in:443"  lead-to-opportunity-with-dmn.bpmn
+zbctl deploy --address "c8-labs-32-zeebe-gw.makelabs.in:443"  new-lead-approval.dmn
+zbctl deploy --address "c8-labs-32-zeebe-gw.makelabs.in:443"  lead-to-opportunity-with-webhook-Form.form
 
 # if secure channel - this is still not working need to debug
 zbctl --authzUrl https://c8-labs-32.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token \

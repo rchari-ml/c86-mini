@@ -10,4 +10,4 @@ Pre-requisites to join the program
 Gmail account
 Project Lens UI app (Free version)  -> https://k8slens.dev
 GCP Cloud SDK (gcloud CLI)          -> https://cloud.google.com/sdk/docs/install
-
+Docker Desktop installed
