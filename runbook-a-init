@@ -32,7 +32,7 @@ gcloud projects add-iam-policy-binding c8-labs --member="user:${UNAME}" --role="
 # 
 gcloud beta container --project "c8-labs" clusters create "c8-labs-sravana" \
   --region "asia-south2"  --no-enable-basic-auth \
-  --cluster-version "1.33.2-gke.1111000" --release-channel "regular" \
+  --cluster-version "1.33.2-gke.1240000" --release-channel "regular" \
   --machine-type "n2-standard-4" --image-type "COS_CONTAINERD" \
   --disk-type "pd-standard" --disk-size "50" --enable-autoscaling \
   --metadata disable-legacy-endpoints=true \
@@ -80,6 +80,7 @@ envsubst '${UNAME} ${UNAMESPACE}' < role-developer-binding.yaml  | kubectl apply
 kubectl create secret tls cf-origin-cert \
   --cert=cert-public-c8-labs.key \
   --key=cert-key-c8-labs.key -n c8-labs-32
+
 
 ################################
 # (A.4) Ngnix Ingress Controller - common for the cluster 
