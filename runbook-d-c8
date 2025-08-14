@@ -71,6 +71,12 @@ kubectl get secret --namespace c8-labs-32 grafana -o jsonpath="{.data.admin-pass
 
 kubectl apply -f c8-ingress-grafana.yaml --namespace c8-labs-32
 
+####### Grafana UI - Setup data source and import dashboard
+# Step 1.  Go to Datasources. Add prometheus as data source. Save and test. (Get 'prometheus-server' IP address from Lens UI)
+# Step 2.a Go to Dashboard -> Import. 
+#      2.b Use link to copy-and-paste dashboard template ->> https://github.com/camunda/camunda/blob/stable/8.6/monitor/grafana/zeebe.json    
+#      2.c Select data source from step 1 and Save
+
 
 # To check prometheus data feed - run this from toolkit pod where curl is supported
 curl -s http://prometheus-server.c8-labs-32:9090/api/v1/targets
