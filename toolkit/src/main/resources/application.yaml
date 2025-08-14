@@ -25,18 +25,17 @@ camunda:
   client:
     mode: self-managed
     auth:
-      client-id: zeebe-api
-      client-secret: ${ZEEBE_API_TOKEN_SECRET}
+      client-id: zeebe
+      client-secret: ${ZEEBE_TOKEN_SECRET}
       token-url: https://c8-labs-32.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token
     zeebe:
       enabled: true
-      grpc-address: http://c8-labs-32-zeebe-gateway.c8-labs-32.svc.cluster.local:26500
+      grpc-address: https://c8-labs-32-zeebe-gw.makelabs.in:443
       prefer-rest-over-grpc: false
-      audience: zeebe-api
-      # using TLS JKS in the deploymenet
+      audience: zeebe
+      # using TLS JKS in the deploymenet - see deploy-worker-toolkit yaml file
       security:
-        plaintext: true
-        #cert-path: /app/certs/ca.crt
+        plaintext: false
 
 logging:
   level:

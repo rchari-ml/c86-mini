@@ -9,3 +9,10 @@ c86-port-fwd-zeebegateway-out11.log
 cert-public-c8-labs.key
 cert-key-c8-labs.key
 cert-origin_ca_ecc_root.pem
+c8-labs-32-zeebe-fullchain.pem
+cert0.pem
+cert1.pem
+cert2.pem
+c8-labs-32-zeebe.jks
+c8-labs-32-zeebe-toolkit.jks
+c8-labs-32-zeebe-toolkit-jks.jks

@@ -14,9 +14,8 @@ cd ..
 
 #################
 
-# IMPORTANT: Ensure the api secret is updated: identity-secret-for-components -> zeebe-api-secret (from Keycloak Admin UI)
+# IMPORTANT: Ensure the api secret is updated: identity-secret-for-components -> zeebe-secret (from Keycloak Admin UI)
 # Do not deploy toolkit app before updating the secret. You may need to restart this service "toolkit-app" otherwise.
-<update-secret-step>
 
 # Lastly, install toolkit app and bpmn solution artifacts -bpmn, dmn, form
 # Lets come back to the home folder and run deploy script to GKE
@@ -26,18 +25,36 @@ kubectl describe service toolkit-service -n c8-labs-32
 
 
 cd 1-lead-to-opportunity-dmn-form-webhook/
+# Below commands to deploy without security enabled for zeebe gateway.
+# See next section for secure deployment
 zbctl deploy --address "c8-labs-32-zeebe-gw.makelabs.in:443"  lead-to-opportunity-with-dmn.bpmn
 zbctl deploy --address "c8-labs-32-zeebe-gw.makelabs.in:443"  new-lead-approval.dmn
 zbctl deploy --address "c8-labs-32-zeebe-gw.makelabs.in:443"  lead-to-opportunity-with-webhook-Form.form
 
-# if secure channel - this is still not working need to debug
-zbctl --authzUrl https://c8-labs-32.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token \
-      --clientId zeebe-api \
-      --clientSecret $ZEEBE_API_TOKEN_SECRET \
-      --audience zeebe-api \
-      --address c8-labs-32-zeebe-gw.makelabs.in \
+# if secure channel, use this method. Make sure to populate this env var first.
+export ZEEBE_SECRET=value-here
+zbctl deploy --authzUrl=https://c8-labs-32.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token \
+      --clientId=zeebe \
+      --clientSecret=$ZEEBE_SECRET \
+      --audience=zeebe \
+      --address "c8-labs-32-zeebe-gw.makelabs.in:443" \
       --insecure=false \
-      deploy new-lead-approval.dmn
+       lead-to-opportunity-with-dmn.bpmn
+zbctl deploy --authzUrl=https://c8-labs-32.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token \
+      --clientId=zeebe \
+      --clientSecret=$ZEEBE_SECRET \
+      --audience=zeebe \
+      --address "c8-labs-32-zeebe-gw.makelabs.in:443" \
+      --insecure=false \
+       new-lead-approval.dmn
+zbctl deploy --authzUrl=https://c8-labs-32.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token \
+      --clientId=zeebe \
+      --clientSecret=$ZEEBE_SECRET \
+      --audience=zeebe \
+      --address "c8-labs-32-zeebe-gw.makelabs.in:443" \
+      --insecure=false \
+       lead-to-opportunity-with-webhook-Form.form
+
 cd ..
 # finally, lets go to home folder
 
@@ -57,3 +74,55 @@ kubectl delete service toolkit-service  -n c8-labs-32
 
 # Reference
 https://docs.camunda.io/docs/apis-tools/spring-zeebe-sdk/getting-started/
+
+
+#####
+# How to run the toolkit service locally to assist with debugging?
+kubectl get secret c8-labs-32-zeebe-toolkit-jks -n c8-labs-32 -o yaml
+kubectl get secret c8-labs-32-zeebe-toolkit-jks -n c8-labs-32 \
+  -o jsonpath='{.data.c8-labs-32-zeebe-toolkit\.jks}' | base64 --decode > c8-labs-32-zeebe-toolkit.jks
+
+keytool -list -v -keystore c8-labs-32-zeebe-toolkit-jks
+
+###### Method 1
+keytool -J-Djavax.net.ssl.trustStore=/Users/raghavendrachari/Documents/camunda-projects/c8-labs-base/c86-mini/c8-labs-32-zeebe.jks \
+        -J-Djavax.net.ssl.trustStorePassword=changeit \
+        -printcert -sslserver c8-labs-32-zeebe-gw.makelabs.in:443
+#Above command prints leaf cert, intermediate cert and root cert
+
+
+###### Method 2
+## step 1 check fingerprint
+openssl x509 -in  cert-public-c8-labs.key -noout -fingerprint -sha256
+## step 2 see if the public cert fingerprint is valid in the jks file
+keytool -list -v -keystore c8-labs-32-zeebe-toolkit.jks | grep -i "SHA256"
+# Expected outcome: The step 1 fingerprint should be listed in the step 2 output list.
+
+
+###### Method 3
+# here are steps to generate JKS that includes all certs. See Method 1 for info.
+openssl s_client -connect c8-labs-32-zeebe-gw.makelabs.in:443 -showcerts </dev/null > c8-labs-32-zeebe-fullchain.pem
+# This command below is supposed to create three files. There was an error at this step.
+# Hence, do the file creation manually from the fullchain pem file.
+csplit -f cert c8-labs-32-zeebe-fullchain.pem '/-----BEGIN CERTIFICATE-----/' '{*}'
+mv cert00 cert0.pem
+mv cert01 cert1.pem
+mv cert02 cert2.pem
+
+# verify the issuer
+openssl x509 -in cert0.pem -noout -subject -issuer
+openssl x509 -in cert1.pem -noout -subject -issuer
+openssl x509 -in cert2.pem -noout -subject -issuer
+
+# Finally, lets create JKS with the files thus created above.
+keytool -importcert -trustcacerts -alias server-cert        -file cert0.pem -keystore c8-labs-32-zeebe.jks -storepass changeit
+keytool -importcert -trustcacerts -alias intermediate-cert  -file cert1.pem -keystore c8-labs-32-zeebe.jks -storepass changeit
+keytool -importcert -trustcacerts -alias root-cert          -file cert2.pem -keystore c8-labs-32-zeebe.jks -storepass changeit
+
+
+##############
+# check certs
+openssl s_client -connect c8-labs-32-zeebe-gw.makelabs.in:443 -showcerts
+
+mvn clean package -DskipTests  
+mvn  -Dspring-boot.run.jvmArguments="-Djavax.net.ssl.trustStore=/Users/raghavendrachari/Documents/camunda-projects/c8-labs-base/c86-mini/c8-labs-32-zeebe.jks -Djavax.net.ssl.trustStorePassword=changeit -Djavax.net.ssl.trustStoreType=JKS" spring-boot:run

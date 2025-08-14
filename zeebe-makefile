@@ -18,4 +18,13 @@ kubectl create secret generic c8-labs-32-zeebe-jks --from-file=c8-labs-32-zeebe.
 # 4. Create Kubernetes secret - public CA root cert needed for spring-boot ca.crt
 kubectl create secret generic c8-labs-32-zeebe-ca-crt --from-file=ca.crt=./cert-origin_ca_ecc_root.pem   -n c8-labs-32 
 
-rm -f c8-labs-32-zeebe.p12  c8-labs-32-zeebe.jks  ./c8-labs-32-zeebe-key-pkcs8.pem
+cp c8-labs-32-zeebe.jks  c8-labs-32-zeebe-toolkit.jks
+
+# 5. Toolkit app requires a key store, that includes leaft cert, intermediate cert and root cert.
+# Make sure three files are in the current folder. See the instructions in runbook-e-deployment bpmn.
+keytool -importcert -trustcacerts -alias server-cert        -file cert0.pem -keystore c8-labs-32-zeebe-toolkit.jks -storepass changeit --noprompt
+keytool -importcert -trustcacerts -alias intermediate-cert  -file cert1.pem -keystore c8-labs-32-zeebe-toolkit.jks -storepass changeit --noprompt
+keytool -importcert -trustcacerts -alias root-cert          -file cert2.pem -keystore c8-labs-32-zeebe-toolkit.jks -storepass changeit --noprompt
+kubectl create secret generic c8-labs-32-zeebe-toolkit-jks  --from-file=c8-labs-32-zeebe-toolkit.jks   -n c8-labs-32
+
+rm -f c8-labs-32-zeebe.p12  c8-labs-32-zeebe.jks  ./c8-labs-32-zeebe-key-pkcs8.pem ./c8-labs-32-zeebe-toolkit.jks

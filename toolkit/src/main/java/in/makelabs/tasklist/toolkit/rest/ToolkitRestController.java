@@ -62,6 +62,7 @@ public class ToolkitRestController {
             return zf.join();
         }catch(Exception e){
             System.out.println("client error " + e.getCause());
+            e.printStackTrace();
             throw new RuntimeException("Unexpected error in topology operation");
         }
     }

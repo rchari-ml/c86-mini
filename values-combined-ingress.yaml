@@ -218,8 +218,8 @@ zeebeGateway:
       value: "/usr/local/zeebe/certs/tls.crt"
     - name: ZEEBE_BROKER_GATEWAY_SECURITY_PRIVATEKEYPATH
       value: "/usr/local/zeebe/certs/tls.key"
-    - name: ZEEBE_GATEWAY_SECURITY_AUTHENTICATION_MODE
-      value: "none"
+    #- name: ZEEBE_GATEWAY_SECURITY_AUTHENTICATION_MODE
+    #  value: "none"
   ingress:
     grpc:
       enabled: true

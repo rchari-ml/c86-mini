@@ -72,6 +72,9 @@ kubectl get secret --namespace c8-labs-32 grafana -o jsonpath="{.data.admin-pass
 kubectl apply -f c8-ingress-grafana.yaml --namespace c8-labs-32
 
 
+# To check prometheus data feed - run this from toolkit pod where curl is supported
+curl -s http://prometheus-server.c8-labs-32:9090/api/v1/targets
+
 # This concludes Camunda setup
 
 # 
