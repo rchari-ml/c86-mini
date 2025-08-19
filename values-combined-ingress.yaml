@@ -229,9 +229,6 @@ connectors:
   readinessProbe:
     enabled: true
     probePath: /actuator/health/readiness
-    httpGet:
-      path: /actuator/health/readiness
-      port: 8080
 
 zeebeGateway:
   image:

@@ -103,6 +103,15 @@ kubectl get ingress c8-labs-32-ingress -n c8-labs-32
 kubectl describe service camunda-identity -n c8-labs-32
 kubectl describe service camunda-connectors -n c8-labs-32
 
+
+# Test oidc token with endpoint
+curl -X POST "https://c8-labs-32.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "grant_type=client_credentials" \
+  -d "client_id=connectors" \
+  -d "client_secret=value"
+
+
 # Known issue (1)
 # Ensure the health check endpoint for below items
 # console => /console (VERIFIED)
