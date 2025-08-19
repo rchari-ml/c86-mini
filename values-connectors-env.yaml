@@ -1,15 +1,77 @@
 connectors:
+  extraVolumeMounts:
+    - name: c8-labs-32-zeebe-ca-crt
+      mountPath: /config/certs
+      readOnly: true
+    - name: zeebe-toolkit-crt
+      mountPath: /config/jks
+      readOnly: true      
+  extraVolumes:
+    - name: c8-labs-32-zeebe-ca-crt
+      secret:
+        secretName: c8-labs-32-zeebe-ca-crt
+    - name: zeebe-toolkit-crt
+      secret:
+        secretName: c8-labs-32-zeebe-toolkit-jks
+
   env:
-     - name: CAMUNDA_CONNECTOR_SECRETPROVIDER_ENVIRONMENT_PREFIX
-       value: CEP_SECRETS_
-     - name: CEP_SECRETS_CUSTOMER_APP_SECRET
-       value: do-not-use-this-app-secret-use-below-token-instead
-     - name: CEP_SECRETS_EMAIL_APP_ACCESS_TOKEN
-       valueFrom:
-         secretKeyRef:
-           name: identity-secret-for-components
-           key: cep-email-access-token
+  # see https://docs.camunda.io/docs/self-managed/connectors-deployment/connectors-configuration/?configuration=sm
+    - name: JAVA_TOOL_OPTIONS
+      value: >
+        -Djavax.net.ssl.trustStore=/config/jks/c8-labs-32-zeebe-toolkit.jks
+        -Djavax.net.ssl.trustStorePassword=changeit
+        -Djavax.net.ssl.trustStoreType=JKS  
+    - name: CAMUNDA_CONNECTOR_SECRETPROVIDER_ENVIRONMENT_PREFIX
+      value: CEP_SECRETS_
+    - name: CEP_SECRETS_CUSTOMER_APP_SECRET
+      value: do-not-use-this-app-secret-use-below-token-instead
+    - name: CEP_SECRETS_EMAIL_APP_ACCESS_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: identity-secret-for-components
+          key: cep-email-access-token
 
   image:
     pullSecrets:
       - name: registry-docker-hub
+  
+  configuration: |
+    server:
+      servlet:
+        context-path: /connectors
+    management:
+      endpoints:
+        web:
+          exposure:
+            include: health,info
+      endpoint:
+        health:
+          probes:
+            enabled: true
+      health:
+        livenessState:
+          enabled: true
+        readinessState:
+          enabled: true
+    camunda:
+      client:
+        mode: self-managed
+        auth:
+          client-id: zeebe
+          client-secret: makelabs
+          issuer: https://c8-labs-32.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token          
+          token-url: https://c8-labs-32.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token          
+        zeebe:
+          grpc-address: https://c8-labs-32-zeebe-gw.makelabs.in:443
+          rest-address: https://c8-labs-32.makelabs.in:443
+          audience: zeebe-api
+          security:
+            plaintext: false
+    operate:
+      client:
+        profile: oidc
+        base-url: https://c8-labs-32.makelabs.in:443/operate
+        auth-url: https://c8-labs-32.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token
+        audience: operate-api
+        client-id: connectors
+        client-secret: makelabs

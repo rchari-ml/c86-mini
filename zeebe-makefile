@@ -27,4 +27,9 @@ keytool -importcert -trustcacerts -alias intermediate-cert  -file cert1.pem -key
 keytool -importcert -trustcacerts -alias root-cert          -file cert2.pem -keystore c8-labs-32-zeebe-toolkit.jks -storepass changeit --noprompt
 kubectl create secret generic c8-labs-32-zeebe-toolkit-jks  --from-file=c8-labs-32-zeebe-toolkit.jks   -n c8-labs-32
 
+# 6. keycloak config
+kubectl create secret generic keycloak-certificates-tls-secret  --from-file=./cert-public-c8-labs.key  --from-file=./cert-key-c8-labs.key -n c8-labs-32
+
+# Cleanup at the end
 rm -f c8-labs-32-zeebe.p12  c8-labs-32-zeebe.jks  ./c8-labs-32-zeebe-key-pkcs8.pem ./c8-labs-32-zeebe-toolkit.jks
+

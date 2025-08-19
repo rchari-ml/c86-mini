@@ -65,6 +65,9 @@ global:
     prefix: zeebe-record
 
 identity:
+  env:
+    - name: KEYCLOAK_URL
+      value: "https://c8-labs-32.makelabs.in/auth"
   image:
     pullSecrets:
       - name: registry-docker-hub
@@ -90,6 +93,21 @@ identityKeycloak:
   image:
     pullSecrets:
       - name: registry-docker-hub
+  extraEnv:
+    - name: KC_HTTPS_CERTIFICATE_FILE
+      value: /etc/x509/https/cert-public-c8-labs.key
+    - name: KC_HTTPS_CERTIFICATE_KEY_FILE
+      value: /etc/x509/https/cert-key-c8-labs.key
+    - name: KC_HOSTNAME
+      value: c8-labs-32.makelabs.in
+  extraVolumeMounts:
+    - name: keycloak-tls
+      mountPath: /etc/x509/https
+      readOnly: true
+  extraVolumes:
+    - name: keycloak-tls
+      secret:
+        secretName: keycloak-certificates-tls-secret  
   auth:
     existingSecret: identity-secret-for-components
     passwordSecretKey: admin-password
@@ -163,7 +181,7 @@ console:
     - name: KEYCLOAK_BASE_URL
       value: "https://c8-labs-32.makelabs.in/auth"
     - name: KEYCLOAK_INTERNAL_BASE_URL
-      value: "http://camunda.makelabs.in/auth"
+      value: "https://c8-labs-32.makelabs.in/auth"
     - name: CAMUNDA_CONSOLE_CONTEXT_PATH
       value: console
     - name: CAMUNDA_IDENTITY_CLIENT_ID
@@ -205,6 +223,15 @@ connectors:
     limits:
       cpu: "250m"
       memory: "1Gi"
+  startupProbe:
+    enabled: true
+    probePath: /actuator/health/readiness
+  readinessProbe:
+    enabled: true
+    probePath: /actuator/health/readiness
+    httpGet:
+      path: /actuator/health/readiness
+      port: 8080
 
 zeebeGateway:
   image:
