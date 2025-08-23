@@ -120,6 +120,11 @@ keytool -importcert -trustcacerts -alias intermediate-cert  -file cert1.pem -key
 keytool -importcert -trustcacerts -alias root-cert          -file cert2.pem -keystore c8-labs-32-zeebe.jks -storepass changeit
 
 
+## How to check cert full chain?
+# create a full chain cert file that is origin cert + origin ca cert. After this, you can verify the cert chain.
+cat cert-public-c8-labs.key  cert-origin_ca_rsa_root.pem  > cert-fullchain-c8-labs.pem
+openssl verify -CAfile cert-fullchain-c8-labs.pem  cert-fullchain-c8-labs.pem 
+
 ##############
 # check certs
 openssl s_client -connect c8-labs-32-zeebe-gw.makelabs.in:443 -showcerts

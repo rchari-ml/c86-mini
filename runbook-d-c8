@@ -28,7 +28,9 @@ helm install c8-labs-32 camunda/camunda-platform -f values-combined-ingress.yaml
 # Ref about security -> https://docs.camunda.io/docs/self-managed/zeebe-deployment/security/secure-client-communication/
 
 # The file controls ingress access
+kubectl apply -f c8-ingress-keycloak.yaml --namespace c8-labs-32
 kubectl apply -f c8-ingress.yaml --namespace c8-labs-32
+kubectl apply -f c8-zeebe-ingress.yaml --namespace c8-labs-32
 
 # Update health check endpoints as noted in Known Issue (1) below.
 # this is required for External LB IP address to be issued by GCE.
@@ -39,8 +41,6 @@ kubectl describe ingress c8-labs-32-ingress -n c8-labs-32
 # this command is required only if we use gce controller
 kubectl get managedcertificate -n c8-labs-32
 
-
-kubectl apply -f c8-zeebe-ingress.yaml --namespace c8-labs-32
 kubectl describe ingress c8-labs-32-zeebe-gateway-grpc -n c8-labs-32 
 
 # Useful command - delete if you wish to recreate it.
@@ -108,9 +108,14 @@ kubectl describe service camunda-connectors -n c8-labs-32
 curl -X POST "https://c8-labs-32.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token" \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "grant_type=client_credentials" \
-  -d "client_id=connectors" \
-  -d "client_secret=value"
+  -d "client_id=zeebe" \
+  -d "client_secret=makelabs"
 
+# config file for Operate and Tasklist pods
+cat /usr/local/operate/config/application.yaml
+
+# config file for Zeebe gateway pod
+cat /usr/local/zeebe/config/application.yaml
 
 # Known issue (1)
 # Ensure the health check endpoint for below items

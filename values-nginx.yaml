@@ -1,0 +1,12 @@
+#controller:
+#  extraVolumes:
+#    - name: custom-ca
+#      secret:
+#        secretName: custom-ca
+#  extraVolumeMounts:
+#    - name: custom-ca
+#      mountPath: /etc/nginx/custom-ca
+#      readOnly: true
+#  extraArgs:
+    # Path to the CA certs
+    #tls-backend-ca-cert: /etc/nginx/custom-ca/ca.crt

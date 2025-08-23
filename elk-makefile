@@ -35,6 +35,11 @@ printf "Convert to crt from cf pem and import to jks"
 openssl x509 -outform der -in ./nginx/cf-tls.pem -out ./nginx/cf-tls.crt
 keytool -import -alias camunda       -keystore externaldb.jks -storetype jks -file ./nginx/cf-tls.crt      -storepass changeit -noprompt
 
+# import public cf ca cert to jks
+# this is not necessary. 
+#keytool -importcert -alias ml-ca -file cert-origin_ca_ecc_root.pem -keystore externaldb.jks  -storepass changeit -noprompt
+
+
 #The jks file is needed by camunda install. Keep it in the camunda namespace
 kubectl  create secret -n c8-labs-32 generic elastic-jks --from-file=externaldb.jks
 

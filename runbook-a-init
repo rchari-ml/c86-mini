@@ -33,7 +33,7 @@ gcloud projects add-iam-policy-binding c8-labs --member="user:${UNAME}" --role="
 gcloud beta container --project "c8-labs" clusters create "c8-labs-sravana" \
   --region "asia-south2"  --no-enable-basic-auth \
   --cluster-version "1.33.2-gke.1240000" --release-channel "regular" \
-  --machine-type "n2-standard-4" --image-type "COS_CONTAINERD" \
+  --machine-type "n2-standard-4"  --image-type="UBUNTU_CONTAINERD"  \
   --disk-type "pd-standard" --disk-size "50" --enable-autoscaling \
   --metadata disable-legacy-endpoints=true \
   --node-locations=asia-south2-a,asia-south2-b,asia-south2-c \
@@ -49,7 +49,7 @@ gcloud beta container --project "c8-labs" clusters create "c8-labs-sravana" \
   --enable-autoupgrade --enable-autorepair --max-surge-upgrade 1 --max-unavailable-upgrade 0 \
   --binauthz-evaluation-mode=DISABLED --enable-managed-prometheus --enable-shielded-nodes \
   --shielded-integrity-monitoring --no-shielded-secure-boot \
-  --autoscaling-profile optimize-utilization 
+  --autoscaling-profile optimize-utilization  
 
 # optional config
 gcloud container clusters update c8-labs-sravana --region "asia-south2" --enable-image-streaming
@@ -68,6 +68,16 @@ kubectl delete namespace c8-labs-32
 export UNAMESPACE=c8-labs-32
 envsubst '${UNAMESPACE}' < namespace-c86-mini.yaml  | kubectl apply -f -
 
+# Add cert files as secrets
+kubectl create secret tls cf-origin-cert \
+  --cert=cert-public-c8-labs.key \
+  --key=cert-key-c8-labs.key -n c8-labs-32
+
+kubectl create secret tls cf-full-chain-origin-cert \
+  --cert=cert-fullchain-c8-labs.pem \
+  --key=cert-key-c8-labs.key -n c8-labs-32
+
+
 # Provide "namespace access" to the user
 # These are generally read-only permissions.
 export UNAME=Raghavendra.chari@gmail.com
@@ -75,11 +85,6 @@ envsubst '${UNAME} ${UNAMESPACE}' < role-viewer-binding.yaml  | kubectl apply -f
 
 # Whereas these are "developer" permissions.
 envsubst '${UNAME} ${UNAMESPACE}' < role-developer-binding.yaml  | kubectl apply -f -
-
-# Add cert files as secrets
-kubectl create secret tls cf-origin-cert \
-  --cert=cert-public-c8-labs.key \
-  --key=cert-key-c8-labs.key -n c8-labs-32
 
 
 ################################
@@ -89,18 +94,23 @@ kubectl create secret tls cf-origin-cert \
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo update
 
-# Use one of the following two options.
-helm install nginx-ingress ingress-nginx/ingress-nginx --namespace c8-labs-ingress-nginx --create-namespace  \
+# Install nginx controller.
+kubectl create namespace c8-labs-ingress-nginx
+kubectl create secret generic custom-ca --from-file=ca.crt=./cert-origin_ca_rsa_root.pem -n c8-labs-ingress-nginx
+helm install nginx-ingress ingress-nginx/ingress-nginx --namespace c8-labs-ingress-nginx   \
   --set controller.config.enable-http2="true" \
-  --set-string controller.config.proxy-buffer-size="16K" \
-  --set-string controller.config.proxy-buffers="3 8K" \
-  --set-string controller.config.proxy-busy-buffers-size="32K"
-
-helm install nginx-ingress ingress-nginx/ingress-nginx --namespace c8-labs-ingress-nginx --create-namespace  \
-  --set controller.config.enable-http2="true" \
+  --set controller.service.enableHttp=false \
+  --set controller.service.enableHttps=true \
   --set-string controller.config.proxy-buffer-size="128K" \
   --set-string controller.config.proxy-buffers="4 64K" \
   --set-string controller.config.proxy-busy-buffers-size="128K"
+
+# this is optional. nothing tangible in the yaml file
+helm upgrade nginx-ingress -f values-nginx.yaml --namespace c8-labs-ingress-nginx  
+
+# if required for any reason to restart
+kubectl rollout restart deployment nginx-ingress-ingress-nginx-controller -n c8-labs-ingress-nginx
+
 
 # try this one perhaps -> --set controller.config.ssl-redirect="false"
 
@@ -121,7 +131,7 @@ gcloud container node-pools create node-pool-swati-v2 \
         --num-nodes=1 --min-nodes=1 --max-nodes=4  \
         --region asia-south2 \
         --node-locations=asia-south2-a,asia-south2-b,asia-south2-c \
-        --spot
+        --spot --image-type=UBUNTU_CONTAINERD
 
 # Cluster optimize utilization profile 
 # This is optional, but recommended to optimize the cluster utilization.

@@ -72,13 +72,6 @@ spec:
                 name: c8-labs-32-optimize
                 port:
                   number: 80
-          - path: /auth/
-            pathType: Prefix
-            backend:
-              service:
-                name: c8-labs-32-keycloak
-                port:
-                  number: 80
           - path: /identity
             pathType: Prefix
             backend:
