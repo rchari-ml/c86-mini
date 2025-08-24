@@ -62,7 +62,7 @@ connectors:
           issuer: https://c8-labs-32.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token          
           token-url: https://c8-labs-32.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token          
         zeebe:
-          grpc-address: https://c8-labs-32-zeebe-gw.makelabs.in:443
+          grpc-address: https://c8-labs-32-zeebe-gateway.makelabs.in:443
           rest-address: https://c8-labs-32.makelabs.in:443
           audience: zeebe-api
           security:

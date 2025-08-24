@@ -48,7 +48,7 @@ kubectl delete ingress c8-labs-32-zeebe-gateway-grpc -n c8-labs-32
 
 # Once IP address is available, go ahead and map it with domain.
 # c8-labs-32.makelabs.in => output of "kubectl describe ingress c8-labs-32-ingress -n c8-labs-32"
-# c8-labs-32-zeebe-gw.makelabs.in => output of "kubectl describe ingress c8-labs-32-zeebe-gateway-grpc -n c8-labs-32"
+# c8-labs-32-zeebe-gateway.makelabs.in => output of "kubectl describe ingress c8-labs-32-zeebe-gateway-grpc -n c8-labs-32"
 
 # login to Camunda app console and verify things.
 
@@ -135,11 +135,11 @@ curl -v http://camunda-identity:82/actuator/health
 # Known issue (2)
 # Debug if you are able to connect on gRPC port 
 # grp curl command to test zeebe gateway gRPC service
-grpcurl -plaintext c8-labs-32-zeebe-gw.makelabs.in:80 list
+grpcurl -plaintext c8-labs-32-zeebe-gateway.makelabs.in:80 list
 grpcurl -plaintext c8-labs-32-zeebe-gateway.c8-labs-32.svc.cluster.local:26500 list
 
 # check to see if http2 is working. you should see somethingg around http2 and not fallback to http1.1
-curl -v --http2-prior-knowledge http://c8-labs-32-zeebe-gw.makelabs.in
+curl -v --http2-prior-knowledge http://c8-labs-32-zeebe-gateway.makelabs.in
 
 kubectl run curl-test --image=curlimages/curl -it --rm --restart=Never -- \
   curl -v --http2-prior-knowledge c8-labs-32-zeebe-gateway.c8-labs-32.svc.cluster.local:26500
