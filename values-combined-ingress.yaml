@@ -160,11 +160,12 @@ identityKeycloak:
     existingSecretKey: admin-password
 
 operate:
+  enabled: true
   env:
     - name: KEYCLOAK_URL
       value: "https://c8-labs-32.makelabs.in/auth"
     - name: CAMUNDA_OPERATE_ZEEBE_GATEWAYADDRESS
-      value: "c8-labs-32-zeebe-gw.makelabs.in:443"
+      value: "c8-labs-32-zeebe-gateway.makelabs.in:443"
     - name: CAMUNDA_OPERATE_ZEEBE_SECURE
       value: "true"
     # link the value from secret cf-full-chain-origin-cert
@@ -172,7 +173,7 @@ operate:
       value: "/app/certs/tls.crt"
     - name: JAVA_TOOL_OPTIONS
       value: >
-        -Djavax.net.ssl.trustStore=/app/certificates/externaldb.jks
+        -Djavax.net.ssl.trustStore=/usr/local/operate/certificates/externaldb.jks
         -Djavax.net.ssl.trustStorePassword=changeit
         -Djavax.net.ssl.trustStoreType=JKS
   extraVolumeMounts:
@@ -272,7 +273,7 @@ operate:
       # Zeebe instance
       zeebe:
         # Gateway address
-        gatewayAddress: "c8-labs-32-zeebe-gw.makelabs.in:443"
+        gatewayAddress: "c8-labs-32-zeebe-gateway.makelabs.in:443"
         secure: true
         certificatePath: "/app/certs/tls.crt"
     logging:
@@ -303,6 +304,7 @@ optimize:
       memory: "1Gi"
 
 tasklist:
+  enabled: false
   env:
     - name: KEYCLOAK_URL
       value: "https://c8-labs-32.makelabs.in/auth"
@@ -413,7 +415,7 @@ tasklist:
       # Zeebe instance
       zeebe:
         # Gateway address
-        gatewayAddress: "c8-labs-32-zeebe-gw.makelabs.in:443"
+        gatewayAddress: "c8-labs-32-zeebe-gateway.makelabs.in:443"
         restAddress: "https://c8-labs-32.makelabs.in/zeebe"
         secure: true
         certificatePath: "/config/certs/tls.crt"
@@ -501,7 +503,7 @@ connectors:
     pullSecrets:
       - name: registry-docker-hub
   contextPath: "/connectors"
-  enabled: true
+  enabled: false
   ingress:
     host: "c8-labs-32.makelabs.in"
   replicas: 1
@@ -527,19 +529,28 @@ zeebeGateway:
       - name: registry-docker-hub
   contextPath: "/zeebe"
   env:
+      # section starts
+      # ref v8.7 -> https://docs.camunda.io/docs/self-managed/zeebe-deployment/security/secure-cluster-communication/
+    - name: ZEEBE_GATEWAY_CLUSTER_SECURITY_ENABLED
+      value: "true"
+    - name: ZEEBE_GATEWAY_CLUSTER_SECURITY_CERTIFICATECHAINPATH
+      value: "/usr/local/zeebe/certs/tls.crt"
+    - name: ZEEBE_GATEWAY_CLUSTER_SECURITY_PRIVATEKEYPATH
+      value: "/usr/local/zeebe/certs/tls.key"
+      # section ends
     - name: ZEEBE_BROKER_GATEWAY_SECURITY_ENABLED
       value: "true"
     - name: ZEEBE_BROKER_GATEWAY_SECURITY_CERTIFICATECHAINPATH
       value: "/usr/local/zeebe/certs/tls.crt"
     - name: ZEEBE_BROKER_GATEWAY_SECURITY_PRIVATEKEYPATH
       value: "/usr/local/zeebe/certs/tls.key"
-    #- name: ZEEBE_GATEWAY_SECURITY_AUTHENTICATION_MODE
-    #  value: "none"
+    - name: ZEEBE_GATEWAY_SECURITY_AUTHENTICATION_MODE
+      value: "identity"
   ingress:
     grpc:
       enabled: true
       className: nginx
-      host: "c8-labs-32-zeebe-gw.makelabs.in"
+      host: "c8-labs-32-zeebe-gateway.makelabs.in"
       tls:
         enabled: true
         secretName: cf-full-chain-origin-cert
@@ -580,7 +591,7 @@ zeebeGateway:
     # zeebe gateway to use full chain cert from the secret
     - name: zeebe-tls
       secret:
-        secretName: cf-full-chain-origin-cert
+        secretName: c8-labs-32-zeebe-tls
 
 zeebe:
   image:
@@ -592,6 +603,14 @@ zeebe:
   metrics:
     prometheus: /actuator/prometheus
   env:
+    # section starts
+    - name: ZEEBE_BROKER_NETWORK_SECURITY_ENABLED
+      value: "true"
+    - name: ZEEBE_BROKER_NETWORK_SECURITY_CERTIFICATECHAINPATH
+      value: "/usr/local/zeebe/certs/tls.crt"
+    - name: ZEEBE_BROKER_NETWORK_SECURITY_PRIVATEKEYPATH
+      value: "/usr/local/zeebe/certs/tls.key"
+    # section ends
     - name: KEYCLOAK_URL
       value: "https://c8-labs-32.makelabs.in/auth"  
     - name: ZEEBE_BROKER_CLUSTER_RAFT_ENABLEPRIORITYELECTION
@@ -644,7 +663,7 @@ zeebe:
     # zeebe to use full chain cert from the secret
     - name: zeebe-tls
       secret:
-        secretName: cf-full-chain-origin-cert
+        secretName: c8-labs-32-zeebe-tls
 
   exporters:
     elasticsearch:

@@ -21,6 +21,9 @@ kubectl create secret generic c8-labs-32-zeebe-jks --from-file=c8-labs-32-zeebe.
 # 4. Create Kubernetes secret - public CA root cert needed for spring-boot ca.crt
 kubectl create secret generic c8-labs-32-zeebe-ca-crt --from-file=ca.crt=./cert-origin_ca_ecc_root.pem   -n c8-labs-32 
 
+# 5. Create Kubernetes secret - public cert with fullchain and pkcs8 secret. For zeebe use.
+# Ref https://docs.camunda.io/docs/self-managed/zeebe-deployment/security/secure-cluster-communication/
+kubectl create secret tls c8-labs-32-zeebe-tls  --cert=cert-fullchain-c8-labs.pem   --key=./c8-labs-32-zeebe-key-pkcs8.pem  -n c8-labs-32
 
 ####################
 # Part 2. Prepare env for Toolkit app
