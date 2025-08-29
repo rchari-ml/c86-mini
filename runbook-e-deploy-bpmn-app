@@ -27,9 +27,9 @@ kubectl describe service toolkit-service -n c8-labs-32
 cd 1-lead-to-opportunity-dmn-form-webhook/
 # Below commands to deploy without security enabled for zeebe gateway.
 # See next section for secure deployment
-zbctl deploy --address "c8-labs-32-zeebe-gateway.makelabs.in:443"  lead-to-opportunity-with-dmn.bpmn
-zbctl deploy --address "c8-labs-32-zeebe-gateway.makelabs.in:443"  new-lead-approval.dmn
-zbctl deploy --address "c8-labs-32-zeebe-gateway.makelabs.in:443"  lead-to-opportunity-with-webhook-Form.form
+zbctl deploy --address "c8-labs-32-zeebe-gateway.makelabs.in:443"  lead-to-opportunity-with-dmn.bpmn --certPath ../cert-origin_ca_rsa_root.pem 
+zbctl deploy --address "c8-labs-32-zeebe-gateway.makelabs.in:443"  new-lead-approval.dmn  --certPath ../cert-origin_ca_rsa_root.pem 
+zbctl deploy --address "c8-labs-32-zeebe-gateway.makelabs.in:443"  lead-to-opportunity-with-webhook-Form.form --certPath ../cert-origin_ca_rsa_root.pem 
 
 # if secure channel, use this method. Make sure to populate this env var first.
 export ZEEBE_SECRET=value-here
@@ -39,21 +39,21 @@ zbctl deploy --authzUrl=https://c8-labs-32.makelabs.in/auth/realms/camunda-platf
       --audience=zeebe \
       --address "c8-labs-32-zeebe-gateway.makelabs.in:443" \
       --insecure=false \
-       lead-to-opportunity-with-dmn.bpmn 
+       lead-to-opportunity-with-dmn.bpmn --certPath ../cert-origin_ca_rsa_root.pem 
 zbctl deploy --authzUrl=https://c8-labs-32.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token \
       --clientId=zeebe \
       --clientSecret=$ZEEBE_SECRET \
       --audience=zeebe \
       --address "c8-labs-32-zeebe-gateway.makelabs.in:443" \
       --insecure=false \
-       new-lead-approval.dmn
+       new-lead-approval.dmn --certPath ../cert-origin_ca_rsa_root.pem 
 zbctl deploy --authzUrl=https://c8-labs-32.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token \
       --clientId=zeebe \
       --clientSecret=$ZEEBE_SECRET \
       --audience=zeebe \
       --address "c8-labs-32-zeebe-gateway.makelabs.in:443" \
       --insecure=false \
-       lead-to-opportunity-with-webhook-Form.form
+       lead-to-opportunity-with-webhook-Form.form --certPath ../cert-origin_ca_rsa_root.pem 
 
 cd ..
 # finally, lets go to home folder
