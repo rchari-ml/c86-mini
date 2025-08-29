@@ -6,6 +6,8 @@ cd nginx
 # Build docker image
 docker build -t asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo/toolkit-c8-labs-nginx-static:v1 .
 
+docker buildx build --platform linux/amd64,linux/arm64 -t asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo/toolkit-c8-labs-nginx-static:v1 .
+
 # Authenticate docker to push to GCR
 docker push                   asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo/toolkit-c8-labs-nginx-static:v1
 

@@ -6,11 +6,19 @@ metadata:
   #annotations:
     #cloud.google.com/backend-config: '{"default": "keycloak-backendconfig"}'
 spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/instance: c8-labs-32
   ports:
     - name: https
       protocol: TCP
       port: 443
       targetPort: 8443
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8080
     - name: metrics
       protocol: TCP
       port: 82
@@ -19,7 +27,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: c8-labs-32-ingress-https
+  name: c8-labs-32-ingress-keycloak
   namespace: c8-labs-32
   labels:
     app: camunda-platform
@@ -33,12 +41,14 @@ metadata:
     meta.helm.sh/release-namespace: c8-labs-32
     kubernetes.io/ingress.allow-http: "false"  # on ingress, we only allow HTTPS. 
     #networking.gke.io/managed-certificates: c8-managed-cert # shift to cf origin cert
-    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS" # Tell GKE to use HTTPS to backend
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP" # Tell GKE to use HTTPS to backend
     #nginx.ingress.kubernetes.io/ssl-passthrough: "true"
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    #nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     #nginx.ingress.kubernetes.io/proxy-ssl-secret: "c8-labs-ingress-nginx/custom-ca"
-    #nginx.ingress.kubernetes.io/proxy-ssl-verify: "false"
+    #nginx.ingress.kubernetes.io/proxy-ssl-verify: "on"
     #nginx.ingress.kubernetes.io/proxy-ssl-verify-depth: "2"    
+    #nginx.ingress.kubernetes.io/proxy-ssl-server-name: "on"
+    #nginx.ingress.kubernetes.io/proxy-ssl-name: "c8-labs-32.makelabs.in"
 spec:
   tls:
     - hosts:
@@ -55,4 +65,4 @@ spec:
               service:
                 name: c8-labs-32-keycloak
                 port:
-                  number: 443
+                  number: 80

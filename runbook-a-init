@@ -30,6 +30,10 @@ gcloud projects add-iam-policy-binding c8-labs --member="user:${UNAME}" --role="
 
 # create cluster with necessary configurations (with default node pool)
 # 
+gcloud compute networks subnets update default \
+  --region=asia-south2 \
+  --add-secondary-ranges gke-pods=10.4.0.0/14,gke-services=10.0.32.0/20
+
 gcloud beta container --project "c8-labs" clusters create "c8-labs-sravana" \
   --region "asia-south2"  --no-enable-basic-auth \
   --cluster-version "1.33.2-gke.1240000" --release-channel "regular" \
@@ -42,6 +46,8 @@ gcloud beta container --project "c8-labs" clusters create "c8-labs-sravana" \
   --monitoring=SYSTEM \
   --enable-private-nodes --enable-ip-alias --network "projects/c8-labs/global/networks/default" \
   --subnetwork "projects/c8-labs/regions/asia-south2/subnetworks/default" \
+  --cluster-secondary-range-name="gke-pods" \
+  --services-secondary-range-name="gke-services" \
   --no-enable-intra-node-visibility --default-max-pods-per-node "110" \
   --security-posture=standard \
   --workload-vulnerability-scanning=disabled --no-enable-google-cloud-access \
@@ -49,7 +55,7 @@ gcloud beta container --project "c8-labs" clusters create "c8-labs-sravana" \
   --enable-autoupgrade --enable-autorepair --max-surge-upgrade 1 --max-unavailable-upgrade 0 \
   --binauthz-evaluation-mode=DISABLED --enable-managed-prometheus --enable-shielded-nodes \
   --shielded-integrity-monitoring --no-shielded-secure-boot \
-  --autoscaling-profile optimize-utilization  
+  --autoscaling-profile optimize-utilization
 
 # optional config
 gcloud container clusters update c8-labs-sravana --region "asia-south2" --enable-image-streaming
@@ -97,16 +103,18 @@ helm repo update
 # Install nginx controller.
 kubectl create namespace c8-labs-ingress-nginx
 kubectl create secret generic custom-ca --from-file=ca.crt=./cert-origin_ca_rsa_root.pem -n c8-labs-ingress-nginx
+kubectl create secret generic custom-ca --from-file=ca.crt=./cert-origin_ca_rsa_root.pem -n c8-labs-32
 helm install nginx-ingress ingress-nginx/ingress-nginx --namespace c8-labs-ingress-nginx   \
   --set controller.config.enable-http2="true" \
   --set controller.service.enableHttp=false \
   --set controller.service.enableHttps=true \
   --set-string controller.config.proxy-buffer-size="128K" \
   --set-string controller.config.proxy-buffers="4 64K" \
-  --set-string controller.config.proxy-busy-buffers-size="128K"
+  --set-string controller.config.proxy-busy-buffers-size="128K" \
+  -f values-nginx.yaml
 
 # this is optional. nothing tangible in the yaml file
-helm upgrade nginx-ingress -f values-nginx.yaml --namespace c8-labs-ingress-nginx  
+helm upgrade nginx-ingress ingress-nginx/ingress-nginx -f values-nginx.yaml --namespace c8-labs-ingress-nginx  
 
 # if required for any reason to restart
 kubectl rollout restart deployment nginx-ingress-ingress-nginx-controller -n c8-labs-ingress-nginx
@@ -136,6 +144,12 @@ gcloud container node-pools create node-pool-swati-v2 \
 # Cluster optimize utilization profile 
 # This is optional, but recommended to optimize the cluster utilization.
 gcloud container clusters update c8-labs-sravana --region asia-south2 --autoscaling-profile optimize-utilization
+
+# Check vpc network config
+# Make sure secondary ranges are defined for gke-pods and gke-services
+gcloud compute networks subnets describe default \  
+  --region asia-south2 \
+  --format="json"
 
 # delete cluster
 gcloud beta container --project "c8-labs" clusters delete "c8-labs-sravana"  --region "asia-south2"

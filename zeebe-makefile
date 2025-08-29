@@ -19,11 +19,15 @@ keytool -importkeystore -deststorepass changeit -destkeypass changeit -destkeyst
 kubectl create secret generic c8-labs-32-zeebe-jks --from-file=c8-labs-32-zeebe.jks   -n c8-labs-32
 
 # 4. Create Kubernetes secret - public CA root cert needed for spring-boot ca.crt
-kubectl create secret generic c8-labs-32-zeebe-ca-crt --from-file=ca.crt=./cert-origin_ca_ecc_root.pem   -n c8-labs-32 
+kubectl create secret generic c8-labs-32-zeebe-ca-crt --from-file=ca.crt=./cert-origin_ca_rsa_root.pem   -n c8-labs-32 
 
 # 5. Create Kubernetes secret - public cert with fullchain and pkcs8 secret. For zeebe use.
 # Ref https://docs.camunda.io/docs/self-managed/zeebe-deployment/security/secure-cluster-communication/
-kubectl create secret tls c8-labs-32-zeebe-tls  --cert=cert-fullchain-c8-labs.pem   --key=./c8-labs-32-zeebe-key-pkcs8.pem  -n c8-labs-32
+kubectl create secret generic c8-labs-32-zeebe-tls -n c8-labs-32 --from-file=tls.crt=cert-fullchain-c8-labs.pem  --from-file=tls.key=./c8-labs-32-zeebe-key-pkcs8.pem --from-file=ca.crt=cert-origin_ca_rsa_root.pem
+
+kubectl create secret tls c8-labs-32-zeebe-grpc-tls -n c8-labs-32 --cert=cert-fullchain-c8-labs.pem  --key=c8-labs-32-zeebe-key-pkcs8.pem 
+kubectl create secret tls c8-labs-32-zeebe-rest-tls -n c8-labs-32 --cert=cert-fullchain-c8-labs.pem  --key=c8-labs-32-zeebe-key-pkcs8.pem 
+
 
 ####################
 # Part 2. Prepare env for Toolkit app
@@ -37,7 +41,7 @@ keytool -importcert -trustcacerts -alias intermediate-cert  -file cert1.pem -key
 keytool -importcert -trustcacerts -alias root-cert          -file cert2.pem -keystore c8-labs-32-zeebe-toolkit.jks -storepass changeit --noprompt
 
 # lets add the ca cert as well to jks
-keytool -importcert -alias ml-ca -file cert-origin_ca_ecc_root.pem -keystore c8-labs-32-zeebe-toolkit.jks -storepass changeit -noprompt
+keytool -importcert -alias ml-ca -file cert-origin_ca_rsa_root.pem -keystore c8-labs-32-zeebe-toolkit.jks -storepass changeit -noprompt
 
 kubectl create secret generic c8-labs-32-zeebe-toolkit-jks  --from-file=c8-labs-32-zeebe-toolkit.jks   -n c8-labs-32
 
@@ -48,11 +52,11 @@ kubectl create secret generic c8-labs-32-zeebe-toolkit-jks  --from-file=c8-labs-
 kubectl create secret generic keycloak-certificates-tls-secret  --from-file=./cert-public-c8-labs.key  --from-file=./cert-key-c8-labs.key -n c8-labs-32
 
 # 6.b. keycloak config - prepare jks with two steps ->> keycloak-keystore.jks
-openssl pkcs12 -export -in ./cert-public-c8-labs.key -inkey ./cert-key-c8-labs.key -out keycloak-keystore.p12 -name keycloak -CAfile cert-origin_ca_ecc_root.pem -caname root -password pass:changeit 
+openssl pkcs12 -export -in ./cert-public-c8-labs.key -inkey ./cert-key-c8-labs.key -out keycloak-keystore.p12 -name keycloak -CAfile cert-origin_ca_rsa_root.pem  -caname root -password pass:changeit 
 keytool -importkeystore -destkeystore keycloak-keystore.jks -srckeystore keycloak-keystore.p12 -srcstoretype pkcs12 -alias keycloak -storepass changeit -srcstorepass changeit --noprompt
 
 # 6.c. lets create trust store ->> keycloak-truststore.jks
-keytool -importcert -alias ml-ca -file cert-origin_ca_ecc_root.pem -keystore keycloak-truststore.jks -storepass changeit -noprompt
+keytool -importcert -alias ml-ca -file cert-origin_ca_rsa_root.pem -keystore keycloak-truststore.jks -storepass changeit -noprompt
 
 # 6.d. lets create a secret with keystore and truststore. along with respetive store password
 kubectl create secret generic keycloak-jks-truststore-secret --from-file=keycloak.keystore.jks=./keycloak-keystore.jks --from-file=keycloak.truststore.jks=./keycloak-truststore.jks   --from-file=tls.crt=./cert-public-c8-labs.key  --from-file=tls.key=./cert-key-c8-labs.key  -n c8-labs-32

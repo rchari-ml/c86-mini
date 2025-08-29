@@ -93,7 +93,7 @@ kubectl get pods -n c8-labs-32 | grep ingress
 kubectl describe ingress camunda-camunda-platform -n c8-labs-32
 
 # To uninstall camunda - at the end of the lab exercise, to get rid of things / wind down etc
-helm uninstall camunda -n c8-labs-32
+helm uninstall c8-labs-32 -n c8-labs-32
 
 # Under path, you should see 6 entries listed: console, identity, operate, tasklist, optimize and auth.
 kubectl describe ingress c8-labs-32-ingress -n c8-labs-32
@@ -116,6 +116,20 @@ cat /usr/local/operate/config/application.yaml
 
 # config file for Zeebe gateway pod
 cat /usr/local/zeebe/config/application.yaml
+
+# check if Zeebe gateway runs with security tls config
+# the output should show security "true" as well as tls.crt, tls.key, ca.crt
+kubectl exec -it deploy/c8-labs-32-zeebe-gateway -n c8-labs-32 -- \
+  grep -A6 "network:" /usr/local/zeebe/config/application.yaml
+
+# check zeebe gateway against ca cert
+# Run this command from nginx controller pod
+curl --http2 -v --cacert /etc/nginx/custom-ca/ca.crt  https://c8-labs-32-zeebe-gateway.c8-labs-32.svc.cluster.local:26500/
+
+# config file for Keycloak pod
+cat /opt/bitnami/keycloak/conf/keycloak.conf
+curl -kv https://localhost:443/auth/admin/master/console/
+curl -kv https://c8-labs-32.makelabs.in:443/auth/admin/master/console/
 
 # Known issue (1)
 # Ensure the health check endpoint for below items
