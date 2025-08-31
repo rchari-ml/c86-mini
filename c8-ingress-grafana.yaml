@@ -1,13 +1,13 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: c8-labs-32-grafana
-  namespace: c8-labs-32
+  name: ${UNAMESPACE}-grafana
+  namespace: ${UNAMESPACE}
   labels:
     app: grafana
   annotations:
     kubernetes.io/ingress.class: "nginx"
-    meta.helm.sh/release-namespace: c8-labs-32
+    meta.helm.sh/release-namespace: ${UNAMESPACE}
     nginx.ingress.kubernetes.io/backend-protocol: "http"
     kubernetes.io/ingress.allow-http: "false"  # on ingress, we only allow secure line. 
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
@@ -15,11 +15,11 @@ metadata:
 spec:
   tls:
     - hosts:
-        - c8-labs-32-grafana.makelabs.in
+        - ${UNAMESPACE}-grafana.makelabs.in
       secretName: cf-origin-cert
   ingressClassName: "nginx"
   rules:
-    - host: c8-labs-32-grafana.makelabs.in
+    - host: ${UNAMESPACE}-grafana.makelabs.in
       http:
         paths:
           - path: /

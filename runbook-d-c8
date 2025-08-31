@@ -1,5 +1,5 @@
 # include user account pwd as secrets
-kubectl apply -f identity-secret.yaml --namespace c8-labs-32
+kubectl apply -f identity-secret.yaml --namespace ${UNAMESPACE}
 
 ##################
 # make sure the current folder has the CF certs
@@ -13,20 +13,20 @@ kubectl apply -f identity-secret.yaml --namespace c8-labs-32
 #       
 #     
 # Generate zeebe keystore jks file
-sh zeebe-makefile
-UNAMESPACE=c8-labs-32 envsubst < zeebe-makefile | sh
+#sh zeebe-makefile
+UNAMESPACE=${UNAMESPACE} envsubst < zeebe-makefile | sh
 
 # Make sure the elasticsearch endpoint config is correct in values-combined-ingress.yaml.
-# elasticsearch-master.c8-labs-32.svc.cluster.local
+# elasticsearch-master.${UNAMESPACE}.svc.cluster.local
 
 # Install camunda
 # 12.0.0-alpha4 or 12.3.0 version in the 8.7.x series is verified as of 01 Aug 2025
-#helm install c8-labs-32 camunda/camunda-platform -f values-combined-ingress.yaml \
+#helm install ${UNAMESPACE} camunda/camunda-platform -f values-combined-ingress.yaml \
 #  -f values-connectors-env.yaml --set zeebe.prometheusServiceMonitor.enabled=true  \
-#  --version 12.4.0 --namespace c8-labs-32
+#  --version 12.4.0 --namespace ${UNAMESPACE}
 
-UNAMESPACE=c8-labs-32 envsubst < values-combined-ingress.yaml > values-combined-ingress.my-ns.yaml
-UNAMESPACE=c8-labs-32 envsubst < values-connectors-env.yaml   > values-connectors-env.my-ns.yaml
+UNAMESPACE=${UNAMESPACE} envsubst < values-combined-ingress.yaml > values-combined-ingress.my-ns.yaml
+UNAMESPACE=${UNAMESPACE} envsubst < values-connectors-env.yaml   > values-connectors-env.my-ns.yaml
 helm install $UNAMESPACE camunda/camunda-platform \
   -f values-combined-ingress.my-ns.yaml \
   -f values-connectors-env.my-ns.yaml \
@@ -38,31 +38,31 @@ helm install $UNAMESPACE camunda/camunda-platform \
 # Ref about security -> https://docs.camunda.io/docs/self-managed/zeebe-deployment/security/secure-client-communication/
 
 # The file controls ingress access
-kubectl apply -f c8-ingress-keycloak.yaml --namespace c8-labs-32
-kubectl apply -f c8-ingress.yaml --namespace c8-labs-32
-kubectl apply -f c8-zeebe-ingress.yaml --namespace c8-labs-32
+kubectl apply -f c8-ingress-keycloak.yaml --namespace ${UNAMESPACE}
+kubectl apply -f c8-ingress.yaml --namespace ${UNAMESPACE}
+kubectl apply -f c8-zeebe-ingress.yaml --namespace ${UNAMESPACE}
 
-envsubst '${UNAMESPACE}' < c8-ingress-keycloak.yaml  | kubectl apply --namespace c8-labs-32 -f -
-envsubst '${UNAMESPACE}' < c8-ingress.yaml           | kubectl apply --namespace c8-labs-32 -f -
-envsubst '${UNAMESPACE}' < c8-zeebe-ingress.yaml     | kubectl apply --namespace c8-labs-32 -f -
+envsubst '${UNAMESPACE}' < c8-ingress-keycloak.yaml  | kubectl apply --namespace ${UNAMESPACE} -f -
+envsubst '${UNAMESPACE}' < c8-ingress.yaml           | kubectl apply --namespace ${UNAMESPACE} -f -
+envsubst '${UNAMESPACE}' < c8-zeebe-ingress.yaml     | kubectl apply --namespace ${UNAMESPACE} -f -
 
 # Update health check endpoints as noted in Known Issue (1) below.
 # this is required for External LB IP address to be issued by GCE.
 
 # wait for 5 minutes or so. use this command to check external IP address is assigned.
-kubectl describe ingress c8-labs-32-ingress -n c8-labs-32
+kubectl describe ingress ${UNAMESPACE}-ingress -n ${UNAMESPACE}
 
 # this command is required only if we use gce controller
-kubectl get managedcertificate -n c8-labs-32
+kubectl get managedcertificate -n ${UNAMESPACE}
 
-kubectl describe ingress c8-labs-32-zeebe-gateway-grpc -n c8-labs-32 
+kubectl describe ingress ${UNAMESPACE}-zeebe-gateway-grpc -n ${UNAMESPACE} 
 
 # Useful command - delete if you wish to recreate it.
-kubectl delete ingress c8-labs-32-zeebe-gateway-grpc -n c8-labs-32 
+kubectl delete ingress ${UNAMESPACE}-zeebe-gateway-grpc -n ${UNAMESPACE} 
 
 # Once IP address is available, go ahead and map it with domain.
-# c8-labs-32.makelabs.in => output of "kubectl describe ingress c8-labs-32-ingress -n c8-labs-32"
-# c8-labs-32-zeebe-gateway.makelabs.in => output of "kubectl describe ingress c8-labs-32-zeebe-gateway-grpc -n c8-labs-32"
+# ${UNAMESPACE}.makelabs.in => output of "kubectl describe ingress ${UNAMESPACE}-ingress -n ${UNAMESPACE}"
+# ${UNAMESPACE}-zeebe-gateway.makelabs.in => output of "kubectl describe ingress ${UNAMESPACE}-zeebe-gateway-grpc -n ${UNAMESPACE}"
 
 # login to Camunda app console and verify things.
 
@@ -75,15 +75,19 @@ kubectl delete ingress c8-labs-32-zeebe-gateway-grpc -n c8-labs-32
 # Prometheus
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update
-helm install prometheus prometheus-community/prometheus -f prometheus.yml --namespace c8-labs-32
+#helm install prometheus prometheus-community/prometheus -f prometheus.yml --namespace ${UNAMESPACE}
+UNAMESPACE=$UNAMESPACE envsubst < prometheus.yml   > prometheus.my-ns.yaml
+helm install prometheus prometheus-community/prometheus -f prometheus.my-ns.yaml --namespace ${UNAMESPACE}
+
 # Grafana
 helm repo add grafana https://grafana.github.io/helm-charts
 helm repo update
-helm install grafana grafana/grafana --namespace  c8-labs-32
+helm install grafana grafana/grafana --namespace  ${UNAMESPACE}
 
-kubectl get secret --namespace c8-labs-32 grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+kubectl get secret --namespace ${UNAMESPACE} grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
 
-kubectl apply -f c8-ingress-grafana.yaml --namespace c8-labs-32
+#kubectl apply -f c8-ingress-grafana.yaml --namespace ${UNAMESPACE}
+UNAMESPACE=$UNAMESPACE envsubst < c8-ingress-grafana.yaml | kubectl apply -f -
 
 ####### Grafana UI - Setup data source and import dashboard
 # Step 1.  Go to Datasources. Add prometheus as data source. Save and test. (Get 'prometheus-server' IP address from Lens UI)
@@ -93,7 +97,7 @@ kubectl apply -f c8-ingress-grafana.yaml --namespace c8-labs-32
 
 
 # To check prometheus data feed - run this from toolkit pod where curl is supported
-curl -s http://prometheus-server.c8-labs-32:9090/api/v1/targets
+curl -s http://prometheus-server.${UNAMESPACE}:9090/api/v1/targets
 
 # This concludes Camunda setup
 
@@ -102,24 +106,24 @@ curl -s http://prometheus-server.c8-labs-32:9090/api/v1/targets
 # Useful Commands
 
 # check ingress status
-kubectl get pods -n c8-labs-32 | grep ingress
+kubectl get pods -n ${UNAMESPACE} | grep ingress
 
-kubectl describe ingress camunda-camunda-platform -n c8-labs-32
+kubectl describe ingress camunda-camunda-platform -n ${UNAMESPACE}
 
 # To uninstall camunda - at the end of the lab exercise, to get rid of things / wind down etc
-helm uninstall c8-labs-32 -n c8-labs-32
+helm uninstall ${UNAMESPACE} -n ${UNAMESPACE}
 
 # Under path, you should see 6 entries listed: console, identity, operate, tasklist, optimize and auth.
-kubectl describe ingress c8-labs-32-ingress -n c8-labs-32
+kubectl describe ingress ${UNAMESPACE}-ingress -n ${UNAMESPACE}
 
-kubectl get ingress c8-labs-32-ingress -n c8-labs-32
+kubectl get ingress ${UNAMESPACE}-ingress -n ${UNAMESPACE}
 
-kubectl describe service camunda-identity -n c8-labs-32
-kubectl describe service camunda-connectors -n c8-labs-32
+kubectl describe service camunda-identity -n ${UNAMESPACE}
+kubectl describe service camunda-connectors -n ${UNAMESPACE}
 
 
 # Test oidc token with endpoint
-curl -X POST "https://c8-labs-32.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token" \
+curl -X POST "https://${UNAMESPACE}.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token" \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "grant_type=client_credentials" \
   -d "client_id=zeebe" \
@@ -133,17 +137,17 @@ cat /usr/local/zeebe/config/application.yaml
 
 # check if Zeebe gateway runs with security tls config
 # the output should show security "true" as well as tls.crt, tls.key, ca.crt
-kubectl exec -it deploy/c8-labs-32-zeebe-gateway -n c8-labs-32 -- \
+kubectl exec -it deploy/${UNAMESPACE}-zeebe-gateway -n ${UNAMESPACE} -- \
   grep -A6 "network:" /usr/local/zeebe/config/application.yaml
 
 # check zeebe gateway against ca cert
 # Run this command from nginx controller pod
-curl --http2 -v --cacert /etc/nginx/custom-ca/ca.crt  https://c8-labs-32-zeebe-gateway.c8-labs-32.svc.cluster.local:26500/
+curl --http2 -v --cacert /etc/nginx/custom-ca/ca.crt  https://${UNAMESPACE}-zeebe-gateway.${UNAMESPACE}.svc.cluster.local:26500/
 
 # config file for Keycloak pod
 cat /opt/bitnami/keycloak/conf/keycloak.conf
 curl -kv https://localhost:443/auth/admin/master/console/
-curl -kv https://c8-labs-32.makelabs.in:443/auth/admin/master/console/
+curl -kv https://${UNAMESPACE}.makelabs.in:443/auth/admin/master/console/
 
 # Known issue (1)
 # Ensure the health check endpoint for below items
@@ -163,17 +167,17 @@ curl -v http://camunda-identity:82/actuator/health
 # Known issue (2)
 # Debug if you are able to connect on gRPC port 
 # grp curl command to test zeebe gateway gRPC service
-grpcurl -plaintext c8-labs-32-zeebe-gateway.makelabs.in:80 list
-grpcurl -plaintext c8-labs-32-zeebe-gateway.c8-labs-32.svc.cluster.local:26500 list
+grpcurl -plaintext ${UNAMESPACE}-zeebe-gateway.makelabs.in:80 list
+grpcurl -plaintext ${UNAMESPACE}-zeebe-gateway.${UNAMESPACE}.svc.cluster.local:26500 list
 
 # check to see if http2 is working. you should see somethingg around http2 and not fallback to http1.1
-curl -v --http2-prior-knowledge http://c8-labs-32-zeebe-gateway.makelabs.in
+curl -v --http2-prior-knowledge http://${UNAMESPACE}-zeebe-gateway.makelabs.in
 
 kubectl run curl-test --image=curlimages/curl -it --rm --restart=Never -- \
-  curl -v --http2-prior-knowledge c8-labs-32-zeebe-gateway.c8-labs-32.svc.cluster.local:26500
+  curl -v --http2-prior-knowledge ${UNAMESPACE}-zeebe-gateway.${UNAMESPACE}.svc.cluster.local:26500
 
 
-kubectl exec -it toolkit-app-5c6d7b6449-c62w8 -n c8-labs-32 -- nslookup c8-labs-32-zeebe-gateway.c8-labs-32.svc.cluster.local
+kubectl exec -it toolkit-app-5c6d7b6449-c62w8 -n ${UNAMESPACE} -- nslookup ${UNAMESPACE}-zeebe-gateway.${UNAMESPACE}.svc.cluster.local
 
 
 # To delete below items at the end of the lab exercise

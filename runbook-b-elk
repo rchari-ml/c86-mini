@@ -23,7 +23,7 @@ gcloud container clusters get-credentials c8-labs-sravana --region asia-south2 -
 
 # replace user id, email, token appropriately
 kubectl create secret docker-registry registry-camunda-cloud  \
-  --namespace=c8-labs-32 \
+  --namespace=${UNAMESPACE} \
   --docker-server=registry.camunda.cloud \
   --docker-username=your-docker-account-uid \
   --docker-password=your-docker-account-token \
@@ -31,7 +31,7 @@ kubectl create secret docker-registry registry-camunda-cloud  \
 
 # replace user id, email, token appropriately
 kubectl create secret docker-registry registry-docker-hub  \
-    --namespace=c8-labs-32 \
+    --namespace=${UNAMESPACE} \
     --docker-server=hub.docker.com \
     --docker-username=your-docker-account-uid \
     --docker-password=your-docker-account-token \
@@ -39,66 +39,67 @@ kubectl create secret docker-registry registry-docker-hub  \
 
 ############### Caution: Make sure Docker Desktop is running
 # Install elastic components - elk certs
-sh elk-makefile
-UNAMESPACE=c8-labs-32 envsubst < elk-makefile | sh
+#sh elk-makefile
+UNAMESPACE=${UNAMESPACE} envsubst < elk-makefile | sh
 
-# After this, you should see secrets created in the namespace c8-labs-32
+# After this, you should see secrets created in the namespace ${UNAMESPACE}
 # Config => secret/elastic-certificates created
 # Config => secret/elasticsearch-master-certs created
 # Config => secret/elastic-jks created
 
 
 # Install elastic components - elasticsearch
-helm install elasticsearch elastic/elasticsearch -n c8-labs-32 -f elasticsearch.yaml
+helm install elasticsearch elastic/elasticsearch -n ${UNAMESPACE} -f elasticsearch.yaml
 # if you see any issues, check the pod status - see command below
 # After this, you should see below
-# Storage: allocated under PersistentVolumeClaims (PVCs) in the namespace c8-labs-32
+# Storage: allocated under PersistentVolumeClaims (PVCs) in the namespace ${UNAMESPACE}
 # with app elasticsearch-master (Look for Label: app=elasticsearch-master)
 # Pod: elasticsearch-master-0 is running
 
 #Note: kibana is currently not validated. Skip this section.
 # Install elastic components - kibana
-#helm install kibana  elastic/kibana -n c8-labs-32  -f kibana.yaml
-#kubectl apply -f elk-ingress.yaml --namespace c8-labs-32
+#helm install kibana  elastic/kibana -n ${UNAMESPACE}  -f kibana.yaml
+#kubectl apply -f elk-ingress.yaml --namespace ${UNAMESPACE}
+#UNAMESPACE=$UNAMESPACE envsubst < elk-ingress.yaml | kubectl apply -f -
 # Wait for external IP address to be assigned to the ingress
 # example 34.8.27.166
-# attach it to the domain name - elk-c8-labs-32.makelabs.in
+# attach it to the domain name - elk-${UNAMESPACE}.makelabs.in
 # yay! you can now access elasticsearch using the domain name
-# https://elk-c8-labs-32.makelabs.in
+# https://elk-${UNAMESPACE}.makelabs.in
 
 
 # this ends part 1 - elk installation
 
 
 # Useful commands
-kubectl api-resources --verbs=list --namespaced -o name | xargs -n 1 kubectl get --show-kind --ignore-not-found -n c8-labs-32
+kubectl api-resources --verbs=list --namespaced -o name | xargs -n 1 kubectl get --show-kind --ignore-not-found -n ${UNAMESPACE}
 
 gcloud config set project c8-labs
 
 
 # check pvs status
-kubectl get pvc -n c8-labs-32
+kubectl get pvc -n ${UNAMESPACE}
 # check pod status
-kubectl describe pod elasticsearch-master-0 -n c8-labs-32
+kubectl describe pod elasticsearch-master-0 -n ${UNAMESPACE}
 
 # check ingress status
 kubectl get pods -n kube-system | grep ingress
 
 # check elasticsearch ingress
-kubectl describe ingress elk-ingress -n c8-labs-32
+kubectl describe ingress elk-ingress -n ${UNAMESPACE}
 
 # check elasticsearch ingress external IP address
-kubectl get ingress elk-ingress -n c8-labs-32
+kubectl get ingress elk-ingress -n ${UNAMESPACE}
 
-kubectl get service elasticsearch-master -n c8-labs-32
-kubectl describe service elasticsearch-master -n c8-labs-32
-
-
-kubectl get svc kibana-kibana -n c8-labs-32
-kubectl get endpoints kibana-kibana -n c8-labs-32
+kubectl get service elasticsearch-master -n ${UNAMESPACE}
+kubectl describe service elasticsearch-master -n ${UNAMESPACE}
 
 
-kubectl port-forward svc/kibana-kibana 5601:5601 -n c8-labs-32
+kubectl get svc kibana-kibana -n ${UNAMESPACE}
+kubectl get endpoints kibana-kibana -n ${UNAMESPACE}
+
+
+kubectl port-forward svc/kibana-kibana 5601:5601 -n ${UNAMESPACE}
 curl -I http://localhost:5601/
 curl -I http://localhost:5601/login
 

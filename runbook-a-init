@@ -69,19 +69,19 @@ gcloud container clusters get-credentials c8-labs-sravana --region asia-south2 -
 # (A.3) Create the namespace and role binding
 
 # lets create a namespace - delete if it exists
-# --namespace c8-labs-32
-kubectl delete namespace c8-labs-32
+# --namespace ${UNAMESPACE}
+kubectl delete namespace ${UNAMESPACE}
 export UNAMESPACE=c8-labs-32
 envsubst '${UNAMESPACE}' < namespace-c86-mini.yaml  | kubectl apply -f -
 
 # Add cert files as secrets
 kubectl create secret tls cf-origin-cert \
   --cert=cert-public-c8-labs.key \
-  --key=cert-key-c8-labs.key -n c8-labs-32
+  --key=cert-key-c8-labs.key -n ${UNAMESPACE}
 
 kubectl create secret tls cf-full-chain-origin-cert \
   --cert=cert-fullchain-c8-labs.pem \
-  --key=cert-key-c8-labs.key -n c8-labs-32
+  --key=cert-key-c8-labs.key -n ${UNAMESPACE}
 
 
 # Provide "namespace access" to the user
@@ -103,7 +103,7 @@ helm repo update
 # Install nginx controller.
 kubectl create namespace c8-labs-ingress-nginx
 kubectl create secret generic custom-ca --from-file=ca.crt=./cert-origin_ca_rsa_root.pem -n c8-labs-ingress-nginx
-kubectl create secret generic custom-ca --from-file=ca.crt=./cert-origin_ca_rsa_root.pem -n c8-labs-32
+kubectl create secret generic custom-ca --from-file=ca.crt=./cert-origin_ca_rsa_root.pem -n ${UNAMESPACE}
 helm install nginx-ingress ingress-nginx/ingress-nginx --namespace c8-labs-ingress-nginx   \
   --set controller.config.enable-http2="true" \
   --set controller.service.enableHttp=false \
@@ -123,7 +123,7 @@ kubectl rollout restart deployment nginx-ingress-ingress-nginx-controller -n c8-
 # try this one perhaps -> --set controller.config.ssl-redirect="false"
 
 # [with right pod name] Check the status of the ingress controller pod - look for any config errors 
-kubectl describe pod nginx-ingress-ingress-nginx-controller-75fc9f4654-68d5x -n c8-labs-32
+kubectl describe pod nginx-ingress-ingress-nginx-controller-75fc9f4654-68d5x -n ${UNAMESPACE}
 
 # End of this part of runboook
 ########
