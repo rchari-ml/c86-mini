@@ -1,24 +1,24 @@
 connectors:
   extraVolumeMounts:
-    - name: c8-labs-32-zeebe-ca-crt
+    - name: ${UNAMESPACE}-zeebe-ca-crt
       mountPath: /config/certs
       readOnly: true
     - name: zeebe-toolkit-crt
       mountPath: /config/jks
       readOnly: true      
   extraVolumes:
-    - name: c8-labs-32-zeebe-ca-crt
+    - name: ${UNAMESPACE}-zeebe-ca-crt
       secret:
-        secretName: c8-labs-32-zeebe-ca-crt
+        secretName: ${UNAMESPACE}-zeebe-ca-crt
     - name: zeebe-toolkit-crt
       secret:
-        secretName: c8-labs-32-zeebe-toolkit-jks
+        secretName: ${UNAMESPACE}-zeebe-toolkit-jks
 
   env:
   # see https://docs.camunda.io/docs/self-managed/connectors-deployment/connectors-configuration/?configuration=sm
     - name: JAVA_TOOL_OPTIONS
       value: >
-        -Djavax.net.ssl.trustStore=/config/jks/c8-labs-32-zeebe-toolkit.jks
+        -Djavax.net.ssl.trustStore=/config/jks/${UNAMESPACE}-zeebe-toolkit.jks
         -Djavax.net.ssl.trustStorePassword=changeit
         -Djavax.net.ssl.trustStoreType=JKS  
     - name: CAMUNDA_CONNECTOR_SECRETPROVIDER_ENVIRONMENT_PREFIX
@@ -59,19 +59,19 @@ connectors:
         auth:
           client-id: zeebe
           client-secret: makelabs
-          issuer: https://c8-labs-32.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token          
-          token-url: https://c8-labs-32.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token          
+          issuer: https://${UNAMESPACE}.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token          
+          token-url: https://${UNAMESPACE}.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token          
         zeebe:
-          grpc-address: https://c8-labs-32-zeebe-gateway.makelabs.in:443
-          rest-address: https://c8-labs-32.makelabs.in:443
+          grpc-address: https://${UNAMESPACE}-zeebe-gateway.makelabs.in:443
+          rest-address: https://${UNAMESPACE}.makelabs.in:443
           audience: zeebe-api
           security:
             plaintext: false
     operate:
       client:
         profile: oidc
-        base-url: https://c8-labs-32.makelabs.in:443/operate
-        auth-url: https://c8-labs-32.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token
+        base-url: https://${UNAMESPACE}.makelabs.in:443/operate
+        auth-url: https://${UNAMESPACE}.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token
         audience: operate-api
         client-id: connectors
         client-secret: makelabs

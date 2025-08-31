@@ -2,17 +2,17 @@
 #kind: ManagedCertificate
 #metadata:
 #  name: c8-zeebe-gw-cert
-#  namespace: c8-labs-32
+#  namespace: ${UNAMESPACE}
 #spec:
 #  domains:
-#    - c8-labs-32-zeebe-gateway.makelabs.in
+#    - ${UNAMESPACE}-zeebe-gateway.makelabs.in
 #---
-# zeebe gateway readiness > http://c8-labs-32-zeebe-gateway.c8-labs-32:9600/zeebe/actuator/health/readiness
+# zeebe gateway readiness > http://${UNAMESPACE}-zeebe-gateway.${UNAMESPACE}:9600/zeebe/actuator/health/readiness
 apiVersion: cloud.google.com/v1
 kind: BackendConfig
 metadata:
   name: zee-gateway-backendconfig
-  namespace: c8-labs-32
+  namespace: ${UNAMESPACE}
 spec:
   healthCheck:
     requestPath: /zeebe/actuator/health/readiness
@@ -21,8 +21,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: c8-labs-32-zeebe-gateway
-  namespace: c8-labs-32
+  name: ${UNAMESPACE}-zeebe-gateway
+  namespace: ${UNAMESPACE}
   annotations:
     cloud.google.com/backend-config: '{"default": "zee-gateway-backendconfig"}'
 spec:
@@ -43,18 +43,18 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: c8-labs-32-zeebe-gateway-grpc
-  namespace: c8-labs-32
+  name: ${UNAMESPACE}-zeebe-gateway-grpc
+  namespace: ${UNAMESPACE}
   labels:
     app: camunda-platform
-    app.kubernetes.io/instance: c8-labs-32
+    app.kubernetes.io/instance: ${UNAMESPACE}
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: camunda-platform
     app.kubernetes.io/part-of: camunda-platform
     helm.sh/chart: camunda-platform-12.0.0-alpha4      
   annotations:
     kubernetes.io/ingress.class: "nginx"
-    meta.helm.sh/release-namespace: c8-labs-32
+    meta.helm.sh/release-namespace: ${UNAMESPACE}
     kubernetes.io/ingress.allow-http: "false"  # on ingress, we only allow secure line. 
     nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
     #nginx.ingress.kubernetes.io/ssl-passthrough: "true" # enable for GRPCS
@@ -63,17 +63,17 @@ metadata:
 spec:
   tls:
     - hosts:
-        - c8-labs-32-zeebe-gateway.makelabs.in
+        - ${UNAMESPACE}-zeebe-gateway.makelabs.in
       secretName: cf-full-chain-origin-cert # cf-origin-cert
   ingressClassName: "nginx"
   rules:
-    - host: c8-labs-32-zeebe-gateway.makelabs.in
+    - host: ${UNAMESPACE}-zeebe-gateway.makelabs.in
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: c8-labs-32-zeebe-gateway
+                name: ${UNAMESPACE}-zeebe-gateway
                 port:
                   number: 26500

@@ -2,14 +2,21 @@
 cd toolkit
 mvn clean package -DskipTests
 
+UNAMESPACE=c8-labs-32
+IMAGE_NAME=toolkit-$UNAMESPACE
+REGISTRY=asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo
+
+
 # Build docker image
-docker build -t asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo/toolkit-c8-labs-32:v1 .
+#docker build -t asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo/toolkit-c8-labs-32:v1 .
+docker build -t $REGISTRY/$IMAGE_NAME:v1 .
 
 
 # Authenticate docker to push to GCR
 #gcloud auth configure-docker asia-south2-docker.pkg.dev
 #docker tag  toolkit-c8-labs-32 asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo/toolkit-c8-labs-32:v1
-docker push                   asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo/toolkit-c8-labs-32:v1
+#docker push                   asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo/toolkit-c8-labs-32:v1
+docker push $REGISTRY/$IMAGE_NAME:v1
 cd ..
 
 #################
@@ -19,7 +26,9 @@ cd ..
 
 # Lastly, install toolkit app and bpmn solution artifacts -bpmn, dmn, form
 # Lets come back to the home folder and run deploy script to GKE
-kubectl apply -f deploy-worker-toolkit.yaml -n c8-labs-32
+#kubectl apply -f deploy-worker-toolkit.yaml -n c8-labs-32
+envsubst '${UNAMESPACE}' < deploy-worker-toolkit.yaml  | kubectl apply  -f -
+
 
 kubectl describe service toolkit-service -n c8-labs-32
 

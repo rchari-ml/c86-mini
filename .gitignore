@@ -18,3 +18,5 @@ c8-labs-32-zeebe-toolkit.jks
 c8-labs-32-zeebe-toolkit-jks.jks
 cert-fullchain-c8-labs.pem
 cert-origin_ca_rsa_root.pem
+values-connectors-env.my-ns.yaml
+values-combined-ingress.my-ns.yaml

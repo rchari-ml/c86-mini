@@ -40,6 +40,8 @@ kubectl create secret docker-registry registry-docker-hub  \
 ############### Caution: Make sure Docker Desktop is running
 # Install elastic components - elk certs
 sh elk-makefile
+UNAMESPACE=c8-labs-32 envsubst < elk-makefile | sh
+
 # After this, you should see secrets created in the namespace c8-labs-32
 # Config => secret/elastic-certificates created
 # Config => secret/elasticsearch-master-certs created

@@ -14,16 +14,26 @@ kubectl apply -f identity-secret.yaml --namespace c8-labs-32
 #     
 # Generate zeebe keystore jks file
 sh zeebe-makefile
-
+UNAMESPACE=c8-labs-32 envsubst < zeebe-makefile | sh
 
 # Make sure the elasticsearch endpoint config is correct in values-combined-ingress.yaml.
 # elasticsearch-master.c8-labs-32.svc.cluster.local
 
 # Install camunda
 # 12.0.0-alpha4 or 12.3.0 version in the 8.7.x series is verified as of 01 Aug 2025
-helm install c8-labs-32 camunda/camunda-platform -f values-combined-ingress.yaml \
-  -f values-connectors-env.yaml --set zeebe.prometheusServiceMonitor.enabled=true  \
-  --version 12.4.0 --namespace c8-labs-32
+#helm install c8-labs-32 camunda/camunda-platform -f values-combined-ingress.yaml \
+#  -f values-connectors-env.yaml --set zeebe.prometheusServiceMonitor.enabled=true  \
+#  --version 12.4.0 --namespace c8-labs-32
+
+UNAMESPACE=c8-labs-32 envsubst < values-combined-ingress.yaml > values-combined-ingress.my-ns.yaml
+UNAMESPACE=c8-labs-32 envsubst < values-connectors-env.yaml   > values-connectors-env.my-ns.yaml
+helm install $UNAMESPACE camunda/camunda-platform \
+  -f values-combined-ingress.my-ns.yaml \
+  -f values-connectors-env.my-ns.yaml \
+  --set zeebe.prometheusServiceMonitor.enabled=true \
+  --version 12.4.0 --namespace $UNAMESPACE
+
+
 
 # Ref about security -> https://docs.camunda.io/docs/self-managed/zeebe-deployment/security/secure-client-communication/
 
@@ -31,6 +41,10 @@ helm install c8-labs-32 camunda/camunda-platform -f values-combined-ingress.yaml
 kubectl apply -f c8-ingress-keycloak.yaml --namespace c8-labs-32
 kubectl apply -f c8-ingress.yaml --namespace c8-labs-32
 kubectl apply -f c8-zeebe-ingress.yaml --namespace c8-labs-32
+
+envsubst '${UNAMESPACE}' < c8-ingress-keycloak.yaml  | kubectl apply --namespace c8-labs-32 -f -
+envsubst '${UNAMESPACE}' < c8-ingress.yaml           | kubectl apply --namespace c8-labs-32 -f -
+envsubst '${UNAMESPACE}' < c8-zeebe-ingress.yaml     | kubectl apply --namespace c8-labs-32 -f -
 
 # Update health check endpoints as noted in Known Issue (1) below.
 # this is required for External LB IP address to be issued by GCE.

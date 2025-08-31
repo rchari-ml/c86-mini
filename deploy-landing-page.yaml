@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nginx-static-web-app
-  namespace: c8-labs-32
+  namespace: ${UNAMESPACE}
 spec:
   replicas: 1
   selector:
@@ -37,7 +37,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: nginx-landing-page-service
-  namespace: c8-labs-32
+  namespace: ${UNAMESPACE}
 spec:
   selector:
     app: nginx-static-web-app

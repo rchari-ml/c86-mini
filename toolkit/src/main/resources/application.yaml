@@ -27,10 +27,10 @@ camunda:
     auth:
       client-id: zeebe
       client-secret: ${ZEEBE_TOKEN_SECRET}
-      token-url: https://c8-labs-32.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token
+      token-url: https://${UNAMESPACE}.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token
     zeebe:
       enabled: true
-      grpc-address: http://c8-labs-32-zeebe-gateway:26500
+      grpc-address: http://${UNAMESPACE}-zeebe-gateway:26500
       prefer-rest-over-grpc: false
       audience: zeebe
       # using TLS JKS in the deploymenet - see deploy-worker-toolkit yaml file

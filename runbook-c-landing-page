@@ -14,7 +14,8 @@ docker push                   asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo/to
 
 #################
 # Lets come back to the home folder and run deploy nginx static landing page to GKE
-kubectl apply -f deploy-landing-page.yaml -n c8-labs-32
+envsubst '${UNAMESPACE}' < deploy-landing-page.yaml  | kubectl apply -f -
+
 
 kubectl describe service nginx-landing-page-service -n c8-labs-32
 
