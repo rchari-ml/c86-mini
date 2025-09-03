@@ -3,7 +3,8 @@ cd toolkit
 mvn clean package -DskipTests
 
 UNAMESPACE=${UNAMESPACE}
-IMAGE_NAME=toolkit-$UNAMESPACE
+# Image name can be made dynamic by replacing app with namespace name -> toolkit-$UNAMESPACE
+IMAGE_NAME=toolkit-app
 REGISTRY=asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo
 
 

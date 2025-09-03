@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: toolkit-app
-        image: asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo/toolkit-${UNAMESPACE}:v1
+        image: asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo/toolkit-app:v1
         imagePullPolicy: Always
         ports:
         - containerPort: 9010

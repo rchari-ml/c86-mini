@@ -41,7 +41,7 @@ gcloud beta container --project "c8-labs" clusters create "c8-labs-sravana" \
   --disk-type "pd-standard" --disk-size "50" --enable-autoscaling \
   --metadata disable-legacy-endpoints=true \
   --node-locations=asia-south2-a,asia-south2-b,asia-south2-c \
-  --spot --num-nodes=1 --total-min-nodes=1 --total-max-nodes=12 \
+  --spot --num-nodes=1 --total-min-nodes=1 --total-max-nodes=24 \
   --logging=SYSTEM,WORKLOAD \
   --monitoring=SYSTEM \
   --enable-private-nodes --enable-ip-alias --network "projects/c8-labs/global/networks/default" \
@@ -64,37 +64,8 @@ gcloud container clusters update c8-labs-sravana --region "asia-south2" --enable
 # After this step, you can use Project Lens UI app to view the cluster details.
 gcloud container clusters get-credentials c8-labs-sravana --region asia-south2 --project c8-labs
 
-
 ################################
-# (A.3) Create the namespace and role binding
-
-# lets create a namespace - delete if it exists
-# --namespace ${UNAMESPACE}
-kubectl delete namespace ${UNAMESPACE}
-export UNAMESPACE=c8-labs-32
-envsubst '${UNAMESPACE}' < namespace-c86-mini.yaml  | kubectl apply -f -
-
-# Add cert files as secrets
-kubectl create secret tls cf-origin-cert \
-  --cert=cert-public-c8-labs.key \
-  --key=cert-key-c8-labs.key -n ${UNAMESPACE}
-
-kubectl create secret tls cf-full-chain-origin-cert \
-  --cert=cert-fullchain-c8-labs.pem \
-  --key=cert-key-c8-labs.key -n ${UNAMESPACE}
-
-
-# Provide "namespace access" to the user
-# These are generally read-only permissions.
-export UNAME=Raghavendra.chari@gmail.com
-envsubst '${UNAME} ${UNAMESPACE}' < role-viewer-binding.yaml  | kubectl apply -f -
-
-# Whereas these are "developer" permissions.
-envsubst '${UNAME} ${UNAMESPACE}' < role-developer-binding.yaml  | kubectl apply -f -
-
-
-################################
-# (A.4) Ngnix Ingress Controller - common for the cluster 
+# (A.3) Ngnix Ingress Controller - common for the cluster 
 #     Normally shared with all namespaces 
 
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
@@ -102,8 +73,8 @@ helm repo update
 
 # Install nginx controller.
 kubectl create namespace c8-labs-ingress-nginx
-kubectl create secret generic custom-ca --from-file=ca.crt=./cert-origin_ca_rsa_root.pem -n c8-labs-ingress-nginx
-kubectl create secret generic custom-ca --from-file=ca.crt=./cert-origin_ca_rsa_root.pem -n ${UNAMESPACE}
+kubectl create secret generic custom-ca --from-file=ca.crt=./cert-main-origin_ca_rsa_root.pem -n c8-labs-ingress-nginx
+
 helm install nginx-ingress ingress-nginx/ingress-nginx --namespace c8-labs-ingress-nginx   \
   --set controller.config.enable-http2="true" \
   --set controller.service.enableHttp=false \
@@ -112,6 +83,18 @@ helm install nginx-ingress ingress-nginx/ingress-nginx --namespace c8-labs-ingre
   --set-string controller.config.proxy-buffers="4 64K" \
   --set-string controller.config.proxy-busy-buffers-size="128K" \
   -f values-nginx.yaml
+
+# add initial set of certificates to nginx ingress controller
+kubectl create secret generic c8-labs-init-certs \
+  --from-file=cert-public-c8-labs.key=./cert-main-public-c8-labs.key \
+  --from-file=cert-key-c8-labs.key=./cert-main-key-c8-labs.key \
+  --from-file=cert-origin_ca_rsa_root.pem=./cert-main-origin_ca_rsa_root.pem \
+  --from-file=cert-fullchain-c8-labs.pem=./cert-main-fullchain-c8-labs.pem \
+  --from-file=cert0.pem=./cert0-main.pem \
+  --from-file=cert1.pem=./cert1-main.pem \
+  --from-file=cert2.pem=./cert2-main.pem \
+  -n c8-labs-ingress-nginx
+
 
 # this is optional. nothing tangible in the yaml file
 helm upgrade nginx-ingress ingress-nginx/ingress-nginx -f values-nginx.yaml --namespace c8-labs-ingress-nginx  
@@ -125,6 +108,26 @@ kubectl rollout restart deployment nginx-ingress-ingress-nginx-controller -n c8-
 # [with right pod name] Check the status of the ingress controller pod - look for any config errors 
 kubectl describe pod nginx-ingress-ingress-nginx-controller-75fc9f4654-68d5x -n ${UNAMESPACE}
 
+
+################################
+# (A.4) Create the namespace and role binding
+#
+# lets create a namespace - delete if it exists
+# --namespace ${UNAMESPACE}
+kubectl delete namespace ${UNAMESPACE}
+export UNAMESPACE=c8-labs-32
+envsubst '${UNAMESPACE}' < namespace-c86-mini.yaml  | kubectl apply -f -
+
+
+# Provide "namespace access" to the user
+# These are generally read-only permissions.
+export UNAME=Raghavendra.chari@gmail.com
+envsubst '${UNAME} ${UNAMESPACE}' < role-viewer-binding.yaml  | kubectl apply -f -
+
+# Whereas these are "developer" permissions.
+envsubst '${UNAME} ${UNAMESPACE}' < role-developer-binding.yaml  | kubectl apply -f -
+
+
 # End of this part of runboook
 ########
 
@@ -136,10 +139,10 @@ gcloud container node-pools create node-pool-swati-v2 \
         --disk-type=pd-standard \
         --disk-size=50 \
         --enable-autoscaling \
-        --num-nodes=1 --min-nodes=1 --max-nodes=4  \
+        --spot --num-nodes=1 --total-min-nodes=1 --total-max-nodes=24 \
         --region asia-south2 \
         --node-locations=asia-south2-a,asia-south2-b,asia-south2-c \
-        --spot --image-type=UBUNTU_CONTAINERD
+        --image-type="COS_CONTAINERD"
 
 # Cluster optimize utilization profile 
 # This is optional, but recommended to optimize the cluster utilization.

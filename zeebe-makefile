@@ -2,6 +2,35 @@
 #
 #
 ####################
+# Part 0. Let's download the certs from k8s secret
+####################
+# 0.a. Four certs are download via these commands
+# cert-public-c8-labs.key (public key)
+kubectl get secret c8-labs-init-certs -n c8-labs-ingress-nginx  -o jsonpath='{.data.cert-public-c8-labs\.key}' | base64 -d > cert-public-c8-labs.key
+
+# cert-key-c8-labs.key (privae key)
+kubectl get secret c8-labs-init-certs -n c8-labs-ingress-nginx  -o jsonpath='{.data.cert-key-c8-labs\.key}' | base64 -d > cert-key-c8-labs.key
+
+# cert-origin_ca_rsa_root.pem
+kubectl get secret c8-labs-init-certs -n c8-labs-ingress-nginx -o jsonpath='{.data.cert-origin_ca_rsa_root\.pem}' | base64 -d > cert-origin_ca_rsa_root.pem
+
+# cert-fullchain-c8-labs.pem
+kubectl get secret c8-labs-init-certs -n c8-labs-ingress-nginx  -o jsonpath='{.data.cert-fullchain-c8-labs\.pem}' | base64 -d > cert-fullchain-c8-labs.pem
+
+# cert0.pem cert1.pem cert2.pem
+kubectl get secret c8-labs-init-certs -n c8-labs-ingress-nginx  -o jsonpath='{.data.cert0\.pem}' | base64 -d > cert0.pem
+kubectl get secret c8-labs-init-certs -n c8-labs-ingress-nginx  -o jsonpath='{.data.cert1\.pem}' | base64 -d > cert1.pem
+kubectl get secret c8-labs-init-certs -n c8-labs-ingress-nginx  -o jsonpath='{.data.cert2\.pem}' | base64 -d > cert2.pem
+
+
+kubectl create secret generic custom-ca --from-file=ca.crt=./cert-origin_ca_rsa_root.pem -n ${UNAMESPACE}
+
+# Add cert files as secrets
+kubectl create secret tls cf-origin-cert  --cert=cert-public-c8-labs.key   --key=cert-key-c8-labs.key -n ${UNAMESPACE}
+kubectl create secret tls cf-full-chain-origin-cert  --cert=cert-fullchain-c8-labs.pem --key=cert-key-c8-labs.key -n ${UNAMESPACE}
+
+
+####################
 # Part 1. Prepare env for Zeebe
 ####################
 # 1.a. Generate a pkcs8 key from current private key
@@ -32,9 +61,11 @@ kubectl create secret tls ${UNAMESPACE}-zeebe-rest-tls -n ${UNAMESPACE} --cert=c
 ####################
 # Part 2. Prepare env for Toolkit app
 ####################
+
+# Instead of copy command, lets create a new jks file for toolkit app. See next two command lines below.
 cp ${UNAMESPACE}-zeebe.jks  ${UNAMESPACE}-zeebe-toolkit.jks
 
-# 5. Toolkit app requires a key store, that includes leaft cert, intermediate cert and root cert.
+# 6. Toolkit app requires a key store, that includes leaft cert, intermediate cert and root cert.
 # Make sure three files are in the current folder. See the instructions in runbook-e-deployment bpmn.
 keytool -importcert -trustcacerts -alias server-cert        -file cert0.pem -keystore ${UNAMESPACE}-zeebe-toolkit.jks -storepass changeit --noprompt
 keytool -importcert -trustcacerts -alias intermediate-cert  -file cert1.pem -keystore ${UNAMESPACE}-zeebe-toolkit.jks -storepass changeit --noprompt
@@ -45,20 +76,25 @@ keytool -importcert -alias ml-ca -file cert-origin_ca_rsa_root.pem -keystore ${U
 
 kubectl create secret generic ${UNAMESPACE}-zeebe-toolkit-jks  --from-file=${UNAMESPACE}-zeebe-toolkit.jks   -n ${UNAMESPACE}
 
+# Debug any issue with toolkit ca cert.
+#kubectl get secret ${UNAMESPACE}-zeebe-toolkit-jks -n ${UNAMESPACE}  -o jsonpath='{.data.c8-labs-32-zeebe-toolkit\.jks}' | base64 -d > ${UNAMESPACE}-zeebe-toolkit.jks
+#keytool -exportcert   -alias ml-ca   -keystore ml-toolkit.jks   -rfc   -file ml-ca.crt
+
+
 ####################
 # Part 3. Prepare env for keycloak
 ####################
-# 6.a. keycloak config - public cert and associated key
+# 7.a. keycloak config - public cert and associated key
 kubectl create secret generic keycloak-certificates-tls-secret  --from-file=./cert-public-c8-labs.key  --from-file=./cert-key-c8-labs.key -n ${UNAMESPACE}
 
-# 6.b. keycloak config - prepare jks with two steps ->> keycloak-keystore.jks
+# 7.b. keycloak config - prepare jks with two steps ->> keycloak-keystore.jks
 openssl pkcs12 -export -in ./cert-public-c8-labs.key -inkey ./cert-key-c8-labs.key -out keycloak-keystore.p12 -name keycloak -CAfile cert-origin_ca_rsa_root.pem  -caname root -password pass:changeit 
 keytool -importkeystore -destkeystore keycloak-keystore.jks -srckeystore keycloak-keystore.p12 -srcstoretype pkcs12 -alias keycloak -storepass changeit -srcstorepass changeit --noprompt
 
-# 6.c. lets create trust store ->> keycloak-truststore.jks
+# 7.c. lets create trust store ->> keycloak-truststore.jks
 keytool -importcert -alias ml-ca -file cert-origin_ca_rsa_root.pem -keystore keycloak-truststore.jks -storepass changeit -noprompt
 
-# 6.d. lets create a secret with keystore and truststore. along with respetive store password
+# 7.d. lets create a secret with keystore and truststore. along with respetive store password
 kubectl create secret generic keycloak-jks-truststore-secret --from-file=keycloak.keystore.jks=./keycloak-keystore.jks --from-file=keycloak.truststore.jks=./keycloak-truststore.jks   --from-file=tls.crt=./cert-public-c8-labs.key  --from-file=tls.key=./cert-key-c8-labs.key  -n ${UNAMESPACE}
 # --from-literal=keystore-password='changeit' --from-literal=truststore-password='changeit'
 
@@ -66,10 +102,11 @@ kubectl create secret generic keycloak-jks-truststore-secret --from-file=keycloa
 ####################
 # Part 4. Prepare env for console
 ####################
-# 7. console config
+# 8. console config
 kubectl create secret generic console-certificates-tls-secret  --from-file=./cert-public-c8-labs.key  --from-file=./cert-key-c8-labs.key -n ${UNAMESPACE}
 
 
 # Cleanup at the end
 rm -f ${UNAMESPACE}-zeebe.p12  ${UNAMESPACE}-zeebe.jks  ./${UNAMESPACE}-zeebe-key-pkcs8.pem ./${UNAMESPACE}-zeebe-toolkit.jks
 rm -f keycloak-keystore.jks keycloak-keystore.p12 keycloak-truststore.jks
+rm -f ${UNAMESPACE}-zeebe-toolkit.p12
