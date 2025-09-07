@@ -2,12 +2,14 @@
 
 docker pull "docker.elastic.co/elasticsearch/elasticsearch:8.5.1"
 
+### add this "MSYS_NO_PATHCONV=1 " to the line below for Windows OS only
 docker run --name elastic-helm-charts-certs -i -w /tmp \
 		docker.elastic.co/elasticsearch/elasticsearch:8.5.1 \
 		/bin/sh -c " \
 			elasticsearch-certutil ca --out /tmp/elastic-stack-ca.p12 --pass '' && \
 			elasticsearch-certutil cert --name elasticsearch-master --dns elasticsearch-master,elasticsearch-master.${UNAMESPACE}.svc.cluster.local --ca /tmp/elastic-stack-ca.p12 --pass '' --ca-pass '' --out /tmp/elastic-certificates.p12"
 
+### add this "MSYS_NO_PATHCONV=1 " to the line below for Windows OS only
 docker cp elastic-helm-charts-certs:/tmp/elastic-certificates.p12 ./
 
 docker rm -f elastic-helm-charts-certs

@@ -32,3 +32,6 @@ ml-toolkit.jks
 cert0-main.pem
 cert1-main.pem
 cert2-main.pem
+participants-config-data-j.csv
+policy.yaml
+onboard.sh

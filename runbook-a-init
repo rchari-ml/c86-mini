@@ -23,7 +23,10 @@ gcloud projects add-iam-policy-binding c8-labs --member="user:${UNAME}" --role="
 gcloud projects add-iam-policy-binding c8-labs --member="user:${UNAME}" --role="roles/viewer"
 
 gcloud projects add-iam-policy-binding c8-labs --member="user:${UNAME}" --role="roles/container.developer"
-gcloud projects add-iam-policy-binding c8-labs --member="user:${UNAME}" --role="roles/artifactregistry.writer"
+gcloud projects add-iam-policy-binding c8-labs --member="user:${UNAME}" --role="roles/artifactregistry.reader"
+
+# writer permission not required as we are using common artifact registry for all namespaces
+#gcloud projects add-iam-policy-binding c8-labs --member="user:${UNAME}" --role="roles/artifactregistry.writer"
 
 ################################
 # (A.2) Create the cluster
@@ -36,7 +39,7 @@ gcloud compute networks subnets update default \
 
 gcloud beta container --project "c8-labs" clusters create "c8-labs-sravana" \
   --region "asia-south2"  --no-enable-basic-auth \
-  --cluster-version "1.33.2-gke.1240000" --release-channel "regular" \
+  --cluster-version "1.33.4-gke.1036000" --release-channel "regular" \
   --machine-type "n2-standard-4"  --image-type="COS_CONTAINERD"  \
   --disk-type "pd-standard" --disk-size "50" --enable-autoscaling \
   --metadata disable-legacy-endpoints=true \
