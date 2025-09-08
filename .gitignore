@@ -34,4 +34,6 @@ cert1-main.pem
 cert2-main.pem
 participants-config-data-j.csv
 policy.yaml
-onboard.sh
+onboard-iam.sh
+onboard-ns.sh
+onboard-cf.sh
