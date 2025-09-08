@@ -79,8 +79,8 @@ spec:
                 name: ${UNAMESPACE}-identity
                 port:
                   number: 80
-          - path: /connectors/.*
-            pathType: ImplementationSpecific
+          - path: /connectors
+            pathType: Prefix
             backend:
               service:
                 name: ${UNAMESPACE}-connectors
