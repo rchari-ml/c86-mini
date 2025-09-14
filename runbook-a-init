@@ -93,9 +93,9 @@ kubectl create secret generic c8-labs-init-certs \
   --from-file=cert-key-c8-labs.key=./cert-main-key-c8-labs.key \
   --from-file=cert-origin_ca_rsa_root.pem=./cert-main-origin_ca_rsa_root.pem \
   --from-file=cert-fullchain-c8-labs.pem=./cert-main-fullchain-c8-labs.pem \
-  --from-file=cert0.pem=./cert0-main.pem \
+  --from-file=cert0.pem=./cert-main-public-c8-labs.key \
   --from-file=cert1.pem=./cert1-main.pem \
-  --from-file=cert2.pem=./cert2-main.pem \
+  --from-file=cert2.pem=./cert-main-origin_ca_rsa_root.pem \
   -n c8-labs-ingress-nginx
 
 
