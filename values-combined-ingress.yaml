@@ -197,7 +197,7 @@ operate:
       cpu: "100m"
       memory: "512M"
     limits:
-      cpu: "250m"
+      cpu: "200m"
       memory: "1Gi"
 
 optimize:
@@ -216,7 +216,7 @@ optimize:
       cpu: "100m"
       memory: "1Gi"
     limits:
-      cpu: "250m"
+      cpu: "200m"
       memory: "1Gi"
 
 tasklist:
@@ -237,10 +237,10 @@ tasklist:
       - name: registry-docker-hub
   resources:
     requests:
-      cpu: "500m"
+      cpu: "200m"
       memory: "1Gi"
     limits:
-      cpu: "750m"
+      cpu: "400m"
       memory: "1Gi"
   #extraVolumes:
   #  - name: tasklist-tls
@@ -304,11 +304,11 @@ console:
   #  #certKeyFilename: cert-public-c8-labs.key
   resources:
     requests:
-      cpu: "250m"
+      cpu: "200m"
       memory: "1Gi"
     limits:
-      cpu: "500m"
-      memory: "2Gi"
+      cpu: "400m"
+      memory: "1Gi"
   #extraVolumeMounts:
   #  - name: console-certificates-tls
   #    mountPath: /config/certs
@@ -341,7 +341,7 @@ connectors:
       cpu: "100m"
       memory: "512M"
     limits:
-      cpu: "250m"
+      cpu: "200m"
       memory: "1Gi"
   startupProbe:
     enabled: true
@@ -396,10 +396,10 @@ zeebeGateway:
   resources:
     requests:
       memory: "1Gi"
-      cpu: "250m"
+      cpu: "200m"
     limits:
       memory: "2Gi"
-      cpu: "500m"
+      cpu: "400m"
   #security:
   #  enabled: false  # true, to make it apply TLS. Also, provide cert and private key as per below.
     #certChainPath: /usr/local/zeebe/certs/tls.crt
@@ -470,10 +470,10 @@ zeebe:
 
   resources:
     requests:
-      cpu: "200m"
+      cpu: "100m"
       memory: "2Gi"
     limits:
-      cpu: "500m"
+      cpu: "200m"
       memory: "2Gi"
   #security:
   #  enabled: false # true to enable TLS
