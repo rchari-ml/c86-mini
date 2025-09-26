@@ -39,12 +39,12 @@ gcloud compute networks subnets update default \
 
 gcloud beta container --project "c8-labs" clusters create "c8-labs-sravana" \
   --region "asia-south2"  --no-enable-basic-auth \
-  --cluster-version "1.33.4-gke.1036000" --release-channel "regular" \
+  --cluster-version "1.33.5-gke.1080000" --release-channel "regular" \
   --machine-type "n2-standard-4"  --image-type="COS_CONTAINERD"  \
   --disk-type "pd-standard" --disk-size "50" --enable-autoscaling \
   --metadata disable-legacy-endpoints=true \
   --node-locations=asia-south2-a,asia-south2-b,asia-south2-c \
-  --spot --num-nodes=1 --total-min-nodes=1 --total-max-nodes=30 \
+  --spot --num-nodes=1 --total-min-nodes=1 --total-max-nodes=50 \
   --logging=SYSTEM,WORKLOAD \
   --monitoring=SYSTEM \
   --enable-private-nodes --enable-ip-alias --network "projects/c8-labs/global/networks/default" \
