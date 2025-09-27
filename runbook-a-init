@@ -138,11 +138,11 @@ envsubst '${UNAME} ${UNAMESPACE}' < role-developer-binding.yaml  | kubectl apply
 # create node pool with spot (optional - to add more capacity as necessary)
 gcloud container node-pools create node-pool-swati-v2 \
         --cluster c8-labs-sravana \
-        --machine-type n2-standard-4 \
+        --machine-type n2-standard-8 \
         --disk-type=pd-standard \
         --disk-size=50 \
         --enable-autoscaling \
-        --spot --num-nodes=1 --total-min-nodes=1 --total-max-nodes=30 \
+        --spot --num-nodes=1 --total-min-nodes=1 --total-max-nodes=25 \
         --region asia-south2 \
         --node-locations=asia-south2-a,asia-south2-b,asia-south2-c \
         --image-type="COS_CONTAINERD"
