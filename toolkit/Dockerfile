@@ -1,4 +1,5 @@
-FROM openjdk:21-jdk-slim
+FROM eclipse-temurin:21-jdk
+## FROM openjdk:21-slim
 
 # Install some prerequisites that will help debug network issues
 # Plus, copy the application JAR file into the container
