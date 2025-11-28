@@ -38,3 +38,4 @@ onboard-iam.sh
 onboard-ns.sh
 onboard-cf.sh
 offboard-cf.sh
+offboard-user.sh
