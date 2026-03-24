@@ -14,8 +14,13 @@ docker push                   asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo/to
 
 #################
 # Lets come back to the home folder and run deploy nginx static landing page to GKE
-envsubst '${UNAMESPACE}' < deploy-landing-page.yaml  | kubectl apply -f -
+export WEBPAGEAPPURL=asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo/toolkit-c8-labs-nginx-static:v1
+envsubst '${UNAMESPACE} ${WEBPAGEAPPURL}' < deploy-landing-page.yaml  | kubectl apply -f -
 
+
+# AWS platform
+export WEBPAGEAPPURL=863183417417.dkr.ecr.ap-south-2.amazonaws.com/toolkit-c8-labs-nginx-static:v1
+envsubst '${UNAMESPACE} ${WEBPAGEAPPURL}' < deploy-landing-page.yaml  | kubectl apply -f -
 
 kubectl describe service nginx-landing-page-service -n ${UNAMESPACE}
 

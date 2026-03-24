@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: nginx-static-web-app
-        image: asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo/toolkit-c8-labs-nginx-static:v1
+        image: ${WEBPAGEAPPURL}
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 80
