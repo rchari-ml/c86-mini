@@ -1,0 +1,46 @@
+# Check elastic search endpoint
+# Open Project Lens
+# Start a new terminal on Pod "nginx-ingress-nginx-controller"
+# Run below command.
+curl -v -k -u elastic:makelabs --cacert /etc/nginx/custom-ca/ca.crt  https://elasticsearch-master.c8-labs-hampi.svc.cluster.local:9200/
+###################
+
+# Check keycloak app conf and endpoint
+# config file for Keycloak pod
+cat /opt/bitnami/keycloak/conf/keycloak.conf
+
+
+curl -kv http://localhost:8080/auth/admin/master/console/
+curl -kv https://localhost:443/auth/admin/master/console/
+curl -kv https://${UNAMESPACE}.makelabs.in:443/auth/admin/master/console/
+
+###################
+
+kubectl apply --server-side -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.3.0/standard-install.yaml
+
+
+# Version 8.9 aplha 5 work in progress
+UNAMESPACE=c8-labs-hampi envsubst < values-combined-ingress-8-9.yaml > values-combined-ingress.my-ns.yaml
+UNAMESPACE=c8-labs-hampi envsubst < values-connectors-env.yaml   > values-connectors-env.my-ns.yaml
+helm install c8-labs-hampi camunda/camunda-platform \
+  -f values-combined-ingress.my-ns.yaml \
+  -f values-connectors-env.my-ns.yaml \
+  --set zeebe.prometheusServiceMonitor.enabled=true \
+  --version 14.0.0-alpha5 --namespace c8-labs-hampi
+
+helm uninstall c8-labs-hampi camunda/camunda-platform  --namespace c8-labs-hampi
+
+helm uninstall elasticsearch --namespace c8-labs-hampi
+
+
+# ngnix -ingress-controller pod: 
+curl -v -k -u elastic:makelabs --cacert /etc/nginx/custom-ca/ca.crt  https://elasticsearch-master.c8-labs-hampi.svc.cluster.local:9200/
+curl -v -k -u elastic:makelabs --cacert /etc/nginx/custom-ca/ca.crt  https://elasticsearch-master.c8-labs-hampi.svc.cluster.local:9200/_cluster/health
+
+# How to fetch a new oidc token
+curl -X POST "https://c8-labs-hampi.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "grant_type=client_credentials" \
+  -d "client_id=zeebe" \
+  -d "client_secret="value-goes-here-keep-it-secret"
+  
