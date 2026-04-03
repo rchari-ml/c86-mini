@@ -32,6 +32,12 @@ helm uninstall c8-labs-hampi camunda/camunda-platform  --namespace c8-labs-hampi
 
 helm uninstall elasticsearch --namespace c8-labs-hampi
 
+helm upgrade c8-labs-hampi camunda/camunda-platform \
+  -f values-combined-ingress.my-ns.yaml \
+  -f values-connectors-env.my-ns.yaml \
+  --set zeebe.prometheusServiceMonitor.enabled=true \
+  --version 14.0.0-alpha5 --namespace c8-labs-hampi
+
 
 # ngnix -ingress-controller pod: 
 curl -v -k -u elastic:makelabs --cacert /etc/nginx/custom-ca/ca.crt  https://elasticsearch-master.c8-labs-hampi.svc.cluster.local:9200/
@@ -44,3 +50,39 @@ curl -X POST "https://c8-labs-hampi.makelabs.in/auth/realms/camunda-platform/pro
   -d "client_id=zeebe" \
   -d "client_secret="value-goes-here-keep-it-secret"
   
+##-----
+# Random Notes and commands
+
+
+zbctl deploy --authzUrl=https://${UNAMESPACE}.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token \
+      --clientId=orchestration \
+      --clientSecret=$ZEEBE_SECRET \
+      --audience=zeebe \
+      --address "${UNAMESPACE}-zeebe-gateway.makelabs.in:443" \
+      --insecure=false \
+       lead-to-opportunity-with-dmn.bpmn --certPath ../cert-origin_ca_rsa_root.pem 
+
+
+
+ CAMUNDA_CLIENT_AUTH_METHOD=oidc
+ CAMUNDA_CLIENT_AUTH_CLIENTID=xxx
+ CAMUNDA_CLIENT_AUTH_CLIENTSECRET=xxx
+ 
+ CAMUNDA_CLIENT_AUTH_AUDIENCE=<your client id of Orchestration Cluster or configured audience>
+ CAMUNDA_CLIENT_AUTH_SCOPE=<your client id of Orchestration Cluster or configured audience>
+
+
+export ACCESS_TOKEN=$(curl --location --request POST "https://${UNAMESPACE}.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token" \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode "client_id=orchestration" \
+--data-urlencode "client_secret=${ZEEBE_SECRET}" \
+--data-urlencode 'grant_type=client_credentials' | jq -r ".access_token")
+
+curl -v -X POST "https://${UNAMESPACE}-zeebe-gateway.makelabs.in/v2/deployments" \
+  -H "Authorization: Bearer ${ACCESS_TOKEN}" \
+  -H "Accept: application/json" \
+  -F "resources=@lead-to-opportunity-with-dmn.bpmn" --cacert ../cert-origin_ca_rsa_root.pem 
+
+  * Connection #0 to host c8-labs-hampi-zeebe-gateway.makelabs.in left intact
+{"type":"about:blank","title":"Internal Server Error","status":500,"detail":"An error occurred while attempting to decode the Jwt: Couldn't retrieve JWK set from URL: (certificate_unknown) PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target","instance":"/v2/deployments"}
+

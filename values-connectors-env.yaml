@@ -37,41 +37,50 @@ connectors:
   
   configuration: |
     server:
+      port: 8080
       servlet:
-        context-path: /connectors
+        context-path: "/connectors"
+
     management:
+      context-path: /actuator
       endpoints:
         web:
           exposure:
-            include: health,info
+            include: metrics,health,prometheus
       endpoint:
         health:
-          probes:
-            enabled: true
-      health:
-        livenessState:
-          enabled: true
-        readinessState:
-          enabled: true
+          show-details: always
+          show-components: always
+          group:
+            readiness:
+              include:
+              - processDefinitionImport
+              - zeebeClient
+
     camunda:
       client:
-        mode: self-managed
+        rest-address: http://c8-labs-hampi-zeebe-gateway:8080/
+        grpc-address: http://c8-labs-hampi-zeebe-gateway:26500
+        worker:
+          defaults:
+            max-jobs-active: 32
+            stream-enabled: true
+        mode: selfManaged
         auth:
-          client-id: zeebe
-          client-secret: makelabs
-          issuer: https://${UNAMESPACE}.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token          
-          token-url: https://${UNAMESPACE}.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token          
-        zeebe:
-          grpc-address: https://${UNAMESPACE}-zeebe-gateway.makelabs.in:443
-          rest-address: https://${UNAMESPACE}.makelabs.in:443
-          audience: zeebe-api
-          security:
-            plaintext: false
-    operate:
-      client:
-        profile: oidc
-        base-url: https://${UNAMESPACE}.makelabs.in:443/operate
-        auth-url: https://${UNAMESPACE}.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token
-        audience: operate-api
-        client-id: connectors
-        client-secret: makelabs
+          token-url: https://c8-labs-hampi.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token
+          client-id: "connectors"
+          client-secret: ${VALUES_CAMUNDA_IDENTITY_CLIENT_SECRET}
+          audience: "orchestration-api"
+      connector:
+        headless:
+          service-url: "c8-labs-hampi-connectors-headless"
+        webhook:
+          enabled: true
+        polling:
+          enabled: true
+        agenticai:
+          enabled: true
+
+    logging:
+      level:
+        io.camunda.connector: INFO

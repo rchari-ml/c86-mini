@@ -77,3 +77,39 @@ spec:
                 name: ${UNAMESPACE}-zeebe-gateway
                 port:
                   number: 26500
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ${UNAMESPACE}-zeebe-gateway-http
+  namespace: ${UNAMESPACE}
+  labels:
+    app: camunda-platform
+    app.kubernetes.io/instance: ${UNAMESPACE}
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: camunda-platform
+    app.kubernetes.io/part-of: camunda-platform
+    helm.sh/chart: camunda-platform-12.0.0-alpha4      
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    meta.helm.sh/release-namespace: ${UNAMESPACE}
+    kubernetes.io/ingress.allow-http: "false"  # on ingress, we only allow secure line. 
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    #networking.gke.io/managed-certificates: c8-zeebe-gw-cert # In case GKE managed cert
+spec:
+  tls:
+    - hosts:
+        - ${UNAMESPACE}-zeebe-gateway.makelabs.in
+      secretName: cf-full-chain-origin-cert # cf-origin-cert
+  ingressClassName: "nginx"
+  rules:
+    - host: ${UNAMESPACE}-zeebe-gateway.makelabs.in
+      http:
+        paths:
+          - path: /v2
+            pathType: Prefix
+            backend:
+              service:
+                name: ${UNAMESPACE}-zeebe-gateway
+                port:
+                  number: 8080

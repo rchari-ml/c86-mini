@@ -45,7 +45,7 @@ global:
 
   identity:
     keycloak:
-      internal: true # TODO - check for this value
+      internal: true
       url:
         protocol: http # was https
         host:  "${UNAMESPACE}-keycloak" # was "${UNAMESPACE}.makelabs.in"
@@ -146,14 +146,6 @@ global:
         secret:
           existingSecret: identity-secret-for-components
           existingSecretKey: console-secret
-
-      #Note: This block is not required. Marked for deletion by hjrc.
-      #zeebe:
-      #  clientId: zeebe
-      #  audience: zeebe-api
-      #  secret:
-      #    existingSecret: identity-secret-for-components
-      #    existingSecretKey: zeebe-secret
 
 
 ############################################
@@ -339,6 +331,8 @@ orchestration:
   env:
     - name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_CLASSNAME
       value: io.camunda.zeebe.exporter.ElasticsearchExporter
+    - name: ZEEBE_GATEWAY_SECURITY_AUTHENTICATION_IDENTITY_SKIP_TLS_VERIFY
+      value: "true"
 
   profiles:
     broker: true
@@ -368,7 +362,7 @@ orchestration:
         ## @param orchestration.security.authentication.oidc.groupsClaim can be used to set group claim.
         groupsClaim: groups
         ## @param orchestration.security.authentication.oidc.audience defines the audience, which is used by Orchestration Cluster.
-        audience: zeebe-api
+        audience: orchestration-api
         ## @param orchestration.security.authentication.oidc.scope defines a list of scopes to request in the OIDC token. If not set, it will use the application defaults.
         scope:
           - openid
@@ -380,8 +374,9 @@ orchestration:
         backwardsCompatibleAudiences:
           - operate
           - tasklist
+          - zeebe-api
         ## @param orchestration.security.authentication.oidc.clientId defines the client id, which is used by Orchestration Cluster in authentication flows.
-        clientId: zeebe
+        clientId: orchestration
         ## @param orchestration.security.authentication.oidc.redirectUrl defines the root (or redirect) URL, which is used by Keycloak to access Tasklist.
         # Should be publicly accessible, the default value works if a port-forward to Orchestration Cluster is created to 8080.
         # Can be overwritten if ingress is in use and an external IP is available.
@@ -534,14 +529,14 @@ orchestration:
       enabled: true
       external: false
       className: nginx
-      host: ${UNAMESPACE}-zeebe-gateway.makelabs.in
+      host: ${UNAMESPACE}-zeebe-gateway # TODO: was ${UNAMESPACE}-zeebe-gateway.makelabs.in
       annotations:
         ingress.kubernetes.io/rewrite-target: "/"
         nginx.ingress.kubernetes.io/ssl-redirect: "false"
         nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
         nginx.ingress.kubernetes.io/proxy-buffer-size: "128k" 
       tls:
-        enabled: true
+        enabled: false # TODO : disable tls grpc
         secretName: cf-full-chain-origin-cert
   ## @param orchestration.contextPath can be used to make Orchestration Cluster web application works on a custom sub-path. This is mainly used to run Camunda web applications under a single domain.
   contextPath: "/"
@@ -720,9 +715,9 @@ identityKeycloak:
       existingSecret: identity-secret-for-components
       secretKeys:
         ## @param identityKeycloak.postgresql.auth.secretKeys.adminPasswordKey defines the key within the existing secret object for PostgreSQL admin.
-        adminPasswordKey: "postgres-password"
+        adminPasswordKey: "postgres-admin-password"
         ## @param identityKeycloak.postgresql.auth.secretKeys.userPasswordKey defines the key within the existing secret object for PostgreSQL user.
-        userPasswordKey: "password"      
+        userPasswordKey: "postgres-user-password"
     existingSecretKey: admin-password
 
 
@@ -780,7 +775,7 @@ connectors:
         ## @param connectors.security.authentication.oidc.clientId defines the client id, which is used by Connectors in authentication flows.
         clientId: connectors
         ## @param connectors.security.authentication.oidc.tokenScope defines the token scope, which is used by Connectors.
-        tokenScope: "email profile operate"
+        tokenScope: "" # TODO was "email profile operate"
         ## @extra connectors.security.authentication.oidc.secret configuration to provide the connectors client secret.
         secret:
           existingSecret: identity-secret-for-components
@@ -789,15 +784,15 @@ connectors:
     - name: CAMUNDA_CLIENT_MODE
       value: self-managed
     - name: CAMUNDA_CLIENT_GRPCADDRESS
-      value: "https://${UNAMESPACE}-zeebe-gateway.makelabs.in"
+      value: "http://${UNAMESPACE}-zeebe-gateway:26500"
     - name: CAMUNDA_CLIENT_RESTADDRESS
-      value: "https://${UNAMESPACE}.makelabs.in"
+      value: "http://${UNAMESPACE}-zeebe-gateway:8080"
     - name: CAMUNDA_CLIENT_AUTH_TOKENURL
       value: "https://${UNAMESPACE}.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token"
     - name: CAMUNDA_CLIENT_AUTH_AUDIENCE
-      value: operate
+      value: orchestration-api
     - name: CAMUNDA_CLIENT_AUTH_SCOPE
-      value: connectors
+      value: "orchestration"
 
 
 ####################

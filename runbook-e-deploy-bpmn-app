@@ -166,4 +166,7 @@ cat cert-main-public-c8-labs.key  cert-main-origin_ca_rsa_root.pem  > cert-main-
 openssl s_client -connect ${UNAMESPACE}-zeebe-gateway.makelabs.in:443 -showcerts </dev/null > ${UNAMESPACE}-zeebe-fullchain.pem
 
 
+openssl s_client -connect c8-labs-hampi-zeebe.c8-labs-hampi-zeebe.svc.cluster.local:26500 -showcerts </dev/null
+openssl s_client -connect c8-labs-hampi-zeebe-gateway.c8-labs-hampi:26500 -showcerts </dev/null
+
 #####
