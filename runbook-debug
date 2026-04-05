@@ -86,3 +86,5 @@ curl -v -X POST "https://${UNAMESPACE}-zeebe-gateway.makelabs.in/v2/deployments"
   * Connection #0 to host c8-labs-hampi-zeebe-gateway.makelabs.in left intact
 {"type":"about:blank","title":"Internal Server Error","status":500,"detail":"An error occurred while attempting to decode the Jwt: Couldn't retrieve JWK set from URL: (certificate_unknown) PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target","instance":"/v2/deployments"}
 
+# check the certs with the domain endpoint
+openssl s_client -connect c86-mini.makelabs.in:443 -showcerts </dev/null
