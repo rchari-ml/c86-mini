@@ -160,24 +160,30 @@ console:
     path: "/"
     pathType: Prefix
   env:
-    - name: KEYCLOAK_BASE_URL
-      value: "https://c86-mini.makelabs.in/auth"
-    - name: KEYCLOAK_INTERNAL_BASE_URL
-      value: "http://camunda.makelabs.in/auth"
-    - name: CAMUNDA_CONSOLE_CONTEXT_PATH
-      value: console
-    - name: CAMUNDA_IDENTITY_CLIENT_ID
-      value: console
-    - name: CAMUNDA_IDENTITY_AUDIENCE
-      value: console
+    # hjrc - commented 5 apr 2026 due to warning
+    #- name: KEYCLOAK_BASE_URL
+    #  value: "https://c86-mini.makelabs.in/auth"
+    # hjrc - commented 5 apr 2026 due to warning
+    #- name: KEYCLOAK_INTERNAL_BASE_URL
+    #  value: "http://camunda.makelabs.in/auth"
+    # hjrc - commented 5 apr 2026 due to warning
+    #- name: CAMUNDA_CONSOLE_CONTEXT_PATH
+    #  value: console
+    # hjrc - commented 5 apr 2026 due to warning
+    #- name: CAMUNDA_IDENTITY_CLIENT_ID
+    #  value: console
+    # hjrc - commented 5 apr 2026 due to warning
+    #- name: CAMUNDA_IDENTITY_AUDIENCE
+    #  value: console
     - name: CAMUNDA_CONSOLE_CUSTOMERID
       value: makelabs-in
     - name: CAMUNDA_CONSOLE_INSTALLATIONID
       value: makelabs-in-c86-mini-deployment
     - name: CAMUNDA_CONSOLE_TELEMETRY
       value: online
-    - name: KEYCLOAK_REALM
-      value: camunda-platform
+    # hjrc - commented 5 apr 2026 due to warning
+    #- name: KEYCLOAK_REALM
+    #  value: camunda-platform
 #  resources:
 #    requests:
 #      cpu: "100m"

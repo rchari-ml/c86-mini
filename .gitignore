@@ -1,0 +1,21 @@
+*.crt
+c8*.pem
+c8*.key
+c8*.jks
+cert*.pem
+cert*.key
+AWSCLIV2.pkg
+ml*.jks
+# Ignore all .pem, .key, .crt, .jks files in the current directory and subdirectories
+offboard*.sh
+onboard*.sh
+# Ignore shell scripts related to onboarding and offboarding
+values*.my-ns.yaml
+c86*.log
+toolkit/.idea/
+toolkit*-SNAPSHOT.jar
+toolkit*-SNAPSHOT.jar.original
+toolkit/target/classes
+toolkit/target/test-classes
+toolkit/target/maven-*
+participants-config-data-j.csv
