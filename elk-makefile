@@ -31,12 +31,20 @@ kubectl create secret -n elastic generic elasticsearch-master-certs  --from-file
 keytool -delete -alias elasticsearch -keystore externaldb.jks
 keytool -import -alias elasticsearch -keystore externaldb.jks -storetype jks -file elastic-certificate.crt -storepass changeit -noprompt
 
+# import google root cert pem file into trust store. We will create using the endpoint.
+#openssl x509 -outform der -in google-roots.pem -out google-roots.crt
+#keytool -import -alias google-root-ca  -keystore externaldb.jks -storetype jks -file google-roots.crt -storepass changeit -noprompt
+openssl s_client -connect c86-mini.makelabs.in:443 -servername c86-mini.makelabs.in -showcerts  < /dev/null 2> /dev/null | sed -n '/BEGIN CERTIFICATE/,/END CERTIFICATE/p' > google-cert-chain.pem
+# Add cert full chain 
+keytool -import -alias google-full-chain  -keystore externaldb.jks -storetype jks -file google-cert-chain.pem -storepass changeit -noprompt
+
 printf "Convert to crt from cf pem and import to jks"
 openssl x509 -outform der -in ./nginx/cf-tls.pem -out ./nginx/cf-tls.crt
 keytool -import -alias camunda       -keystore externaldb.jks -storetype jks -file ./nginx/cf-tls.crt      -storepass changeit -noprompt
 
 #The jks file is needed by camunda install. Keep it in the camunda namespace
 kubectl  create secret -n c86-mini generic elastic-jks --from-file=externaldb.jks
+kubectl  create secret -n c86-mini generic camunda-elastic-jks --from-file=externaldb.jks 
 
-rm -f elastic-certificates.p12 elastic-certificate.pem elastic-certificate.crt  externaldb.jks
+rm -f elastic-certificates.p12 elastic-certificate.pem elastic-certificate.crt  externaldb.jks google-cert-chain.pem
 rm -f tls.crt ca.crt tls.key

@@ -19,3 +19,8 @@ toolkit/target/classes
 toolkit/target/test-classes
 toolkit/target/maven-*
 participants-config-data-j.csv
+google-roots.pem
+google-roots.crt
+google-cert-chain.pem
+externaldb.jks
+truststore.pem

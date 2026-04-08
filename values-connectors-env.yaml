@@ -1,15 +1,74 @@
+#####################################################################
+ #####
+#     #  ####  #    # #    # ######  ####  #####  ####  #####   ####
+#       #    # ##   # ##   # #      #    #   #   #    # #    # #
+#       #    # # #  # # #  # #####  #        #   #    # #    #  ####
+#       #    # #  # # #  # # #      #        #   #    # #####       #
+#     # #    # #   ## #   ## #      #    #   #   #    # #   #  #    #
+ #####   ####  #    # #    # ######  ####    #    ####  #    #  ####
+#####################################################################
+## @section Connectors Parameters
 connectors:
-  env:
-     - name: CAMUNDA_CONNECTOR_SECRETPROVIDER_ENVIRONMENT_PREFIX
-       value: CEP_SECRETS_
-     - name: CEP_SECRETS_CUSTOMER_APP_SECRET
-       value: do-not-use-this-app-secret-use-below-token-instead
-     - name: CEP_SECRETS_EMAIL_APP_ACCESS_TOKEN
-       valueFrom:
-         secretKeyRef:
-           name: identity-secret-for-components
-           key: cep-email-access-token
-
   image:
     pullSecrets:
       - name: registry-docker-hub
+  contextPath: "/connectors"
+  enabled: false # TODO enable when needed. Disable for testing in mini env.
+  ingress:
+    host: "c86-mini.makelabs.in"
+  replicas: 1
+  metrics:
+    prometheus: /actuator/prometheus
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "512M"
+    limits:
+      cpu: "200m"
+      memory: "1Gi"
+  startupProbe:
+    enabled: true
+    probePath: /actuator/health/readiness
+  readinessProbe:
+    enabled: true
+    probePath: /actuator/health/readiness
+  security:
+    ## Authentication configuration
+    ## @extra connectors.security.authentication
+    authentication:
+      ## @param connectors.security.authentication.method defines the authentication method which should be used. Possible values: `basic`, `oidc`, or `none`. It could be used to override `global.security.authentication.method`.
+      # In External OIDC, must resolve to "oidc" (either set here or via global.security.authentication.method).
+      # When set to "oidc", also configure oidc.clientId, audience, and secret below.
+      method: "oidc"
+      oidc:
+        ## @param connectors.security.authentication.oidc.clientId defines the client id, which is used by Connectors in authentication flows.
+        clientId: connectors
+        ## @param connectors.security.authentication.oidc.tokenScope defines the token scope, which is used by Connectors.
+        tokenScope: "" # TODO was "email profile operate"
+        ## @extra connectors.security.authentication.oidc.secret configuration to provide the connectors client secret.
+        secret:
+          existingSecret: identity-secret-for-components
+          existingSecretKey: connectors-secret
+  env:
+    - name: CAMUNDA_CLIENT_MODE
+      value: self-managed
+    - name: CAMUNDA_CLIENT_GRPCADDRESS
+      value: "http://${UNAMESPACE}-zeebe-gateway:26500"
+    - name: CAMUNDA_CLIENT_RESTADDRESS
+      value: "http://${UNAMESPACE}-zeebe-gateway:8080"
+    - name: CAMUNDA_CLIENT_AUTH_TOKENURL
+      value: "https://${UNAMESPACE}.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token"
+    - name: CAMUNDA_CLIENT_AUTH_AUDIENCE
+      value: orchestration-api
+    - name: CAMUNDA_CLIENT_AUTH_SCOPE
+      value: "orchestration"
+    - name: CAMUNDA_CONNECTOR_SECRETPROVIDER_ENVIRONMENT_PREFIX
+      value: CEP_SECRETS_
+    - name: CEP_SECRETS_CUSTOMER_APP_SECRET
+      value: do-not-use-this-app-secret-use-below-token-instead
+    - name: CEP_SECRETS_EMAIL_APP_ACCESS_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: identity-secret-for-components
+          key: cep-email-access-token
+

@@ -1,317 +1,745 @@
 global:
-  ingress:
+  config:
+    ## @param global.config.requestBodySize defines applications request body size which used for upload files.
+    requestBodySize: 10MB
+  multitenancy:
+    ## @param global.multitenancy.enabled if true, then enable multitenancy in all applicable components.
+    enabled: false
+  host: "c86-mini.makelabs.in"
+  orchestration:
     enabled: true
-    className: nginx
+  security:
+    authentication:
+       method: "oidc"
+  gateway:
+    createGatewayResource: true
+    enabled: true
+  ingress:
+    enabled: false
+    className: "nginx"
     host: "c86-mini.makelabs.in"
-#    tls:
-#      enabled: true
-#      secretName: tls-grpc-secret
-  identity:
-    auth:
-      publicIssuerUrl: "https://c86-mini.makelabs.in/auth/realms/camunda-platform"
-      operate:
-        redirectUrl: "https://c86-mini.makelabs.in/operate"
-        existingSecret:
-          name: identity-secret-for-components
-        existingSecretKey: operate-secret
-
-      tasklist:
-        redirectUrl: "https://c86-mini.makelabs.in/tasklist"
-        existingSecret:
-          name: identity-secret-for-components
-        existingSecretKey: tasklist-secret
-
-      optimize:
-        redirectUrl: "https://c86-mini.makelabs.in/optimize"
-        existingSecret:
-          name: identity-secret-for-components
-        existingSecretKey: optimize-secret
-#     web modeler is not in use at the moment.
-#      webModeler:
-#        redirectUrl: "http://camunda.makelabs.in/webmodeler"
-#        existingSecret:
-#          name: identity-secret-for-components
-
-      connectors:
-        existingSecret:
-          name: identity-secret-for-components
-        existingSecretKey: connectors-secret
-
-      console:
-        redirectUrl: "https://c86-mini.makelabs.in/console"
-        existingSecret:
-          name: identity-secret-for-components
-        existingSecretKey: console-secret
-
-      zeebe:
-        existingSecret:
-          name: identity-secret-for-components
-        existingSecretKey: zeebe-secret
-
+    tls:
+      enabled: true
+      secretName: cf-full-chain-origin-cert
+  # global.elasticsearch
   elasticsearch:
     enabled: true
     external: true
     tls:
       enabled: true
-      existingSecret: elastic-jks
+      secret:
+        existingSecret: elastic-jks
     auth:
       username: elastic
-      password: makelabs
+      secret:
+        inlineSecret: makelabs
     url:
       protocol: https
       host: elasticsearch-master.elastic.svc.cluster.local
       port: 9200
     clusterName: elasticsearch
     prefix: zeebe-record
+  identity:
+    keycloak:
+      internal: true
+      url:
+        protocol: https # was http
+        host: "c86-mini.makelabs.in" # was "c86-mini-keycloak"
+        port: 443 # was "80"
+      contextPath: "/auth"
+      realm: "/realms/camunda-platform"
+      extraVolumeMounts:
+        - name: keycloak-jks-truststore
+          mountPath: /etc/x509/https
+          readOnly: true    
+      extraVolumes:
+        - name: keycloak-jks-truststore
+          secret:
+            secretName: camunda-elastic-jks # was  keycloak-jks-truststore-secret
+      env:
+        - name: IMPORTER_KEYCLOAK_SSL_VERIFY
+          value: "false"    
+        - name: KEYCLOAK_URL
+          value: "https://c86-mini.makelabs.in/auth"
+        - name: KEYCLOAK_PROXY_ADDRESS_FORWARDING
+          value: "true"
+        - name: KEYCLOAK_FRONTEND_URL
+          value: "https://c86-mini.makelabs.in/auth"
+        - name: KC_HTTP_ENABLED
+          value: "false"
+        - name: KEYCLOAK_PROXY
+          value: "edge"
+        - name: KEYCLOAK_HOSTNAME
+          value: "c86-mini.makelabs.in"  
+        - name: KC_HOSTNAME
+          value: "c86-mini.makelabs.in"
+        - name: KC_HOSTNAME_STRICT
+          value: "false"
+        - name: KC_PROXY
+          value: "edge"
+        #- name: KC_HTTPS_CERTIFICATE_FILE
+        #  value: /etc/x509/https/tls.crt
+        #- name: KC_HTTPS_CERTIFICATE_KEY_FILE
+        #  value: /etc/x509/https/tls.key
+        #- name: KC_HTTPS_PORT
+        #  value: "8443"
+      auth:
+        adminUser: admin
+        secret:
+          existingSecret: identity-secret-for-components
+          existingSecretKey: admin-password
+    auth:
+      enabled: true
+      type: "KEYCLOAK"
+      issuerBackendUrl: "https://c86-mini.makelabs.in/auth/realms/camunda-platform"
+      publicIssuerUrl:  "https://c86-mini.makelabs.in/auth/realms/camunda-platform"
+      # Added below for TLS config
+      adminUrl: "https://c86-mini.makelabs.in/auth"
+      tokenUrl: "https://c86-mini.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token"
+      jwksUrl: "https://c86-mini.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/certs"
+      operate:
+        clientId: operate
+        audience: operate-api
+        redirectUrl: "https://c86-mini.makelabs.in/operate"
+        secret:
+          existingSecret: identity-secret-for-components
+          existingSecretKey: operate-secret
 
+      tasklist:
+        clientId: tasklist
+        audience: tasklist-api
+        redirectUrl: "https://c86-mini.makelabs.in/tasklist"
+        secret:
+          existingSecret: identity-secret-for-components
+          existingSecretKey: tasklist-secret
+
+      optimize:
+        clientId: optimize
+        audience: optimize-api
+        redirectUrl: "https://c86-mini.makelabs.in/optimize"
+        secret:
+          existingSecret: identity-secret-for-components
+          existingSecretKey: optimize-secret
+#     web modeler is not in use at the moment.
+#      webModeler:
+#        redirectUrl: "http://camunda.makelabs.in/webmodeler"
+#        existingSecret:
+#          name: identity-secret-for-components
+
+      identity:
+        clientId: camunda-identity
+        audience: camunda-identity-resource-server
+        # secret configuration does not need to be set when using Keycloak.
+        # Marked for deletion by hjrc. TODO
+        #secret:
+        #  existingSecret: identity-secret-for-components
+        #  existingSecretKey: identity-secret
+
+      console:
+        clientId: console
+        audience: console-api
+        redirectUrl: "https://c86-mini.makelabs.in/console"
+        secret:
+          existingSecret: identity-secret-for-components
+          existingSecretKey: console-secret
+
+
+############################################
+###
+ #  #####  ###### #    # ##### # ##### #   #
+ #  #    # #      ##   #   #   #   #    # #
+ #  #    # #####  # #  #   #   #   #     #
+ #  #    # #      #  # #   #   #   #     #
+ #  #    # #      #   ##   #   #   #     #
+### #####  ###### #    #   #   #   #     #
+############################################
+## @section Identity Parameters
 identity:
+  enabled: true
   image:
     pullSecrets:
       - name: registry-docker-hub
   contextPath: "/identity"
   fullURL: "https://c86-mini.makelabs.in/identity"
   firstUser:
+    enabled: true
     username: demo
-    password: makelabs
     email: demo@makelabs.in
-#    existingSecret:
-#      name: identity-secret-for-components
-#    existingSecretKey: identity-firstuser-password
-
-  keycloak:
-    extraEnvVars:
-      - name: KEYCLOAK_PROXY_ADDRESS_FORWARDING
-        value: "true"
-      - name: KEYCLOAK_FRONTEND_URL
-        value: "https://c86-mini.makelabs.in/auth"
-
-
-identityKeycloak:
-  image:
-    pullSecrets:
-      - name: registry-docker-hub
-  auth:
-    existingSecret: identity-secret-for-components
-    passwordSecretKey: admin-password
-  postgresql:
-    auth:
+    secret:
+      #inlineSecret: some-thing-very-secret
       existingSecret: identity-secret-for-components
-    existingSecretKey: admin-password
+      existingSecretKey: identity-firstuser-password
+  extraVolumeMounts:
+    - name: identity-truststore
+      mountPath: /config/jks
+      readOnly: true    
+  extraVolumes:
+    - name: identity-truststore
+      secret:
+        secretName: camunda-elastic-jks
 
-operate:
-  image:
-    pullSecrets:
-      - name: registry-docker-hub
-#  ingress:
-#    enabled: true
-  contextPath: "/operate"
-#  resources:
-#    requests:
-#      cpu: "100m"
-#      memory: "512M"
-#    limits:
-#      cpu: "250m"
-#      memory: "1Gi"
 
-optimize:
-  enabled: true
-  image:
-    pullSecrets:
-      - name: registry-docker-hub
-  contextPath: "/optimize"
-#  ingress:
-#    enabled: true
-#  resources:
-#    requests:
-#      cpu: "100m"
-#      memory: "512M"
-#    limits:
-#      cpu: "250m"
-#      memory: "1Gi"
-
-tasklist:
-#  ingress:
-#    enabled: true
-  contextPath: "/tasklist"
-  image:
-    pullSecrets:
-      - name: registry-docker-hub
-#  resources:
-#    requests:
-#      cpu: "100m"
-#      memory: "512M"
-#    limits:
-#      cpu: "250m"
-#      memory: "1Gi"
-
-#webModeler:
-  # The context path is used for the web application that will be accessed by users in the browser.
-  # In addition, a WebSocket endpoint will be exposed on "[contextPath]-ws", e.g. "/modeler-ws".
-#  contextPath: "/modeler"
-
+#################################################
+ #####
+#     #  ####  #    #  ####   ####  #      ######
+#       #    # ##   # #      #    # #      #
+#       #    # # #  #  ####  #    # #      #####
+#       #    # #  # #      # #    # #      #
+#     # #    # #   ## #    # #    # #      #
+ #####   ####  #    #  ####   ####  ###### ######
+#################################################
 console:
   contextPath: "/console"
   enabled: true
   image:
     pullSecrets:
       - name: registry-camunda-cloud
+  nodeEnv: learning
+  replicas: 1
+  keycloak:
+    realm: "camunda-platform"
   ingress:
     host: "c86-mini.makelabs.in"
     path: "/"
     pathType: Prefix
   env:
-    # hjrc - commented 5 apr 2026 due to warning
+  #  - name: KEYCLOAK_URL
+  #    value: "https://${UNAMESPACE}.makelabs.in/auth"  
+  #  - name: JAVA_TOOL_OPTIONS
+  #    value: >
+  #      -Djavax.net.ssl.trustStore=/config/jks/${UNAMESPACE}-zeebe-toolkit.jks
+  #      -Djavax.net.ssl.trustStorePassword=changeit
+  #      -Djavax.net.ssl.trustStoreType=JKS
     #- name: KEYCLOAK_BASE_URL
     #  value: "https://c86-mini.makelabs.in/auth"
-    # hjrc - commented 5 apr 2026 due to warning
     #- name: KEYCLOAK_INTERNAL_BASE_URL
-    #  value: "http://camunda.makelabs.in/auth"
-    # hjrc - commented 5 apr 2026 due to warning
-    #- name: CAMUNDA_CONSOLE_CONTEXT_PATH
-    #  value: console
-    # hjrc - commented 5 apr 2026 due to warning
-    #- name: CAMUNDA_IDENTITY_CLIENT_ID
-    #  value: console
-    # hjrc - commented 5 apr 2026 due to warning
-    #- name: CAMUNDA_IDENTITY_AUDIENCE
-    #  value: console
+    #  value: "https://c86-mini.makelabs.in:443/auth"
+  #  - name: CAMUNDA_CONSOLE_CONTEXT_PATH
+  #    value: console
+  #  - name: CAMUNDA_IDENTITY_CLIENT_ID
+  #    value: console
+  #  - name: CAMUNDA_IDENTITY_AUDIENCE
+  #    value: console
     - name: CAMUNDA_CONSOLE_CUSTOMERID
       value: makelabs-in
     - name: CAMUNDA_CONSOLE_INSTALLATIONID
       value: makelabs-in-c86-mini-deployment
     - name: CAMUNDA_CONSOLE_TELEMETRY
       value: online
-    # hjrc - commented 5 apr 2026 due to warning
     #- name: KEYCLOAK_REALM
     #  value: camunda-platform
-#  resources:
-#    requests:
-#      cpu: "100m"
-#      memory: "512M"
-#    limits:
-#      cpu: "250m"
-#      memory: "1Gi"
+  #  - name: SERVER_SSL_ENABLED
+  #    value: "false"
+  #  - name: SERVER_SSL_CERTIFICATE
+  #    value: "file:/config/certs/cert-public-c8-labs.key"
+  #  - name: SERVER_SSL_CERTIFICATE_PRIVATE_KEY
+  #    value: "file:/config/certs/cert-key-c8-labs.key"
+  #tls:
+  #  enabled: false
+  #  #existingSecret: console-certificates-tls-secret
+  #  #certKeyFilename: cert-public-c8-labs.key
+  resources:
+    requests:
+      cpu: "200m"
+      memory: "1Gi"
+    limits:
+      cpu: "400m"
+      memory: "1Gi"
+  #extraVolumeMounts:
+  #  - name: console-certificates-tls
+  #    mountPath: /config/certs
+  #    readOnly: true
+  #  - name: console-truststore
+  #    mountPath: /config/jks
+  #    readOnly: true
+  #extraVolumes:
+  #  - name: console-certificates-tls
+  #    secret:
+  #      secretName: console-certificates-tls-secret
+  #  - name: console-truststore
+  #    secret:
+  #      secretName: ${UNAMESPACE}-zeebe-toolkit-jks
 
 
-connectors:
+#############################################
+ #####
+#     # #####  ##### # #    # # ###### ######
+#     # #    #   #   # ##  ## #     #  #
+#     # #    #   #   # # ## # #    #   #####
+#     # #####    #   # #    # #   #    #
+#     # #        #   # #    # #  #     #
+ #####  #        #   # #    # # ###### ######
+#############################################
+## @section Optimize Parameters
+optimize:
+  #env:
+  #  - name: KEYCLOAK_URL
+  #    value: "https://${UNAMESPACE}.makelabs.in/auth"
+  enabled: false # TODO enable when needed. Disable for testing in mini env.
   image:
     pullSecrets:
       - name: registry-docker-hub
-  contextPath: "/connectors"
+  contextPath: "/optimize"
+#  ingress:
+#    enabled: true
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "1Gi"
+    limits:
+      cpu: "200m"
+      memory: "1Gi"
+
+
+####################################################################################
+#######
+#     # #####   ####  #    # ######  ####  ##### #####    ##   ##### #  ####  #    #
+#     # #    # #    # #    # #      #        #   #    #  #  #    #   # #    # ##   #
+#     # #    # #      ###### #####   ####    #   #    # #    #   #   # #    # # #  #
+#     # #####  #      #    # #           #   #   #####  ######   #   # #    # #  # #
+#     # #   #  #    # #    # #      #    #   #   #   #  #    #   #   # #    # #   ##
+####### #    #  ####  #    # ######  ####    #   #    # #    #   #   #  ####  #    #
+####################################################################################
+## @section Orchestration Cluster Parameters
+## @extra orchestration configuration for the Orchestration Cluster.
+orchestration:
+  ## @param orchestration.enabled if true, the orchestration cluster deployment and its related resources are deployed via a helm release
   enabled: true
-  ingress:
-    host: "c86-mini.makelabs.in"
-  replicas: 1
-  metrics:
-    prometheus: /actuator/prometheus
-#  resources:
-#    requests:
-#      cpu: "100m"
-#      memory: "512M"
-#    limits:
-#      cpu: "250m"
-#      memory: "1Gi"
 
-zeebeGateway:
+  ## @param orchestration.debug if true, extra info is printed.
+  debug: false
+
+  # combined env seed config: operate / tasklist / zeebe
+  env:
+    - name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_CLASSNAME
+      value: io.camunda.zeebe.exporter.ElasticsearchExporter
+    - name: ZEEBE_GATEWAY_SECURITY_AUTHENTICATION_IDENTITY_SKIP_TLS_VERIFY
+      value: "true"
+
+  profiles:
+    broker: true
+    admin: true
+    operate: true
+    tasklist: true
+
+  security:
+    ## Authentication configuration
+    ## @extra orchestration.security.authentication
+    authentication:
+      ## @param orchestration.security.authentication.method defines the authentication method which should be used. Possible values: `basic`, `oidc`, or `none`. It could be used to override `global.security.authentication.method`.
+      # In External OIDC, must resolve to "oidc" (either set here or via global.security.authentication.method).
+      # When set to "oidc", also configure oidc.clientId, audience, and secret below.
+      method: "oidc"
+      ## @param orchestration.security.authentication.authenticationRefreshInterval defines the session's authentication refresh time, defaulted to PT30S.
+      authenticationRefreshInterval: "PT30S"
+
+      # @extra orchestration.security.authentication.oidc
+      oidc:
+        ## @param orchestration.security.authentication.oidc.usernameClaim can be used to set username claim.
+        usernameClaim: preferred_username
+        ## @param orchestration.security.authentication.oidc.preferUsernameClaim can be used to set OIDC prefer-username-claim.
+        preferUsernameClaim: false
+        ## @param orchestration.security.authentication.oidc.clientIdClaim can be used to set client ID claim.
+        clientIdClaim: client_id
+        ## @param orchestration.security.authentication.oidc.groupsClaim can be used to set group claim.
+        groupsClaim: groups
+        ## @param orchestration.security.authentication.oidc.audience defines the audience, which is used by Orchestration Cluster.
+        audience: orchestration-api
+        ## @param orchestration.security.authentication.oidc.scope defines a list of scopes to request in the OIDC token. If not set, it will use the application defaults.
+        #scope:  # TODO - hjrc - this resulted in error while accessing operate tasklist webapp. lets try default value instead.
+        #  - openid
+        #  - profile
+        #  - offline_access
+        #  - zeebe
+        #  - operate
+        ## @param orchestration.security.authentication.oidc.backwardsCompatibleAudiences defines audiences, which need to be set for backwards compatibility to allow the access the Orchestration Cluster. This is only important and set if you're coming from an earlier version
+        backwardsCompatibleAudiences:
+          - operate
+          - tasklist
+          - zeebe-api
+          - zeebe
+        ## @param orchestration.security.authentication.oidc.clientId defines the client id, which is used by Orchestration Cluster in authentication flows.
+        clientId: orchestration
+        ## @param orchestration.security.authentication.oidc.redirectUrl defines the root (or redirect) URL, which is used by Keycloak to access Tasklist.
+        # Should be publicly accessible, the default value works if a port-forward to Orchestration Cluster is created to 8080.
+        # Can be overwritten if ingress is in use and an external IP is available.
+        redirectUrl: "https://c86-mini.makelabs.in/orchestration"
+        ## @extra orchestration.security.authentication.oidc.secret configuration to provide the orchestration client secret.
+        secret:
+          existingSecret: identity-secret-for-components
+          existingSecretKey: zeebe-secret
+
+    ## Authorizations configuration.
+    ## @extra orchestration.security.authorizations
+    authorizations:
+      ## @param orchestration.security.authorizations.enabled if true, then enable authorizations checks in all applicable components.
+      enabled: true # TODO explore this further
+
+    ## Initialization configuration
+    ## @extra orchestration.security.initialization
+    initialization:
+      ## Initial admin users configurations
+      ## @extra orchestration.security.initialization.users
+      ## @param orchestration.security.initialization.users[0].username
+      ## @param orchestration.security.initialization.users[0].password
+      ## @param orchestration.security.initialization.users[0].name
+      ## @param orchestration.security.initialization.users[0].email
+      ## @param orchestration.security.initialization.users[1].username
+      ## @param orchestration.security.initialization.users[1].password
+      ## @param orchestration.security.initialization.users[1].name
+      ## @param orchestration.security.initialization.users[1].email
+      users:
+        ## @extra orchestration.security.initialization.users.username, the username of an initial user, used for the connectors component.
+        - username: connectors
+          ## @extra orchestration.security.initialization.users.password, the password of an initial user, used for the connectors component.
+          password: makelabs
+          ## @extra orchestration.security.initialization.users.name, the name of an initial user, used for the connectors component.
+          name: Connector User
+          ## @extra orchestration.security.initialization.users.email, the email of an initial user, used for the connectors component.
+          email: connector@demo.com
+        ## @extra orchestration.security.initialization.users.username, the username of an initial user, used for the connectors component.
+        - username: demo
+          ## @extra orchestration.security.initialization.users.password, the password of an initial user.
+          password: makelabs
+          ## @extra orchestration.security.initialization.users.name, the name of an initial user.
+          name: Demo User
+          ## @extra orchestration.security.initialization.users.email, the email of an initial user.
+          email: demo@demo.com
+      ## @extra orchestration.security.initialization.defaultRoles assigning initial users to default roles. More roles can be added to the dictionary: https://docs.camunda.io/docs/next/components/concepts/access-control/authorizations/#default-roles
+      ## @param orchestration.security.initialization.defaultRoles.admin.users defines the initial users that will get the admin permission
+      ## @param orchestration.security.initialization.defaultRoles.connectors.users defines the initial users that will get the connectors permission
+      ## @param orchestration.security.initialization.defaultRoles.connectors.clients define clients for the orchestration cluster.
+      defaultRoles:
+        admin:
+          users:
+            - demo
+        connectors:
+          # Remove this block for oidc. Marked by hjrc. TODO
+          #users:
+          #  ## @extra orchestration.security.initialization.defaultRoles.connectors.users[0].connectors Needed for basic auth setup. Can be removed for OIDC. Define the connectors user with the connectors role.
+          #  - connectors
+          #  - zeebe
+          clients:
+            ## @extra orchestration.security.initialization.defaultRoles.connectors.clients[0].connectors Needed for OIDC setup. Can be removed for basic auth. Define the connectors client with the connrectors role.
+            - connectors
+      ## @param orchestration.security.initialization.mappingRules define mapping rules.
+      mappingRules: []
+      ## @param orchestration.security.initialization.authorizations define authorizations.
+      authorizations: []
+  ## @extra orchestration.image configuration to configure the image specifics
   image:
     pullSecrets:
       - name: registry-docker-hub
-  contextPath: "/zeebe"
-  env:
-    - name: ZEEBE_GATEWAY_SECURITY_AUTHENTICATION_MODE
-      value: "none"
+
+  ## @extra orchestration.importer configuration for the external tasklist and operate importer deployment for the orchestration cluster
+  importer:
+    ## @param orchestration.importer.envFrom list of environment variables to import from configMapRef and secretRef
+    envFrom: []
+    ## @param orchestration.importer.extraVolumes can be used to define extra volumes for the importer pod
+    extraVolumes: []
+    ## @param orchestration.importer.extraVolumeMounts can be used to mount extra volumes for the importer pod
+    extraVolumeMounts: []
+
+  ## @param orchestration.sidecars can be used to attach extra containers to the deployment
+  sidecars: []
+
+  ## @param orchestration.clusterSize defines the amount of brokers (=replicas), which are deployed via helm
+  clusterSize: "3"
+  ## @param orchestration.partitionCount defines how many partitions are set up in the cluster
+  partitionCount: "3"
+  ## @param orchestration.replicationFactor defines how each partition is replicated, the value defines the number of nodes
+  replicationFactor: "3"
+  ## @param orchestration.javaOpts can be used to set java options
+  javaOpts: >-
+    -XX:+HeapDumpOnOutOfMemoryError
+    -XX:HeapDumpPath=/usr/local/camunda/data
+    -XX:ErrorFile=/usr/local/camunda/data/camunda_error%p.log
+    -XX:+ExitOnOutOfMemoryError
+    -Djavax.net.ssl.trustStore=/usr/local/camunda/certificates/externaldb.jks
+    -Djavax.net.ssl.trustStorePassword=changeit
+    -Djavax.net.ssl.trustStoreType=JKS 
+
+  # Not required since we are using oidc. TODO - explore further
+  #envFrom:
+  #  - name: ZEEBE_GATEWAY_SECURITY_AUTHENTICATION_MODE
+  #    value: "none" # or "identity"
+
+  ## @extra orchestration.service configuration for the Orchestration Cluster service
+  service:
+    ## @param orchestration.service.annotations can be used to define annotations, which will be applied to the service
+    annotations: {}
+    ## @extra orchestration.service configuration for the Orchestration Cluster headless service
+    headless:
+      ## @param orchestration.service.headless.annotations can be used to define annotations, which will be applied to the headless service
+      annotations: {}
+      ## @param orchestration.service.headless.type defines the type of the headless service https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+      type: ClusterIP
+    ## @param orchestration.service.type defines the type of the service https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+    type: ClusterIP
+    ## @param orchestration.service.loadBalancerIP defines public IP of the load balancer if the type is LoadBalancer
+    loadBalancerIP: ""
+    ## @param orchestration.service.loadBalancerSourceRanges defines list of allowed source IP address ranges if the type is LoadBalancer
+    loadBalancerSourceRanges: []
+    ## @param orchestration.service.httpName defines the name of the http endpoint, where for example metrics are provided
+    httpName: "http"
+    ## @param orchestration.service.httpPort defines the port of the http endpoint, where for example metrics are provided
+    httpPort: 8080
+    ## @param orchestration.service.managementName defines the name of the management endpoint, where the management API is exposed
+    managementName: "server"
+    ## @param orchestration.service.managementPort defines the port of the management endpoint, where the management API is exposed
+    managementPort: 9600
+    ## @param orchestration.service.grpcName defines the name of the gateway gRPC endpoint, where client commands (grpc) are sent to
+    grpcName: "grpc"
+    ## @param orchestration.service.grpcPort defines the port of the gateway gRPC endpoint, where client commands (grpc) are sent to
+    grpcPort: 26500
+    ## @param orchestration.service.commandName defines the name of the command API endpoint, where the broker commands are sent to
+    commandName: "command"
+    ## @param orchestration.service.commandPort defines the port of the command API endpoint, where the broker commands are sent to
+    commandPort: 26501
+    ## @param orchestration.service.internalName defines the name of the internal API endpoint, which is used for internal communication
+    internalName: "internal"
+    ## @param orchestration.service.internalPort defines the port of the internal API endpoint, which is used for internal communication
+    internalPort: 26502
+
+  gateway:
+    grpc:
+      ## @param orchestration.gateway.grpc.enabled if true, the GRPCRoute will be created to expose the orchestration grpc service.
+      enabled: true
+      ## @param orchestration.gateway.grpc.host defines the url for the GRPC k8s Gateway resources
+      host: c86-mini-zeebe-gateway.makelabs.in
+
   ingress:
     grpc:
       enabled: true
+      external: false
       className: nginx
-      host: "zeebe.c86-mini.makelabs.in"
-    rest:
-      enabled: true
-      className: nginx
-      host: "c86-mini.makelabs.in"
-      path: "/zeebe"
-  replicas: 1
-#  resources:
-#    requests:
-#      memory: "512Mi"
-#      cpu: "150m"
-#    limits:
-#      memory: "1024Mi"
-#      cpu: "500m"
+      host: c86-mini-zeebe-gateway.makelabs.in
+      annotations:
+        ingress.kubernetes.io/rewrite-target: "/"
+        nginx.ingress.kubernetes.io/ssl-redirect: "false"
+        nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
+        nginx.ingress.kubernetes.io/proxy-buffer-size: "128k" 
+      tls:
+        enabled: false # TODO : disable tls grpc
+        secretName: cf-full-chain-origin-cert
+  ## @param orchestration.contextPath can be used to make Orchestration Cluster web application works on a custom sub-path. This is mainly used to run Camunda web applications under a single domain.
+  contextPath: "/orchestration"
 
-zeebe:
+  ## @param orchestration.cpuThreadCount defines how many threads can be used for the processing on each broker pod
+  cpuThreadCount: "3"
+  ## @param orchestration.ioThreadCount defines how many threads can be used for the exporting on each broker pod
+  ioThreadCount: "3"
+  ## @extra orchestration.resources configuration to set request and limit configuration for the container https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#requests-and-limits
+  ## @extra orchestration.resources.requests
+  ## @param orchestration.resources.requests.cpu
+  ## @param orchestration.resources.requests.memory
+  ## @param orchestration.resources.limits.cpu
+  ## @param orchestration.resources.limits.memory
+  resources:
+    requests:
+      cpu: 1000m
+      memory: 1500Mi
+    limits:
+      cpu: 2000m
+      memory: 3000Mi
+
+  ## @param orchestration.persistenceType defines the type of persistence which is used by orchestration. Possible values are: disk, local and memory.
+  #   disk  - means a persistence volume claim is configured and used
+  #   local - means the data is stored into the container, no volumeMount nor volume nor claim is configured
+  #   memory   - means it uses a tmpfs for the data persistence, be aware that this takes the limits into account
+  persistenceType: disk
+  ## @param orchestration.pvcSize defines the persistent volume claim size, which is used by each broker pod https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims
+  pvcSize: "5Gi"
+  ## @param orchestration.pvcAccessModes can be used to configure the persistent volume claim access mode https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes
+  pvcAccessModes: ["ReadWriteOnce"]
+  ## @extra orchestration.data configuration to configure the data handling of the Zeebe broker pods
+  data:
+    ## @param orchestration.data.snapshotPeriod defines the period, after which a snapshot is created https://docs.camunda.io/docs/self-managed/zeebe-deployment/configuration/broker-config/#zeebebrokerdata
+    snapshotPeriod: "5m"
+    ## @extra orchestration.data.disk configuration to configure the disk storage of the Zeebe broker pods
+    disk:
+      ## @extra orchestration.data.disk.freeSpace configuration to configure the free space handling of the Zeebe broker pods
+      freeSpace:
+        ## @param orchestration.data.disk.freeSpace.processing the minimum free space which should be available on the disk, before the broker stops processing commands https://docs.camunda.io/docs/self-managed/zeebe-deployment/configuration/broker-config/#zeebebrokerdatadiskfreespace
+        processing: "2GB"
+        ## @param orchestration.data.disk.freeSpace.replication the minimum free space which should be available on the disk, before the broker stops receicing replicated events https://docs.camunda.io/docs/self-managed/zeebe-deployment/configuration/broker-config/#zeebebrokerdatadiskfreespace
+        replication: "1GB"
+    # TODO : check for secondary storage config.
+    secondaryStorage:
+      type: elasticsearch
+      elasticsearch:
+        enabled: true
+        url: "https://elasticsearch-master.elastic.svc.cluster.local:9200"
+        auth:
+          username: elastic
+          #secret:
+          #  inlineSecret: makelabs
+        #tls:
+        #  secret:
+        #    existingSecret: elastic-jks
+        #    existingSecretKey: externaldb.jks
+
+  ## @param orchestration.extraVolumes can be used to define extra volumes for the broker pods, useful for additional exporters
+  ## Bewlo extra volume and volume mounts are not required. hence commented out. hjrc
+  ## Define one extra volume for handling auto import of keycloak certificate to truststore for the brokers.
+  extraVolumes:
+    - name: truststore-volume
+      emptyDir: {}
+    #- name: elastic-jks
+    #  secret:
+    #    secretName: elastic-jks
+    #- name: truststore
+    #  secret:
+    #    secretName: camunda-elastic-jks
+  extraVolumeMounts:
+    #- name: elastic-jks
+    #  mountPath: /app/certs
+    #  readOnly: true
+    #- name: truststore
+    #  mountPath: /opt/camunda/truststore
+
+  initContainers: []
+
+  ## @extra orchestration.exporters allows disabling inbuilt exporters.
+  exporters:
+    ## @param orchestration.exporters.camunda.enabled if true, enables the new Camunda exporter.
+    camunda:
+      enabled: true
+    ## @param orchestration.exporters.rdbms.enabled if true, enables the new RDBMS exporter.
+    rdbms:
+      enabled: false
+    ## @param orchestration.exporters.zeebe.enabled if true, enables the legacy Zeebe Elasticsearch and OpenSearch exporters.
+    zeebe:
+      enabled: true # TODO is the legacy required?
+
+    appIntegrations:
+      apiKey:
+        secret:
+          ## @param orchestration.exporters.appIntegrations.apiKey.secret.inlineSecret can be used to provide the apiKey as a plain-text value for non-production usage.
+          inlineSecret: "makelabs"
+  index:
+    ## @param orchestration.index.prefix if specified, defines an index prefix in Elasticsearch/OpenSearch for the new exporter and Orchestration Cluster. For old exporter or Optimize use the "global.elasticsearch.prefix" or OpenSearch equivalent.
+    prefix: "zeebe-record"
+    ## @param orchestration.index.replicas can be used to specify the number of replicas for indices in Elasticsearch/OpenSearch
+    replicas: 1
+
+  ## @extra orchestration.retention configuration to enable ILM Policy creation and application for Zeebe record (legacy Elasticsearch/Opensearch exporter) indices; controls their retention.
+  retention:
+    ## @param orchestration.retention.enabled if true, the ILM Policy is created and applied to the index templates.
+    enabled: true
+    ## @param orchestration.retention.minimumAge defines how old the data must be, before the data is deleted as a duration.
+    minimumAge: 10d
+    ## @param orchestration.retention.policyName defines the name of the created and applied ILM policy.
+    policyName: zeebe-record-retention-policy
+
+  ## @extra orchestration.history configuration for Camunda harmonized historical indices.
+  history:
+    ## @param orchestration.history.elsRolloverDateFormat defines the date format of historical indices in a Java DateTimeFormatter compliant syntax.
+    elsRolloverDateFormat: date
+    ## @param orchestration.history.rolloverInterval defines the time range of the historical indices to be created.
+    rolloverInterval: 1d
+    ## @param orchestration.history.rolloverBatchSize defines the maximum number of process instances per batch during archiving.
+    rolloverBatchSize: 100
+    ## @param orchestration.history.waitPeriodBeforeArchiving defines the grace period for processes to be excluded from archiving for a value of 1h, any processes completed in
+    ## the last hour will not be collected into historical indices.
+    waitPeriodBeforeArchiving: 1h
+    ## @param orchestration.history.delayBetweenRuns the millisecond interval between archiver runs
+    delayBetweenRuns: 2000
+    ## @param orchestration.history.maxDelayBetweenRuns the maximum millisecond interval between archiver runs due to failure backoffs
+    maxDelayBetweenRuns: 60000
+    ## @extra orchestration.history.retention configuration for retention of the Camunda harmonized historical indices.
+    retention:
+      ## @param orchestration.history.retention.enabled if true, applies ILM Policy to the archived orchestration indices (operate, tasklist, camunda).
+      enabled: false
+      ## @param orchestration.history.retention.minimumAge defines how old the data must be, before the data is deleted as a duration.
+      minimumAge: 10d
+      ## @param orchestration.history.retention.policyName defines the name of the created and applied ILM policy.
+      # NOTE: The value is set to "zeebe-record-retention-policy" for backward compatibility between 8.7 and 8.8.
+      policyName: camunda-history-retention-policy
+      ## @param orchestration.history.retention.usageMetricsMinimumAge defines how old the usage metric indices must be before deletion (camunda-usage-metric, camunda-usage-metric-tu).
+      usageMetricsMinimumAge: 730d
+      ## @param orchestration.history.retention.usageMetricsPolicyName defines the name of the created and applied ILM policy to usage metric indices.
+      usageMetricsPolicyName: camunda-usage-metrics-retention-policy
+
+
+
+#    # ###### #   #  ####  #       ####    ##   #    #
+#   #  #       # #  #    # #      #    #  #  #  #   #
+####   #####    #   #      #      #    # #    # ####
+#  #   #        #   #      #      #    # ###### #  #
+#   #  #        #   #    # #      #    # #    # #   #
+#    # ######   #    ####  ######  ####  #    # #    #
+## @section Identity - Keycloak Parameters
+identityKeycloak:
+  enabled: true
+  #tls:
+  #  enabled: true
+  #  usePemCerts: true
+  #  existingSecret: "keycloak-jks-truststore-secret"
+  #  certFilename: "tls.crt"
+  #  certKeyFilename: "tls.key"    
+  #  keystoreFilename: "keycloak.keystore.jks"
+  #  truststoreFilename: "keycloak.truststore.jks"
+  #  keystorePassword: "changeit"
+  #  truststorePassword: "changeit"
+  nameOverride: "keycloak"
   image:
     pullSecrets:
       - name: registry-docker-hub
-  enabled: true
-  prometheusServiceMonitor:
-    enabled: true
-  metrics:
-    prometheus: /actuator/prometheus
-  env:
-    - name: ZEEBE_BROKER_CLUSTER_RAFT_ENABLEPRIORITYELECTION
-      value: "false"
-    - name: ZEEBE_BROKER_CLUSTER_MEMBERSHIP_BROADCASTUPDATES
-      value: "true"
-    - name: ZEEBE_BROKER_EXECUTION_METRICS_EXPORTER_ENABLED
-      value: "true"
-    - name: ZEEBE_BROKER_EXPERIMENTAL_ROCKSDB_ENABLEACCESSMETRICS
-      value: "fine"
-  clusterSize: 3
-  partitionCount: 7
-  replicationFactor: 1
-  pvcSize: 3Gi
-  # refer to partitioning docs. https://docs.camunda.io/docs/self-managed/zeebe-deployment/configuration/fixed-partitioning/
+  extraVolumeMounts:
+    - name: keycloak-jks-truststore
+      mountPath: /etc/x509/https
+      readOnly: true    
+  extraVolumes:
+    - name: keycloak-jks-truststore
+      secret:
+        secretName: keycloak-jks-truststore-secret
+  auth:
+    adminUser: admin
+    existingSecret: identity-secret-for-components
+    passwordSecretKey: admin-password
+  postgresql:
+    auth:
+      existingSecret: identity-secret-for-components
+      secretKeys:
+        ## @param identityKeycloak.postgresql.auth.secretKeys.adminPasswordKey defines the key within the existing secret object for PostgreSQL admin.
+        adminPasswordKey: "postgres-admin-password"
+        ## @param identityKeycloak.postgresql.auth.secretKeys.userPasswordKey defines the key within the existing secret object for PostgreSQL user.
+        userPasswordKey: "postgres-user-password"
+    existingSecretKey: admin-password
 
-  membership:
-    configManager:
-      gossip:
-        syncDelay: 10s
-        syncRequestTimeout: 5s
-        gossipFanout: 2
 
-#  resources:
-#    requests:
-#      cpu: "100m"
-#      memory: "512M"
-#    limits:
-#      cpu: "250m"
-#      memory: "1Gi"
+####################
+#webModeler:
+  # The context path is used for the web application that will be accessed by users in the browser.
+  # In addition, a WebSocket endpoint will be exposed on "[contextPath]-ws", e.g. "/modeler-ws".
+#  contextPath: "/modeler"
 
-  exporters:
-    elasticsearch:
-      className: io.camunda.zeebe.exporter.ElasticsearchExporter
-      args:
-        url: https://elasticsearch-master.elastic.svc.cluster.local:9200
-        bulk:
-          delay: 5
-          size: 1000
-          memoryLimit: 10485760
-        authentication:
-          username: elastic
-          password: makelabs
-        index:
-          prefix: zeebe-record
-          createTemplate: true
-          numberOfShards: 3
-          numberOfReplicas: 0
-        retention:
-          enabled: true
-          minimumAge: 10d
-          policyName: zeebe-record-retention-policy
 
+####################
+# PostGRE SQL
+##
 postgresql:
   image:
     pullSecrets:
       - name: registry-docker-hub
 
-# lets use existing elk - we have it running with another namespace. check the config.
+
+#####################################################################################
+#######
+#       #        ##    ####  ##### #  ####   ####  ######   ##   #####   ####  #    #
+#       #       #  #  #        #   # #    # #      #       #  #  #    # #    # #    #
+#####   #      #    #  ####    #   # #       ####  #####  #    # #    # #      ######
+#       #      ######      #   #   # #           # #      ###### #####  #      #    #
+#       #      #    # #    #   #   # #    # #    # #      #    # #   #  #    # #    #
+####### ###### #    #  ####    #   #  ####   ####  ###### #    # #    #  ####  #    #
+#####################################################################################
+## @section Elasticsearch Parameters
 elasticsearch:
   enabled: false
 #  image:
 #    pullSecrets:
 #      - name: registry-docker-hub
-
 #  master:
 #    replicaCount: 1
 #  data:
