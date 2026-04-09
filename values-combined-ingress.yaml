@@ -401,14 +401,17 @@ orchestration:
       ## @param orchestration.security.initialization.defaultRoles.connectors.clients define clients for the orchestration cluster.
       defaultRoles:
         admin:
+          mappingRules: []
           users:
             - demo
         connectors:
+          mappingRules: []
           users:
             - connectors
           clients:
             - connectors
         task-worker:
+          mappingRules: []
           users:
             - demo
 
@@ -417,13 +420,11 @@ orchestration:
 
       ## @param orchestration.security.initialization.authorizations define authorizations.
       authorizations:
-        - ownerId: "demo"
-          ownerType: "User"   # USER | GROUP | ROLE
+        - ownerType: USER
+          ownerId: "demo"
           resourceType: "Component"
           resourceId: "*" # operate, tasklist, identity
-          permissions:
-            - "ACCESS"
-
+          permissions: [ "ACCESS" ]
 
   ## @extra orchestration.image configuration to configure the image specifics
   image:
