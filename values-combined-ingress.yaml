@@ -307,7 +307,7 @@ orchestration:
   enabled: true
 
   ## @param orchestration.debug if true, extra info is printed.
-  debug: false
+  debug: true
 
   # combined env seed config: operate / tasklist / zeebe
   env:
@@ -346,12 +346,9 @@ orchestration:
         ## @param orchestration.security.authentication.oidc.audience defines the audience, which is used by Orchestration Cluster.
         audience: orchestration-api
         ## @param orchestration.security.authentication.oidc.scope defines a list of scopes to request in the OIDC token. If not set, it will use the application defaults.
-        #scope:  # TODO - hjrc - this resulted in error while accessing operate tasklist webapp. lets try default value instead.
-        #  - openid
-        #  - profile
-        #  - offline_access
-        #  - zeebe
-        #  - operate
+        scope:
+          - openid
+          - profile
         ## @param orchestration.security.authentication.oidc.backwardsCompatibleAudiences defines audiences, which need to be set for backwards compatibility to allow the access the Orchestration Cluster. This is only important and set if you're coming from an earlier version
         backwardsCompatibleAudiences:
           - operate
@@ -389,22 +386,15 @@ orchestration:
       ## @param orchestration.security.initialization.users[1].name
       ## @param orchestration.security.initialization.users[1].email
       users:
-        ## @extra orchestration.security.initialization.users.username, the username of an initial user, used for the connectors component.
         - username: connectors
-          ## @extra orchestration.security.initialization.users.password, the password of an initial user, used for the connectors component.
           password: makelabs
-          ## @extra orchestration.security.initialization.users.name, the name of an initial user, used for the connectors component.
           name: Connector User
-          ## @extra orchestration.security.initialization.users.email, the email of an initial user, used for the connectors component.
-          email: connector@demo.com
-        ## @extra orchestration.security.initialization.users.username, the username of an initial user, used for the connectors component.
+          email: connector@makelabs.in
         - username: demo
-          ## @extra orchestration.security.initialization.users.password, the password of an initial user.
           password: makelabs
-          ## @extra orchestration.security.initialization.users.name, the name of an initial user.
           name: Demo User
-          ## @extra orchestration.security.initialization.users.email, the email of an initial user.
-          email: demo@demo.com
+          email: demo@makelabs.in
+
       ## @extra orchestration.security.initialization.defaultRoles assigning initial users to default roles. More roles can be added to the dictionary: https://docs.camunda.io/docs/next/components/concepts/access-control/authorizations/#default-roles
       ## @param orchestration.security.initialization.defaultRoles.admin.users defines the initial users that will get the admin permission
       ## @param orchestration.security.initialization.defaultRoles.connectors.users defines the initial users that will get the connectors permission
@@ -414,18 +404,27 @@ orchestration:
           users:
             - demo
         connectors:
-          # Remove this block for oidc. Marked by hjrc. TODO
-          #users:
-          #  ## @extra orchestration.security.initialization.defaultRoles.connectors.users[0].connectors Needed for basic auth setup. Can be removed for OIDC. Define the connectors user with the connectors role.
-          #  - connectors
-          #  - zeebe
-          clients:
-            ## @extra orchestration.security.initialization.defaultRoles.connectors.clients[0].connectors Needed for OIDC setup. Can be removed for basic auth. Define the connectors client with the connrectors role.
+          users:
             - connectors
+          clients:
+            - connectors
+        task-worker:
+          users:
+            - demo
+
       ## @param orchestration.security.initialization.mappingRules define mapping rules.
       mappingRules: []
+
       ## @param orchestration.security.initialization.authorizations define authorizations.
-      authorizations: []
+      authorizations:
+        - ownerId: "demo"
+          ownerType: "User"   # USER | GROUP | ROLE
+          resourceType: "Component"
+          resourceId: "*" # operate, tasklist, identity
+          permissions:
+            - "ACCESS"
+
+
   ## @extra orchestration.image configuration to configure the image specifics
   image:
     pullSecrets:

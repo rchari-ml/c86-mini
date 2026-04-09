@@ -39,9 +39,19 @@ helm install c86-mini camunda/camunda-platform \
   --set zeebe.prometheusServiceMonitor.enabled=true \
   --namespace c86-mini  --version 14.0.0-alpha5 
 
+helm upgrade c86-mini camunda/camunda-platform \
+  -f values-combined-ingress.yaml \
+  -f values-connectors-env.yaml \
+  --set zeebe.prometheusServiceMonitor.enabled=true \
+  --namespace c86-mini  --version 14.0.0-alpha5 
+
+
 # Cleanup - uninstall camunda & elastic
 helm uninstall c86-mini camunda/camunda-platform     --namespace c86-mini
 helm uninstall elasticsearch elastic/elasticsearch -n elastic  
+
+# current user info
+https://c86-mini.makelabs.in/orchestration/v2/authentication/me
 
 ```
 
