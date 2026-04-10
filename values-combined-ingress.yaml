@@ -97,10 +97,16 @@ global:
       adminUrl: "https://c86-mini.makelabs.in/auth"
       tokenUrl: "https://c86-mini.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token"
       jwksUrl: "https://c86-mini.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/certs"
+      admin:
+        clientId: admin
+        enabled: true
+        secret:
+          existingSecret: identity-secret-for-components
+          existingSecretKey: identity-secret
       operate:
         clientId: operate
         audience: operate-api
-        redirectUrl: "https://c86-mini.makelabs.in/operate"
+        redirectUrl: "https://c86-mini.makelabs.in/orchestration/operate"
         secret:
           existingSecret: identity-secret-for-components
           existingSecretKey: operate-secret
@@ -108,7 +114,7 @@ global:
       tasklist:
         clientId: tasklist
         audience: tasklist-api
-        redirectUrl: "https://c86-mini.makelabs.in/tasklist"
+        redirectUrl: "https://c86-mini.makelabs.in/orchestration/tasklist"
         secret:
           existingSecret: identity-secret-for-components
           existingSecretKey: tasklist-secret
@@ -164,6 +170,7 @@ identity:
   firstUser:
     enabled: true
     username: demo
+    name: Demo User
     email: demo@makelabs.in
     secret:
       #inlineSecret: some-thing-very-secret
@@ -177,6 +184,20 @@ identity:
     - name: identity-truststore
       secret:
         secretName: camunda-elastic-jks
+  users:   
+    - username: demo
+      secret:
+        existingSecret: identity-secret-for-components
+        existingSecretKey: identity-firstuser-password
+      name: Demo User
+      email: demo@makelabs.in
+    - username: connectors
+      secret:
+        existingSecret: identity-secret-for-components
+        existingSecretKey: identity-firstuser-password
+      name: Connector User
+      email: connector@makelabs.in
+
 
 
 #################################################
@@ -376,29 +397,7 @@ orchestration:
     ## @extra orchestration.security.initialization
     initialization:
       ## Initial admin users configurations
-      ## @extra orchestration.security.initialization.users
-      ## @param orchestration.security.initialization.users[0].username
-      ## @param orchestration.security.initialization.users[0].password
-      ## @param orchestration.security.initialization.users[0].name
-      ## @param orchestration.security.initialization.users[0].email
-      ## @param orchestration.security.initialization.users[1].username
-      ## @param orchestration.security.initialization.users[1].password
-      ## @param orchestration.security.initialization.users[1].name
-      ## @param orchestration.security.initialization.users[1].email
-      users:
-        - username: connectors
-          password: makelabs
-          name: Connector User
-          email: connector@makelabs.in
-        - username: demo
-          password: makelabs
-          name: Demo User
-          email: demo@makelabs.in
-
-      ## @extra orchestration.security.initialization.defaultRoles assigning initial users to default roles. More roles can be added to the dictionary: https://docs.camunda.io/docs/next/components/concepts/access-control/authorizations/#default-roles
-      ## @param orchestration.security.initialization.defaultRoles.admin.users defines the initial users that will get the admin permission
-      ## @param orchestration.security.initialization.defaultRoles.connectors.users defines the initial users that will get the connectors permission
-      ## @param orchestration.security.initialization.defaultRoles.connectors.clients define clients for the orchestration cluster.
+      users: []
       defaultRoles:
         admin:
           mappingRules: []
@@ -422,8 +421,8 @@ orchestration:
       authorizations:
         - ownerType: USER
           ownerId: "demo"
-          resourceType: "Component"
-          resourceId: "*" # operate, tasklist, identity
+          resourceType: Component
+          resourceId: "*" # operate, tasklist, admin
           permissions: [ "ACCESS" ]
 
   ## @extra orchestration.image configuration to configure the image specifics

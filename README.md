@@ -78,6 +78,10 @@ kubectl port-forward svc/c86-mini-keycloak 18080:80 -n c86-mini
 Operate / Tasklist:
 kubectl port-forward svc/c86-mini-zeebe 8081:8080 -n c86-mini 
 
+Zeebe gRPC: (Testing with toolit service in progress)
+kubectl port-forward svc/c86-mini-zeebe 26500:26500 -n c86-mini
+
+
 Convert jks trust store to a pem file
 keytool -list -rfc   -keystore externaldb.jks   -storepass changeit > truststore.pem
 openssl crl2pkcs7 -nocrl -certfile truststore.pem | openssl pkcs7 -print_certs -noout
