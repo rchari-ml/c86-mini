@@ -32,7 +32,9 @@ global:
     auth:
       username: elastic
       secret:
-        inlineSecret: makelabs
+        # inlineSecret: something-secret
+        existingSecret: identity-secret-for-components
+        existingSecretKey: elastic-secret
     url:
       protocol: https
       host: elasticsearch-master.elastic.svc.cluster.local
@@ -572,7 +574,9 @@ orchestration:
         auth:
           username: elastic
           #secret:
-          #  inlineSecret: makelabs
+            #  inlineSecret: something-secret
+            #existingSecret: identity-secret-for-components
+            #existingSecretKey: elastic-secret
         #tls:
         #  secret:
         #    existingSecret: elastic-jks
@@ -615,7 +619,9 @@ orchestration:
       apiKey:
         secret:
           ## @param orchestration.exporters.appIntegrations.apiKey.secret.inlineSecret can be used to provide the apiKey as a plain-text value for non-production usage.
-          inlineSecret: "makelabs"
+          # inlineSecret: "something-secret"
+          existingSecret: identity-secret-for-components
+          existingSecretKey: elastic-secret
   index:
     ## @param orchestration.index.prefix if specified, defines an index prefix in Elasticsearch/OpenSearch for the new exporter and Orchestration Cluster. For old exporter or Optimize use the "global.elasticsearch.prefix" or OpenSearch equivalent.
     prefix: "zeebe-record"
