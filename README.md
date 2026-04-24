@@ -37,14 +37,41 @@ helm install c86-mini camunda/camunda-platform \
   -f values-combined-ingress.yaml \
   -f values-connectors-env.yaml \
   --set zeebe.prometheusServiceMonitor.enabled=true \
-  --namespace c86-mini  --version 14.0.0-alpha5 
+  --namespace c86-mini  --version 14.0.1
 
 helm upgrade c86-mini camunda/camunda-platform \
   -f values-combined-ingress.yaml \
   -f values-connectors-env.yaml \
   --set zeebe.prometheusServiceMonitor.enabled=true \
-  --namespace c86-mini  --version 14.0.0-alpha5 
+  --namespace c86-mini  --version 14.0.1
 
+
+export TOKEN=$(curl https://c86-mini.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token  \
+   -H 'Content-Type: application/x-www-form-urlencoded' \
+   -d 'grant_type=client_credentials' \
+   -d 'client_id=orchestration'   -d 'client_secret=makelabs' | jq -r '.access_token' )
+
+curl -v --request GET \
+  --url 'https://c86-mini.makelabs.in/orchestration/v2/topology' \
+  --header "Authorization: Bearer $TOKEN" -H 'Content-Type: application/x-www-form-urlencoded'
+
+
+curl -v --request POST 'https://c86-mini.makelabs.in/orchestration/v2/deployments' \
+  -H "Authorization: Bearer $TOKEN" \
+  -H 'Accept: application/json' \
+  -F resources=@new-lead-approval.dmn
+
+curl -v --request POST \
+  --url 'https://c86-mini.makelabs.in/orchestration/v2/deployments' \
+  --header "Authorization: Bearer $TOKEN" \
+  --header 'Content-Type: multipart/form-data' \
+  --form 'resources=@lead-to-opportunity-with-dmn.bpmn'
+
+curl -v --request POST \
+  --url 'https://c86-mini.makelabs.in/orchestration/v2/deployments' \
+  --header "Authorization: Bearer $TOKEN" \
+  --header 'Content-Type: multipart/form-data' \
+  --form 'resources=@lead-to-opportunity-with-webhook-Form.form'
 
 # Cleanup - uninstall camunda & elastic
 helm uninstall c86-mini camunda/camunda-platform     --namespace c86-mini

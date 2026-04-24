@@ -14,6 +14,10 @@ global:
   gateway:
     createGatewayResource: true
     enabled: true
+    className: "nginx"
+    tls:
+      enabled: true
+      secretName: cf-full-chain-origin-cert
   ingress:
     enabled: false
     className: "nginx"
@@ -615,13 +619,14 @@ orchestration:
     zeebe:
       enabled: true # TODO is the legacy required?
 
-    appIntegrations:
-      apiKey:
-        secret:
-          ## @param orchestration.exporters.appIntegrations.apiKey.secret.inlineSecret can be used to provide the apiKey as a plain-text value for non-production usage.
-          # inlineSecret: "something-secret"
-          existingSecret: identity-secret-for-components
-          existingSecretKey: elastic-secret
+    # Disable app integrations for now. hjrc - apr 2026
+    #appIntegrations:
+    #  apiKey:
+    #    secret:
+    #      ## @param orchestration.exporters.appIntegrations.apiKey.secret.inlineSecret can be used to provide the apiKey as a plain-text value for non-production usage.
+    #      # inlineSecret: "something-secret"
+    #      existingSecret: identity-secret-for-components
+    #      existingSecretKey: elastic-secret
   index:
     ## @param orchestration.index.prefix if specified, defines an index prefix in Elasticsearch/OpenSearch for the new exporter and Orchestration Cluster. For old exporter or Optimize use the "global.elasticsearch.prefix" or OpenSearch equivalent.
     prefix: "zeebe-record"
