@@ -190,19 +190,6 @@ identity:
     - name: identity-truststore
       secret:
         secretName: camunda-elastic-jks
-  users:   
-    - username: demo
-      secret:
-        existingSecret: identity-secret-for-components
-        existingSecretKey: identity-firstuser-password
-      name: Demo User
-      email: demo@makelabs.in
-    - username: connectors
-      secret:
-        existingSecret: identity-secret-for-components
-        existingSecretKey: identity-firstuser-password
-      name: Connector User
-      email: connector@makelabs.in
 
 
 
@@ -426,10 +413,11 @@ orchestration:
       ## @param orchestration.security.initialization.authorizations define authorizations.
       authorizations:
         - ownerType: USER
-          ownerId: "demo"
-          resourceType: Component
+          ownerId: demo
+          resourceType: COMPONENT
           resourceId: "*" # operate, tasklist, admin
           permissions: [ "ACCESS" ]
+
 
   ## @extra orchestration.image configuration to configure the image specifics
   image:

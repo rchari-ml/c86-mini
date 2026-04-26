@@ -74,7 +74,7 @@ curl -v --request POST \
   --form 'resources=@lead-to-opportunity-with-webhook-Form.form'
 
 # Cleanup - uninstall camunda & elastic
-helm uninstall c86-mini camunda/camunda-platform     --namespace c86-mini
+helm uninstall c86-mini  --namespace c86-mini
 helm uninstall elasticsearch elastic/elasticsearch -n elastic  
 
 # current user info
