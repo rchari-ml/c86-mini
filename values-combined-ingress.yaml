@@ -390,20 +390,22 @@ orchestration:
     ## @extra orchestration.security.initialization
     initialization:
       ## Initial admin users configurations
-      users: []
+      users:
+        - username: john
+          password: makelabs
+          name: John Doe Orchestration User
+          email: john@makelabs.in
       defaultRoles:
         admin:
-          mappingRules: []
           users:
             - demo
+            - john
         connectors:
-          mappingRules: []
           users:
             - connectors
           clients:
             - connectors
         task-worker:
-          mappingRules: []
           users:
             - demo
 
