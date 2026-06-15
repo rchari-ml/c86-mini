@@ -13,7 +13,7 @@ camunda:
       grpc-address: http://127.0.0.1:26500
       rest-address: http://127.0.0.1:8088
     auth:
-      client-id: tasklist-api
+      client-id: orchestration
       # include secret from the camunda env
       client-secret: put-correct-secret-value-here
       # include issuer endpoint from the camunda env

@@ -37,13 +37,13 @@ helm install c86-mini camunda/camunda-platform \
   -f values-combined-ingress.yaml \
   -f values-connectors-env.yaml \
   --set zeebe.prometheusServiceMonitor.enabled=true \
-  --namespace c86-mini  --version 14.0.1
+  --namespace c86-mini  --version 14.4.1
 
 helm upgrade c86-mini camunda/camunda-platform \
   -f values-combined-ingress.yaml \
   -f values-connectors-env.yaml \
   --set zeebe.prometheusServiceMonitor.enabled=true \
-  --namespace c86-mini  --version 14.0.1
+  --namespace c86-mini  --version 14.4.1
 
 
 export TOKEN=$(curl https://c86-mini.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token  \
