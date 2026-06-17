@@ -289,7 +289,7 @@ optimize:
   #env:
   #  - name: KEYCLOAK_URL
   #    value: "https://${UNAMESPACE}.makelabs.in/auth"
-  enabled: false # TODO enable when needed. Disable for testing in mini env.
+  enabled: true # TODO enable when needed. Disable for testing in mini env.
   image:
     pullSecrets:
       - name: registry-docker-hub
@@ -400,6 +400,10 @@ orchestration:
           users:
             - demo
             - john
+          clients:
+            - orchestration
+          mappingRules:
+            - ml-admin-mapping-rule
         connectors:
           users:
             - connectors
@@ -410,7 +414,10 @@ orchestration:
             - demo
 
       ## @param orchestration.security.initialization.mappingRules define mapping rules.
-      mappingRules: []
+      mappingRules: 
+        - mappingRuleId: ml-admin-mapping-rule
+          claimName: email
+          claimValue: "demo@makelabs.in"
 
       ## @param orchestration.security.initialization.authorizations define authorizations.
       authorizations:
