@@ -44,6 +44,11 @@ keytool -import -alias elasticsearch -keystore externaldb.jks -storetype jks -fi
 # this step is not required
 #keytool -importcert -alias ml-ca -file cert-origin_ca_rsa_root.pem  -keystore externaldb.jks  -storepass changeit -noprompt
 
+# import google roots pem to the jks. 
+# plus, import origin pem full chain to the jks. 
+# orchestration needs it for cert chain validation.
+keytool -importcert -alias ml-google-roots -file google-roots.pem                 -keystore externaldb.jks -storepass changeit -noprompt
+keytool -importcert -alias ml-origin-ca    -file cert-main-fullchain-c8-labs.pem  -keystore externaldb.jks -storepass changeit -noprompt
 
 #The jks file is needed by camunda install. Keep it in the camunda namespace
 kubectl  create secret -n ${UNAMESPACE} generic elastic-jks --from-file=externaldb.jks

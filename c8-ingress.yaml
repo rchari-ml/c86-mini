@@ -51,20 +51,6 @@ spec:
                 name: ${UNAMESPACE}-console
                 port:
                   number: 80
-          - path: /operate
-            pathType: Prefix
-            backend:
-              service:
-                name: ${UNAMESPACE}-operate
-                port:
-                  number: 80
-          - path: /tasklist
-            pathType: Prefix
-            backend:
-              service:
-                name: ${UNAMESPACE}-tasklist
-                port:
-                  number: 80
           - path: /optimize
             pathType: Prefix
             backend:
@@ -79,18 +65,18 @@ spec:
                 name: ${UNAMESPACE}-identity
                 port:
                   number: 80
-          - path: /connectors/.*
-            pathType: ImplementationSpecific
+          - path: /connectors
+            pathType: Prefix
             backend:
               service:
                 name: ${UNAMESPACE}-connectors
                 port:
-                  number: 8080
-          - path: /zeebe
+                  number: 80
+          - path: /orchestration
             pathType: Prefix
             backend:
               service:
-                name: ${UNAMESPACE}-zeebe-gateway
+                name: ${UNAMESPACE}-zeebe
                 port:
                   number: 8080
 ---
@@ -121,7 +107,7 @@ spec:
     - name: http
       protocol: TCP
       port: 80
-      targetPort: 8080
+      targetPort: 8084
     - name: metrics
       protocol: TCP
       port: 82
@@ -153,74 +139,8 @@ spec:
   ports:
     - name: http
       protocol: TCP
-      port: 8080
-      targetPort: 8080
----
-# The following is for the operate service
-apiVersion: cloud.google.com/v1
-kind: BackendConfig
-metadata:
-  name: operate-backendconfig
-  namespace: ${UNAMESPACE}
-spec:
-  healthCheck:
-    requestPath: /operate/actuator/health/readiness
-    port: 9600
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: ${UNAMESPACE}-operate
-  namespace: ${UNAMESPACE}
-  labels:
-    app.kubernetes.io/managed-by: Helm
-  annotations:
-    meta.helm.sh/release-name: ${UNAMESPACE}
-    meta.helm.sh/release-namespace: ${UNAMESPACE}
-    cloud.google.com/backend-config: '{"default": "operate-backendconfig"}'
-spec:
-  ports:
-    - name: http
-      protocol: TCP
       port: 80
       targetPort: 8080
-    - name: metrics
-      protocol: TCP
-      port: 9600
-      targetPort: 9600
----
-# The following is for the tasklist service
-apiVersion: cloud.google.com/v1
-kind: BackendConfig
-metadata:
-  name: tasklist-backendconfig
-  namespace: ${UNAMESPACE}
-spec:
-  healthCheck:
-    requestPath: /tasklist/actuator/health/readiness
-    port: 9600
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: ${UNAMESPACE}-tasklist
-  namespace: ${UNAMESPACE}
-  labels:
-    app.kubernetes.io/managed-by: Helm
-  annotations:
-    meta.helm.sh/release-name: ${UNAMESPACE}
-    meta.helm.sh/release-namespace: ${UNAMESPACE}
-    cloud.google.com/backend-config: '{"default": "tasklist-backendconfig"}'
-spec:
-  ports:
-    - name: http
-      protocol: TCP
-      port: 80
-      targetPort: 8080
-    - name: metrics
-      protocol: TCP
-      port: 9600
-      targetPort: 9600
 ---
 # The following is for the console service
 # console readiness -> http://${UNAMESPACE}-console.${UNAMESPACE}:9100/health/readiness
@@ -255,3 +175,69 @@ spec:
       protocol: TCP
       port: 9100
       targetPort: 9100
+---
+# The following is for the operate service
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: orchestration-backendconfig
+  namespace: ${UNAMESPACE}
+spec:
+  healthCheck:
+    requestPath: /orchestration/actuator/health/readiness
+    port: 9600
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${UNAMESPACE}-zeebe
+  namespace: ${UNAMESPACE}
+  labels:
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    meta.helm.sh/release-name: ${UNAMESPACE}
+    meta.helm.sh/release-namespace: ${UNAMESPACE}
+    cloud.google.com/backend-config: '{"default": "orchestration-backendconfig"}'
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+    - name: metrics
+      protocol: TCP
+      port: 9600
+      targetPort: 9600
+---
+# The following is for the optimize service
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: optimize-backendconfig
+  namespace: ${UNAMESPACE}
+spec:
+  healthCheck:
+    requestPath: /optimize/api/readyz
+    port: 8090
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${UNAMESPACE}-optimize
+  namespace: ${UNAMESPACE}
+  labels:
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    meta.helm.sh/release-name: ${UNAMESPACE}
+    meta.helm.sh/release-namespace: ${UNAMESPACE}
+    cloud.google.com/backend-config: '{"default": "optimize-backendconfig"}'
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8090
+    - name: metrics
+      protocol: TCP
+      port: 8092
+      targetPort: 8092

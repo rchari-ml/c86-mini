@@ -9,15 +9,20 @@ REGISTRY=asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo
 
 
 # Build docker image
-#docker build -t asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo/toolkit-${UNAMESPACE}:v1 .
-docker build -t $REGISTRY/$IMAGE_NAME:v1 .
-
-
 # Authenticate docker to push to GCR
+#docker build -t asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo/toolkit-${UNAMESPACE}:v1 .
+# docker build -t $REGISTRY/$IMAGE_NAME:v1 .
 #gcloud auth configure-docker asia-south2-docker.pkg.dev
 #docker tag  toolkit-${UNAMESPACE} asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo/toolkit-${UNAMESPACE}:v1
 #docker push                   asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo/toolkit-${UNAMESPACE}:v1
-docker push $REGISTRY/$IMAGE_NAME:v1
+#docker push $REGISTRY/$IMAGE_NAME:v1
+
+docker buildx create --use
+docker buildx build \
+  --platform linux/amd64,linux/arm64 \
+  -t $REGISTRY/$IMAGE_NAME:v1 \
+  --push .
+
 cd ..
 
 #################

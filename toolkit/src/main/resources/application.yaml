@@ -1,6 +1,8 @@
 spring:
   application:
     name: tasklist-toolkit
+  main:
+    allow-bean-definition-overriding: true
 
 server:
   port: 9010
@@ -25,17 +27,17 @@ camunda:
   client:
     mode: self-managed
     auth:
-      client-id: zeebe
+      method: oidc
+      client-id: orchestration
       client-secret: ${ZEEBE_TOKEN_SECRET}
-      token-url: https://${UNAMESPACE}.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token
-    zeebe:
-      enabled: true
-      grpc-address: http://${UNAMESPACE}-zeebe-gateway:26500
-      prefer-rest-over-grpc: false
-      audience: zeebe
-      # using TLS JKS in the deploymenet - see deploy-worker-toolkit yaml file
-      security:
-        plaintext: true
+      issuer-url: https://${UNAMESPACE}.makelabs.in/auth/realms/camunda-platform
+      token-url:  https://${UNAMESPACE}.makelabs.in/auth/realms/camunda-platform/protocol/openid-connect/token
+      audience: zeebe-api
+    # Absolute path to your server's CA or public certificate - in pem format
+    # ca-certificate-path:: ${CA_CERT_PATH}
+    grpc-address: grpc://${UNAMESPACE}-zeebe-gateway:26500
+    rest-address: http://${UNAMESPACE}-zeebe-gateway:8080
+    prefer-rest-over-grpc: false
 
 logging:
   level:

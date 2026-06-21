@@ -15,7 +15,7 @@ metadata:
   namespace: ${UNAMESPACE}
 spec:
   healthCheck:
-    requestPath: /zeebe/actuator/health/readiness
+    requestPath: /orchestration/actuator/health/readiness
     port: 9600
 ---
 apiVersion: v1

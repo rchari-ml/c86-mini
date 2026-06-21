@@ -1,16 +1,7 @@
-#apiVersion: networking.gke.io/v1
-#kind: ManagedCertificate
-#metadata:
-#  name: c8-managed-cert
-#  namespace: ${UNAMESPACE}
-#spec:
-#  domains:
-#    - ${UNAMESPACE}.makelabs.in
-#---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ${UNAMESPACE}-ingress-toolkit
+  name: ${UNAMESPACE}-ingress
   namespace: ${UNAMESPACE}
   labels:
     app: camunda-platform
@@ -37,10 +28,10 @@ spec:
     - host: ${UNAMESPACE}.makelabs.in
       http:
         paths:
-          - path: /ml-api
+          - path: /
             pathType: Prefix
             backend:
               service:
-                name: toolkit-service
+                name: nginx-landing-page-service
                 port:
                   number: 80

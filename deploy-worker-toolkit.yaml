@@ -20,6 +20,9 @@ spec:
         ports:
         - containerPort: 9010
         volumeMounts:
+          - name: toolkit-ca-crt
+            mountPath: /app/ca-certs
+            readOnly: true
           - name: zeebe-toolkit-crt
             mountPath: /app/certs
             readOnly: true
@@ -41,6 +44,8 @@ spec:
               secretKeyRef:
                 name: identity-secret-for-components
                 key: zeebe-secret
+          - name: CA_CERT_PATH
+            value: /app/ca-certs/ca.crt
         readinessProbe:
           httpGet:
             path: /actuator/health/readiness
@@ -55,6 +60,9 @@ spec:
             memory: "512Mi"
             cpu: "200m"
       volumes:
+        - name: toolkit-ca-crt
+          secret:
+            secretName: custom-ca
         - name: zeebe-toolkit-crt
           secret:
             secretName: "${UNAMESPACE}-zeebe-toolkit-jks"

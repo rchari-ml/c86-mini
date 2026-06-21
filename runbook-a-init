@@ -112,6 +112,9 @@ kubectl create secret generic c8-labs-init-certs \
   --from-file=cert2.pem=./cert-main-origin_ca_rsa_root.pem \
   -n c8-labs-ingress-nginx
 
+# Gateway API CRDs related
+kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.1.0/standard-install.yaml
+
 
 # this is optional. nothing tangible in the yaml file
 helm upgrade nginx-ingress ingress-nginx/ingress-nginx -f values-nginx.yaml --namespace c8-labs-ingress-nginx  

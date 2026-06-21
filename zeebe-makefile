@@ -74,6 +74,12 @@ keytool -importcert -trustcacerts -alias root-cert          -file cert2.pem -key
 # lets add the ca cert as well to jks
 keytool -importcert -alias ml-ca -file cert-origin_ca_rsa_root.pem -keystore ${UNAMESPACE}-zeebe-toolkit.jks -storepass changeit -noprompt
 
+# import google roots pem to the jks. 
+# plus, import origin pem full chain to the jks. 
+# toolkit needs it for cert chain validation.
+keytool -importcert -alias ml-google-roots -file google-roots.pem                 -keystore ${UNAMESPACE}-zeebe-toolkit.jks -storepass changeit -noprompt
+keytool -importcert -alias ml-origin-ca    -file cert-main-fullchain-c8-labs.pem  -keystore ${UNAMESPACE}-zeebe-toolkit.jks -storepass changeit -noprompt
+
 kubectl create secret generic ${UNAMESPACE}-zeebe-toolkit-jks  --from-file=${UNAMESPACE}-zeebe-toolkit.jks   -n ${UNAMESPACE}
 
 # Debug any issue with toolkit ca cert.

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Welcome to Camunda 8.7 Cluster Setup on GKE - Hands On Lab!</title>
+<title>Camunda 8.9 on GKE Cluster Hands On Lab!</title>
 
     <style media="screen">
       body { background: white; color: rgba(0,0,0,0.87); font-family: "Manrope", sans-serif; margin: 0; padding: 0; }
@@ -42,41 +42,55 @@
     </div>
     <div id="message">
           <h1>Welcome to Enablement Program</h1>
-          <h2>Camunda 8.7 Cluster Setup Hands On Lab</h2>
+          <h2>Camunda 8.9+ Self Managed Setup Hands On Lab</h2>
           <h4>MakeLabs.in</h4>
           <p>
-            Camunda 8.7 (or higher) cluster is setup on GKE cluster running on GCP.
-            The cluster nodes are distributed across 3 zones in the Asia region. The setup includes below components.
+            Camunda 8.9 is setup on GKE cluster. The setup includes below components.
             <br/>
               <ul>
-                <li>Camunda setup via Helm charts - release 8.7 alpha or higher</li>
-                <li>Elastic and Kibana as supporting components</li>
-                <li>Prometheus and Grafana as optional components</li>
+                <li>Orchestration Cluster</li>
+                <li>Console, Identity, Optimize</li>
+                <li>Keycloak for Identity Management</li>
+                <li>Elastic and Kibana<sup>*</sup></li>
+                <li>Prometheus and Grafana<sup>*</sup></li>
               </ul>
           </p>
           <p>
-            More about the official documentation <a href="https://github.com/camunda/camunda-platform-helm/tree/main/charts/camunda-platform-8.7">here</a>.
+            More about the official documentation <a href="https://github.com/camunda/camunda-platform-helm/tree/main/charts/camunda-platform-8.9">here</a>.
           </p>
-
           <p>
-            Camunda Platform Webapps.
+            Core Orchestration
+            <br/>
+            <a target="_blank" href="/orchestration/admin">Orchestration Admin</a>&nbsp;&nbsp;
+            <a target="_blank" href="/orchestration/operate">Operate</a>&nbsp;&nbsp;
+            <a target="_blank" href="/orchestration/tasklist">Tasklist</a>&nbsp;&nbsp;
+          </p>
+          <p>
+            Management webapp(s)
             <br/>
             <a target="_blank" href="/console">Console</a>&nbsp;&nbsp;
             <a target="_blank" href="/identity">Identity</a>&nbsp;&nbsp;
-            <a target="_blank" href="/operate">Operate</a>&nbsp;&nbsp;
             <a target="_blank" href="/optimize">Optimize</a>&nbsp;&nbsp;
-            <a target="_blank" href="/tasklist">Tasklist</a>&nbsp;&nbsp;
           </p>
           <p>
-            Administration Webapps.
+            Administration
             <br/>
             <a target="_blank"  href="/auth/">Admin Console</a>&nbsp;&nbsp;
             <a target="_blank" href="/auth/realms/camunda-platform/.well-known/openid-configuration">Open ID Config</a>&nbsp;&nbsp;
-            <a target="_blank" href="/ml-api/fetchTopology">Topology</a>&nbsp;&nbsp;
           </p>
+          <p>
+            Custom App(s)
+            <br/>
+            <a target="_blank" href="/orchestration/v2/authentication/me">Current User</a>&nbsp;&nbsp;
+            <a target="_blank" href="/ml-api/fetchTopology">Topology</a>&nbsp;&nbsp;
 
-          <p><em>Visit the <a target="_blank" href="https://cep-now.makelabs.in">Enablement Program portal</a> here.</em></p>
-          <p><em>Note: The cep-now site is built using Cloudflare Access and Zero Trust components.</em></p>
+          </p>
+          <hr/>
+          <p><em>Visit the <a target="_blank" href="https://c8-portal.makelabs.in">Enablement portal</a> here.</em></p>
+          <p><em>Note: This site is built using Cloudflare Access, GCP and Zero Trust components.</em></p>
+          <p/>
+          <hr/>
+          <p><em>Please share your feedback with us: <code>contact@makelabs.in</code></em></p>
       </div>
   </div>
 </body>
