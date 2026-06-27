@@ -9,7 +9,12 @@ includedPermissions:
 - container.thirdPartyObjects.get
 - container.thirdPartyObjects.list
 - container.thirdPartyObjects.update
-# below are associated with Helm scripts privileges
+# below are associated with backed config - ingress spec
+- container.backendConfigs.get
+- container.backendConfigs.list
+- container.backendConfigs.create
+- container.backendConfigs.update
+- container.backendConfigs.delete
 #- container.thirdPartyObjects.updateStatus
 #- container.thirdPartyObjects.patch
 #- container.thirdPartyObjects.watch
