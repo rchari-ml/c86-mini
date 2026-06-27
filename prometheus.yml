@@ -1,24 +1,114 @@
-# adds additional scrape configs to prometheus.yml
-# must be a string so you have to add a | after extraScrapeConfigs:
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 30s
 
-extraScrapeConfigs: |
-   - job_name: 'zeebe-gateway'
-     scrape_interval: 15s
-     metrics_path: /zeebe/actuator/prometheus
-     scheme: http
-     tls_config:
-       insecure_skip_verify: true
-     static_configs:
-     - targets:
-         - '${UNAMESPACE}-zeebe-gateway.${UNAMESPACE}.svc.cluster.local:9600'
-   - job_name: 'zeebe'
-     scrape_interval: 15s
-     metrics_path: /actuator/prometheus
-     scheme: http
-     tls_config:
-       insecure_skip_verify: true
-     static_configs:
-     - targets:
-         - '${UNAMESPACE}-zeebe-0.${UNAMESPACE}-zeebe:9600'
-         - '${UNAMESPACE}-zeebe-1.${UNAMESPACE}-zeebe:9600'
-         - '${UNAMESPACE}-zeebe-2.${UNAMESPACE}-zeebe:9600'
+    scrape_configs:
+
+      - job_name: 'zeebe-gateway'
+        scrape_interval: 15s
+        metrics_path: /orchestration/actuator/prometheus
+        scheme: http
+        static_configs:
+          - targets:
+              - '${UNAMESPACE}-zeebe-gateway.${UNAMESPACE}.svc.cluster.local:9600'
+
+      - job_name: 'zeebe'
+        scrape_interval: 15s
+        metrics_path: /orchestration/actuator/prometheus
+        scheme: http
+        static_configs:
+          - targets:
+              - '${UNAMESPACE}-zeebe-0.${UNAMESPACE}-zeebe:9600'
+              - '${UNAMESPACE}-zeebe-1.${UNAMESPACE}-zeebe:9600'
+              - '${UNAMESPACE}-zeebe-2.${UNAMESPACE}-zeebe:9600'
+
+#      - job_name: 'operate'
+#        scrape_interval: 15s
+#        metrics_path: /actuator/prometheus
+#        static_configs:
+#          - targets:
+#              - '${UNAMESPACE}-operate:9600'
+
+#      - job_name: 'tasklist'
+#        scrape_interval: 15s
+#        metrics_path: /actuator/prometheus
+#        static_configs:
+#          - targets:
+#              - '${UNAMESPACE}-tasklist:9600'
+
+#      - job_name: 'optimize'
+#        scrape_interval: 15s
+#        metrics_path: /actuator/prometheus
+#        static_configs:
+#          - targets:
+#              - '${UNAMESPACE}-optimize:8092'
+
+#      - job_name: 'connectors'
+#        scrape_interval: 15s
+#        metrics_path: /actuator/prometheus
+#        static_configs:
+#          - targets:
+#              - '${UNAMESPACE}-connectors:8080'
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      containers:
+        - name: prometheus
+          image: prom/prometheus:v3.5.0
+          imagePullPolicy: IfNotPresent
+          args:
+            - --config.file=/etc/prometheus/prometheus.yml
+            - --storage.tsdb.path=/prometheus
+            - --web.enable-lifecycle
+          ports:
+            - containerPort: 9090
+              name: http
+          volumeMounts:
+            - name: config
+              mountPath: /etc/prometheus
+            - name: data
+              mountPath: /prometheus
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+      volumes:
+        - name: config
+          configMap:
+            name: prometheus-config
+        - name: data
+          emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+spec:
+  type: ClusterIP
+  selector:
+    app: prometheus
+  ports:
+    - name: http
+      port: 9090
+      targetPort: 9090
