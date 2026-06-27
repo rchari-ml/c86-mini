@@ -43,3 +43,4 @@ AWSCLIV2.pkg
 .AWSCLIV2.pkg.icloud
 truststore.pem
 google-roots.crt
+grafana.my-ns.yaml

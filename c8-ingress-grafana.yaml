@@ -15,17 +15,17 @@ metadata:
 spec:
   tls:
     - hosts:
-        - ${UNAMESPACE}-grafana.makelabs.in
+        - ${UNAMESPACE}.makelabs.in
       secretName: cf-origin-cert
   ingressClassName: "nginx"
   rules:
-    - host: ${UNAMESPACE}-grafana.makelabs.in
+    - host: ${UNAMESPACE}.makelabs.in
       http:
         paths:
-          - path: /
-            pathType: ImplementationSpecific
+          - path: /grafana
+            pathType: Prefix
             backend:
               service:
                 name: grafana
                 port:
-                  number: 80
+                  number: 3000
