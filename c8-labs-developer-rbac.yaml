@@ -1,0 +1,15 @@
+title: C8 Labs Developer
+description: Minimal IAM permissions for namespace-scoped GKE developers for running C8 Labs
+stage: GA
+includedPermissions:
+- container.clusters.connect
+- container.clusters.get
+- container.thirdPartyObjects.create
+- container.thirdPartyObjects.delete
+- container.thirdPartyObjects.get
+- container.thirdPartyObjects.list
+- container.thirdPartyObjects.update
+# below are associated with Helm scripts privileges
+#- container.thirdPartyObjects.updateStatus
+#- container.thirdPartyObjects.patch
+#- container.thirdPartyObjects.watch
