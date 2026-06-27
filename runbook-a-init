@@ -171,9 +171,9 @@ gcloud container node-pools create node-pool-swati-v2 \
 gcloud container clusters update c8-labs-sravana --region asia-south2 --autoscaling-profile optimize-utilization
 
 # create custom c8 labs developer role for participants
-gcloud iam roles create c8-labs-developer \
+gcloud iam roles create c8_labs_developer \
     --project=c8-labs \
-    --file=c8-labs-developer.yaml
+    --file=c8-labs-developer-rbac.yaml
 
 # Check vpc network config
 # Make sure secondary ranges are defined for gke-pods and gke-services
