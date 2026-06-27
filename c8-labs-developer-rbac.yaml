@@ -15,6 +15,3 @@ includedPermissions:
 - container.backendConfigs.create
 - container.backendConfigs.update
 - container.backendConfigs.delete
-#- container.thirdPartyObjects.updateStatus
-#- container.thirdPartyObjects.patch
-#- container.thirdPartyObjects.watch

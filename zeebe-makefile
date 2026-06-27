@@ -75,11 +75,12 @@ keytool -importcert -trustcacerts -alias root-cert          -file cert2.pem -key
 keytool -importcert -alias ml-ca -file cert-origin_ca_rsa_root.pem -keystore ${UNAMESPACE}-zeebe-toolkit.jks -storepass changeit -noprompt
 
 # import google roots pem to the jks. 
-# plus, import origin root pem full chain to the jks. 
+# plus, import cf origin root pem full chain to the jks. 
 # toolkit needs it for cert chain validation.
 keytool -importcert -alias ml-google-roots -file google-roots.pem                 -keystore ${UNAMESPACE}-zeebe-toolkit.jks -storepass changeit -noprompt
-kubectl get secret custom-ca -n c8-labs-ingress-nginx   -o jsonpath='{.data.ca\.crt}' | base64 --decode > cert-main-origin_ca_rsa_root.pem
-keytool -importcert -alias ml-origin-ca    -file cert-main-origin_ca_rsa_root.pem  -keystore ${UNAMESPACE}-zeebe-toolkit.jks -storepass changeit -noprompt
+keytool -importcert -alias ml-origin-ca        -file cert-origin_ca_rsa_root.pem  -keystore ${UNAMESPACE}-zeebe-toolkit.jks -storepass changeit -noprompt
+keytool -importcert -alias ml-fullchain-cert   -file cert-fullchain-c8-labs.pem   -keystore ${UNAMESPACE}-zeebe-toolkit.jks -storepass changeit -noprompt
+
 
 kubectl create secret generic ${UNAMESPACE}-zeebe-toolkit-jks  --from-file=${UNAMESPACE}-zeebe-toolkit.jks   -n ${UNAMESPACE}
 
