@@ -71,7 +71,7 @@ spec:
               service:
                 name: ${UNAMESPACE}-connectors
                 port:
-                  number: 80
+                  number: 8080
           - path: /orchestration
             pathType: Prefix
             backend:

@@ -2,6 +2,7 @@ title: C8 Labs Developer
 description: Minimal IAM permissions for namespace-scoped GKE developers for running C8 Labs
 stage: GA
 includedPermissions:
+- resourcemanager.projects.get
 - container.clusters.connect
 - container.clusters.get
 - container.thirdPartyObjects.create
