@@ -29,6 +29,9 @@ gcloud projects add-iam-policy-binding c8-labs --member="user:${UNAME}" --role="
 gcloud projects add-iam-policy-binding c8-labs --member="user:${UNAME}" --role="roles/container.developer"
 gcloud projects add-iam-policy-binding c8-labs --member="user:${UNAME}" --role="roles/artifactregistry.reader"
 
+# custom role c8 labs developer
+gcloud projects add-iam-policy-binding c8-labs --member="user:${UNAME}" --role="projects/c8-labs/roles/c8_labs_developer" 
+
 # writer permission not required as we are using common artifact registry for all namespaces
 #gcloud projects add-iam-policy-binding c8-labs --member="user:${UNAME}" --role="roles/artifactregistry.writer"
 
