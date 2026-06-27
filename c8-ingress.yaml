@@ -129,18 +129,8 @@ kind: Service
 metadata:
   name: ${UNAMESPACE}-connectors
   namespace: ${UNAMESPACE}
-  labels:
-    app.kubernetes.io/managed-by: Helm
   annotations:
-    meta.helm.sh/release-name: ${UNAMESPACE}
-    meta.helm.sh/release-namespace: ${UNAMESPACE}
     cloud.google.com/backend-config: '{"default": "connectors-backendconfig"}'
-spec:
-  ports:
-    - name: http
-      protocol: TCP
-      port: 80
-      targetPort: 8080
 ---
 # The following is for the console service
 # console readiness -> http://${UNAMESPACE}-console.${UNAMESPACE}:9100/health/readiness
