@@ -42,5 +42,4 @@ offboard-user.sh
 AWSCLIV2.pkg
 .AWSCLIV2.pkg.icloud
 truststore.pem
-google-roots.pem
 google-roots.crt
