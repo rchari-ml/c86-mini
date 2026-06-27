@@ -115,6 +115,8 @@ kubectl create secret generic c8-labs-init-certs \
 # Gateway API CRDs related
 kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.1.0/standard-install.yaml
 
+# Allow other ns entities to view this generic ns
+kubectl apply -f namespace-k8s-access.yaml 
 
 # this is optional. nothing tangible in the yaml file
 helm upgrade nginx-ingress ingress-nginx/ingress-nginx -f values-nginx.yaml --namespace c8-labs-ingress-nginx  
