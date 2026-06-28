@@ -3,7 +3,7 @@
 docker pull "docker.elastic.co/elasticsearch/elasticsearch:8.5.1"
 
 ### add this "MSYS_NO_PATHCONV=1 " to the line below for Windows OS only
-MSYS_NO_PATHCONV=1 docker run --name elastic-helm-charts-certs -i -w /tmp \
+MSYS_NO_PATHCONV=1 docker run --name elastic-helm-charts-certs  -w /tmp \
 		docker.elastic.co/elasticsearch/elasticsearch:8.5.1 \
 		/bin/sh -c " \
 			elasticsearch-certutil ca --out /tmp/elastic-stack-ca.p12 --pass '' && \
