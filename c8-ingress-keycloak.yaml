@@ -1,10 +1,20 @@
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: keycloak-backendconfig
+  namespace: ${UNAMESPACE}
+spec:
+  healthCheck:
+    requestPath: /auth/realms/master
+    port: 8080
+---
 apiVersion: v1
 kind: Service
 metadata:
   name: ${UNAMESPACE}-keycloak
   namespace: ${UNAMESPACE}
-  #annotations:
-    #cloud.google.com/backend-config: '{"default": "keycloak-backendconfig"}'
+  annotations:
+    cloud.google.com/backend-config: '{"default": "keycloak-backendconfig"}'
 spec:
   type: ClusterIP
   selector:
