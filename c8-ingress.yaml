@@ -25,7 +25,8 @@ metadata:
     meta.helm.sh/release-namespace: ${UNAMESPACE}
     kubernetes.io/ingress.allow-http: "false"  # on ingress, we only allow HTTPS. 
     #networking.gke.io/managed-certificates: c8-managed-cert # shift to cf origin cert
-    networking.gke.io/backend-protocol: "HTTP"  # Tell GKE to use HTTP to backend
+    #networking.gke.io/backend-protocol: "HTTP"  # Tell GKE to use HTTP to backend
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
     #cloud.google.com/healthcheck-path: "/console"
 spec:
   tls:
