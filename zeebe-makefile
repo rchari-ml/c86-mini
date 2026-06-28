@@ -103,8 +103,7 @@ keytool -importkeystore -destkeystore keycloak-keystore.jks -srckeystore keycloa
 keytool -importcert -alias ml-ca -file cert-origin_ca_rsa_root.pem -keystore keycloak-truststore.jks -storepass changeit -noprompt
 
 # 7.d. lets create a secret with keystore and truststore. along with respetive store password
-kubectl create secret generic keycloak-jks-truststore-secret --from-file=keycloak.keystore.jks=./keycloak-keystore.jks --from-file=keycloak.truststore.jks=./keycloak-truststore.jks   --from-file=tls.crt=./cert-public-c8-labs.key  --from-file=tls.key=./cert-key-c8-labs.key  -n ${UNAMESPACE}
-# --from-literal=keystore-password='changeit' --from-literal=truststore-password='changeit'
+kubectl create secret generic keycloak-jks-truststore-secret --from-file=keycloak.keystore.jks=./keycloak-keystore.jks --from-file=keycloak.truststore.jks=./keycloak-truststore.jks   --from-file=tls.crt=./cert-public-c8-labs.key  --from-file=tls.key=./cert-key-c8-labs.key  -n ${UNAMESPACE} --from-literal=keystore-password='changeit' --from-literal=truststore-password='changeit'
 
 
 ####################
