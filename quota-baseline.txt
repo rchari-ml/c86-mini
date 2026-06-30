@@ -1,0 +1,113 @@
+export UNAMESPACE=raghu-hj-gmail-com-ccb-c8-labs
+kubectl top pods -n $UNAMESPACE
+
+NAME                                                         CPU(cores)   MEMORY(bytes)   
+elasticsearch-master-0                                       19m          1554Mi          
+nginx-static-web-app-7b886cfb7f-kq7zx                        1m           4Mi             
+raghu-hj-gmail-com-ccb-c8-labs-connectors-67bddb58b5-d4z7b   3m           360Mi           
+raghu-hj-gmail-com-ccb-c8-labs-console-7f5c9b8cdf-vfb5k      6m           223Mi           
+raghu-hj-gmail-com-ccb-c8-labs-identity-97fdbcf76-nnhqd      4m           326Mi           
+raghu-hj-gmail-com-ccb-c8-labs-keycloak-0                    4m           542Mi           
+raghu-hj-gmail-com-ccb-c8-labs-optimize-7979ccb9dd-55dz7     4m           663Mi           
+raghu-hj-gmail-com-ccb-c8-labs-postgresql-0                  9m           44Mi            
+raghu-hj-gmail-com-ccb-c8-labs-zeebe-0                       37m          1622Mi          
+raghu-hj-gmail-com-ccb-c8-labs-zeebe-1                       26m          1586Mi          
+
+raghu-hj-gmail-com-ccb-c8-labs-zeebe-2                       35m          1640Mi          
+
+toolkit-app-78fd7964d6-z999p                                 2m           219Mi 
+
+
+
+kubectl get pods -n $UNAMESPACE
+NAME                                                         READY   STATUS    RESTARTS        AGE
+elasticsearch-master-0                                       1/1     Running   0               3h27m
+nginx-static-web-app-7b886cfb7f-kq7zx                        1/1     Running   0               3h30m
+raghu-hj-gmail-com-ccb-c8-labs-connectors-67bddb58b5-d4z7b   1/1     Running   1 (3h17m ago)   3h20m
+raghu-hj-gmail-com-ccb-c8-labs-console-7f5c9b8cdf-vfb5k      1/1     Running   0               3h20m
+raghu-hj-gmail-com-ccb-c8-labs-identity-97fdbcf76-nnhqd      1/1     Running   0               3h20m
+raghu-hj-gmail-com-ccb-c8-labs-keycloak-0                    1/1     Running   0               3h20m
+raghu-hj-gmail-com-ccb-c8-labs-optimize-7979ccb9dd-55dz7     1/1     Running   0               3h20m
+raghu-hj-gmail-com-ccb-c8-labs-postgresql-0                  1/1     Running   0               3h20m
+raghu-hj-gmail-com-ccb-c8-labs-zeebe-0                       1/1     Running   0               3h20m
+raghu-hj-gmail-com-ccb-c8-labs-zeebe-1                       1/1     Running   0               3h20m
+raghu-hj-gmail-com-ccb-c8-labs-zeebe-2                       1/1     Running   0               3h20m
+toolkit-app-78fd7964d6-z999p                                 1/1     Running   0               3h3m
+
+kubectl get pvc -n $UNAMESPACE
+
+NAME                                               STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+data-raghu-hj-gmail-com-ccb-c8-labs-postgresql-0   Bound    pvc-d52c52e9-7bc0-4d80-a024-5583beb2a1af   8Gi        RWO            standard-rwo   <unset>                 3h21m
+data-raghu-hj-gmail-com-ccb-c8-labs-zeebe-0        Bound    pvc-e068f750-3cab-45a9-aea8-9c2d0d02f956   5Gi        RWO            standard-rwo   <unset>                 3h21m
+data-raghu-hj-gmail-com-ccb-c8-labs-zeebe-1        Bound    pvc-8e53c4e4-9bd1-4548-819e-1e553d6b31c8   5Gi        RWO            standard-rwo   <unset>                 3h21m
+data-raghu-hj-gmail-com-ccb-c8-labs-zeebe-2        Bound    pvc-a3d7f028-fa5c-4dd3-8c43-5d06261a89de   5Gi        RWO            standard-rwo   <unset>                 3h21m
+elasticsearch-master-elasticsearch-master-0        Bound    pvc-a7086a92-3bd3-4f66-90c6-e5c824b34ed0   10Gi       RWO            standard-rwo   <unset>                 3h28m
+
+
+kubectl get svc -n $UNAMESPACE
+NAME                                                 TYPE           CLUSTER-IP    EXTERNAL-IP                                  PORT(S)    AGE
+elasticsearch-master                                 ClusterIP      10.0.42.30    <none>                                       9200/TCP,9300/TCP    3h28m
+elasticsearch-master-headless                        ClusterIP      None          <none>                                       9200/TCP,9300/TCP    3h28m
+nginx-landing-page-service                           ClusterIP      10.0.39.49    <none>                                       80/TCP    3h31m
+raghu-hj-gmail-com-ccb-c8-labs-connectors            ClusterIP      10.0.39.47    <none>                                       8080/TCP    3h21m
+raghu-hj-gmail-com-ccb-c8-labs-connectors-headless   ClusterIP      None          <none>                                       8080/TCP    3h21m
+raghu-hj-gmail-com-ccb-c8-labs-console               ClusterIP      10.0.45.131   <none>                                       80/TCP,9100/TCP    3h21m
+raghu-hj-gmail-com-ccb-c8-labs-identity              ClusterIP      10.0.45.122   <none>                                       80/TCP,82/TCP    3h21m
+raghu-hj-gmail-com-ccb-c8-labs-keycloak              ClusterIP      10.0.45.155   <none>                                       443/TCP,80/TCP,82/TCP    3h21m
+raghu-hj-gmail-com-ccb-c8-labs-keycloak-custom       ExternalName   <none>        raghu-hj-gmail-com-ccb-c8-labs.makelabs.in   <none>    3h21m
+raghu-hj-gmail-com-ccb-c8-labs-keycloak-headless     ClusterIP      None          <none>                                       8080/TCP    3h21m
+raghu-hj-gmail-com-ccb-c8-labs-optimize              ClusterIP      10.0.37.246   <none>                                       80/TCP,8092/TCP    3h21m
+raghu-hj-gmail-com-ccb-c8-labs-postgresql            ClusterIP      10.0.43.171   <none>                                       5432/TCP    3h21m
+raghu-hj-gmail-com-ccb-c8-labs-postgresql-hl         ClusterIP      None          <none>                                       5432/TCP    3h21m
+raghu-hj-gmail-com-ccb-c8-labs-zeebe                 ClusterIP      None          <none>                                       26502/TCP,26501/TCP,8080/TCP,9600/TCP,26500/TCP   3h21m
+raghu-hj-gmail-com-ccb-c8-labs-zeebe-gateway         ClusterIP      10.0.43.95    <none>                                       8080/TCP,9600/TCP,26500/TCP    3h21m
+toolkit-service                                      ClusterIP      10.0.37.210   <none>                                       80/TCP    3h4m
+
+
+kubectl get ingress -n $UNAMESPACE
+NAME                                                   CLASS   HOSTS                                                      ADDRESS          PORTS     AGE
+raghu-hj-gmail-com-ccb-c8-labs-camunda-platform-grpc   nginx   raghu-hj-gmail-com-ccb-c8-labs-zeebe-gateway.makelabs.in   34.131.148.143   80        3h22m
+raghu-hj-gmail-com-ccb-c8-labs-ingress                 nginx   raghu-hj-gmail-com-ccb-c8-labs.makelabs.in                 34.131.148.143   80, 443   3h20m
+raghu-hj-gmail-com-ccb-c8-labs-ingress-keycloak        nginx   raghu-hj-gmail-com-ccb-c8-labs.makelabs.in                 34.131.148.143   80, 443   3h20m
+raghu-hj-gmail-com-ccb-c8-labs-ingress-toolkit         nginx   raghu-hj-gmail-com-ccb-c8-labs.makelabs.in                 34.131.148.143   80, 443   3h5m
+raghu-hj-gmail-com-ccb-c8-labs-zeebe-gateway-http      nginx   raghu-hj-gmail-com-ccb-c8-labs-zeebe-gateway.makelabs.in   34.131.148.143   80, 443   3h20m
+
+
+kubectl get configmap -n $UNAMESPACE
+NAME                                                                     DATA   AGE
+elasticsearch-master-config                                              1      3h29m
+kube-root-ca.crt                                                         1      3h40m
+raghu-hj-gmail-com-ccb-c8-labs-camunda-platform-documentstore-env-vars   2      3h22m
+raghu-hj-gmail-com-ccb-c8-labs-camunda-platform-identity-env-vars        4      3h22m
+raghu-hj-gmail-com-ccb-c8-labs-camunda-platform-release                  1      3h22m
+raghu-hj-gmail-com-ccb-c8-labs-connectors-configuration                  1      3h22m
+raghu-hj-gmail-com-ccb-c8-labs-console-configuration                     1      3h22m
+raghu-hj-gmail-com-ccb-c8-labs-identity-configuration                    1      3h22m
+raghu-hj-gmail-com-ccb-c8-labs-keycloak-env-vars                         17     3h22m
+raghu-hj-gmail-com-ccb-c8-labs-optimize-configuration                    2      3h22m
+raghu-hj-gmail-com-ccb-c8-labs-zeebe-configuration                       3      3h22m
+
+
+kubectl get secret -n $UNAMESPACE
+NAME                                                   TYPE                             DATA   AGE
+cf-full-chain-origin-cert                              kubernetes.io/tls                2      3h23m
+cf-origin-cert                                         kubernetes.io/tls                2      3h23m
+console-certificates-tls-secret                        Opaque                           2      3h23m
+custom-ca                                              Opaque                           1      3h23m
+elastic-certificates                                   Opaque                           1      3h30m
+elastic-jks                                            Opaque                           1      3h30m
+elasticsearch-master-certs                             kubernetes.io/tls                3      3h30m
+elasticsearch-master-credentials                       Opaque                           2      3h29m
+identity-secret-for-components                         Opaque                           18     3h23m
+keycloak-certificates-tls-secret                       Opaque                           2      3h23m
+keycloak-jks-truststore-secret                         Opaque                           6      3h23m
+raghu-hj-gmail-com-ccb-c8-labs-zeebe-ca-crt            Opaque                           1      3h23m
+raghu-hj-gmail-com-ccb-c8-labs-zeebe-grpc-tls          kubernetes.io/tls                2      3h23m
+raghu-hj-gmail-com-ccb-c8-labs-zeebe-jks               Opaque                           1      3h23m
+raghu-hj-gmail-com-ccb-c8-labs-zeebe-rest-tls          kubernetes.io/tls                2      3h23m
+raghu-hj-gmail-com-ccb-c8-labs-zeebe-tls               Opaque                           3      3h23m
+raghu-hj-gmail-com-ccb-c8-labs-zeebe-toolkit-jks       Opaque                           1      3h23m
+registry-camunda-cloud                                 kubernetes.io/dockerconfigjson   1      3h31m
+registry-docker-hub                                    kubernetes.io/dockerconfigjson   1      3h31m
+sh.helm.release.v1.elasticsearch.v1                    helm.sh/release.v1               1      3h29m
+sh.helm.release.v1.raghu-hj-gmail-com-ccb-c8-labs.v1   helm.sh/release.v1               1      3h22m

@@ -736,6 +736,10 @@ postgresql:
   image:
     pullSecrets:
       - name: registry-docker-hub
+  primary:
+    persistence:
+      enabled: true
+      size: 5Gi
 
 
 #####################################################################################
