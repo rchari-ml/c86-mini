@@ -104,7 +104,23 @@ helm install nginx-ingress ingress-nginx/ingress-nginx --namespace c8-labs-ingre
   --set-string controller.config.proxy-busy-buffers-size="128K" \
   -f values-nginx.yaml
 
+# add headlamp repo and install in kubee-system
+# add initial set of certificates - used by headlamp dashboard
+helm repo add headlamp https://kubernetes-sigs.github.io/headlamp/
+helm install my-headlamp headlamp/headlamp --namespace kube-system
+kubectl get pods -n kube-system
+
+kubectl create secret tls dashboard-makelabs-in-tls \
+  --cert=./cert-main-public-c8-labs.key \
+  --key=./cert-main-key-c8-labs.key \
+  -n kube-system
+
+# apply igress rules for K8S Dashboard
+kubectl apply -f c8-ingress-headlamp.yaml
+# end of headlamp
+
 # add initial set of certificates to nginx ingress controller
+# used by participant namespaces respectively
 kubectl create secret generic c8-labs-init-certs \
   --from-file=cert-public-c8-labs.key=./cert-main-public-c8-labs.key \
   --from-file=cert-key-c8-labs.key=./cert-main-key-c8-labs.key \
