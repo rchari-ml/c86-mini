@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-all-traffic-demo
+  namespace: $UNAMESPACE
+spec:
+  # An empty podSelector targets ALL pods in the namespace
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+  # Empty brackets mean "allow all incoming traffic from anywhere"
+  ingress:
+  - {}
+  # Empty brackets mean "allow all outgoing traffic to anywhere"
+  egress:
+  - {}

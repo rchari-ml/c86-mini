@@ -16,6 +16,10 @@ kubectl apply -f identity-secret.yaml --namespace ${UNAMESPACE}
 #sh zeebe-makefile
 UNAMESPACE=${UNAMESPACE} envsubst < zeebe-makefile | sh
 
+# GKE auto pilot cluster 
+# allow all pods to communicate policy - keep it simple
+envsubst '${UNAMESPACE}' < c8-labs-pod-network-policy.yaml  | kubectl apply  -f -
+
 # Make sure the elasticsearch endpoint config is correct in values-combined-ingress.yaml.
 # elasticsearch-master.${UNAMESPACE}.svc.cluster.local
 
@@ -189,3 +193,14 @@ kubectl exec -it toolkit-app-5c6d7b6449-c62w8 -n ${UNAMESPACE} -- nslookup ${UNA
 # GCP > Security > Certificate Manager > Classic Certificates > Delete entries for the env.
 # GCP > IAM > Delete any users created.
 # Remove any external DNS entries created for the env.
+
+
+# useful commands
+# delete network policy before applying something new
+kubectl delete networkpolicy --all -n $UNAMESPACE
+envsubst '${UNAMESPACE}' < c8-labs-pod-network-policy.yaml  | kubectl apply  -f -
+# ofcourse, we can restart the relevant pods. in this case broker nodes
+kubectl delete pod -l app.kubernetes.io/component=zeebe-broker -n $UNAMESPACE
+
+# to see the logs of connectors pod
+kubectl logs -n ${UNAMESPACE}   raghu-at-makelabs-in-connectors-6cfc686db4-5t64k  -f

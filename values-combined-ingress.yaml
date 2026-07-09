@@ -254,10 +254,10 @@ console:
   #  #certKeyFilename: cert-public-c8-labs.key
   resources:
     requests:
-      cpu: "200m"
+      cpu: "500m"
       memory: "1Gi"
     limits:
-      cpu: "400m"
+      cpu: "500m"
       memory: "1Gi"
   #extraVolumeMounts:
   #  - name: console-certificates-tls
@@ -298,10 +298,10 @@ optimize:
 #    enabled: true
   resources:
     requests:
-      cpu: "100m"
+      cpu: "500m"
       memory: "1Gi"
     limits:
-      cpu: "200m"
+      cpu: "500m"
       memory: "1Gi"
 
 

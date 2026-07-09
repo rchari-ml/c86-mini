@@ -21,11 +21,11 @@ connectors:
     prometheus: /actuator/prometheus
   resources:
     requests:
-      cpu: "100m"
-      memory: "512M"
-    limits:
-      cpu: "200m"
+      cpu: "500m"
       memory: "1Gi"
+    limits:
+      cpu: "500m"
+      memory: "2Gi"
   startupProbe:
     enabled: true
     probePath: /actuator/health/readiness

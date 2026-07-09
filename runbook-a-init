@@ -107,13 +107,13 @@ helm install nginx-ingress ingress-nginx/ingress-nginx --namespace c8-labs-ingre
 # add headlamp repo and install in kubee-system
 # add initial set of certificates - used by headlamp dashboard
 helm repo add headlamp https://kubernetes-sigs.github.io/headlamp/
-helm install my-headlamp headlamp/headlamp --namespace kube-system
-kubectl get pods -n kube-system
+helm install my-headlamp headlamp/headlamp --namespace c8-labs-ingress-nginx
+kubectl get pods -n  c8-labs-ingress-nginx
 
 kubectl create secret tls dashboard-makelabs-in-tls \
   --cert=./cert-main-public-c8-labs.key \
   --key=./cert-main-key-c8-labs.key \
-  -n kube-system
+  -n c8-labs-ingress-nginx
 
 # apply igress rules for K8S Dashboard
 kubectl apply -f c8-ingress-headlamp.yaml
@@ -132,10 +132,16 @@ kubectl create secret generic c8-labs-init-certs \
   -n c8-labs-ingress-nginx
 
 # Gateway API CRDs related
-kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.1.0/standard-install.yaml
+kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.1.0/standard-install.yaml 
 
-# Allow other ns entities to view this generic ns
+# Allow other ns entities to view this generic ns. 
+#
+# THIS COMMAND IS FOR STANDARD GKE ONLY.
 kubectl apply -f namespace-k8s-access.yaml 
+# OR
+#
+# THIS COMMAND IS FOR AUTO PILOT GKE ONLY.
+kubectl apply -f namespace-k8s-access-ap-21.yaml 
 
 # this is optional. nothing tangible in the yaml file
 helm upgrade nginx-ingress ingress-nginx/ingress-nginx -f values-nginx.yaml --namespace c8-labs-ingress-nginx  
@@ -156,7 +162,7 @@ kubectl describe pod nginx-ingress-ingress-nginx-controller-75fc9f4654-68d5x -n 
 # lets create a namespace - delete if it exists
 # --namespace ${UNAMESPACE}
 kubectl delete namespace ${UNAMESPACE}
-export UNAMESPACE=c8-labs-32
+export UNAMESPACE=raghu-at-makelabs-in
 envsubst '${UNAMESPACE}' < namespace-c86-mini.yaml  | kubectl apply -f -
 
 

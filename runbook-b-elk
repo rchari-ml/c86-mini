@@ -48,8 +48,11 @@ UNAMESPACE=${UNAMESPACE} envsubst < elk-makefile | sh
 # Config => secret/elastic-jks created
 
 
+# There are two versions: one for GKE standard cluster and other for auto pilot cluster. choose the file suitably.
 # Install elastic components - elasticsearch
 helm install elasticsearch elastic/elasticsearch -n ${UNAMESPACE} -f elasticsearch.yaml
+# (OR)
+helm install elasticsearch elastic/elasticsearch -n ${UNAMESPACE} -f elasticsearch-ap-21.yaml
 # if you see any issues, check the pod status - see command below
 # After this, you should see below
 # Storage: allocated under PersistentVolumeClaims (PVCs) in the namespace ${UNAMESPACE}
