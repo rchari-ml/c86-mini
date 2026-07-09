@@ -47,6 +47,8 @@ gcloud compute networks subnets update default \
 gcloud compute networks subnets describe \
   projects/c8-labs/regions/asia-south2/subnetworks/default
 
+# Two options available:
+# Option a: GKE Standard
 gcloud beta container --project "c8-labs" clusters create "c8-labs-sravana" \
   --addons HorizontalPodAutoscaling,HttpLoadBalancing,GcePersistentDiskCsiDriver \
   --autoscaling-profile=optimize-utilization \
@@ -72,6 +74,21 @@ gcloud beta container --project "c8-labs" clusters create "c8-labs-sravana" \
   --spot --num-nodes=1 --total-min-nodes=1 --total-max-nodes=5 \
   --workload-vulnerability-scanning=disabled \
   --enable-master-authorized-networks --master-authorized-networks="0.0.0.0/0"
+
+# (OR)
+# b. GKE Auto Pilot
+gcloud container clusters create-auto "c8-labs-sravana-ap-21" \
+  --project "c8-labs" \
+  --region "asia-south2" \
+  --network "projects/c8-labs/global/networks/default" \
+  --subnetwork "projects/c8-labs/regions/asia-south2/subnetworks/default" \
+  --cluster-secondary-range-name="gke-pods" \
+  --services-secondary-range-name="gke-services" \
+  --release-channel=stable \
+  --enable-private-nodes \
+  --enable-master-authorized-networks \
+  --master-authorized-networks="0.0.0.0/0"
+
 
 # optional config
 gcloud container clusters update c8-labs-sravana --region "asia-south2" --enable-image-streaming

@@ -11,7 +11,7 @@ spec:
   tls:
     - hosts:
         - dashboard-c8-labs.makelabs.in
-      secretName: c8-labs-init-certs
+      secretName: dashboard-makelabs-in-tls
 
   rules:
     - host: dashboard-c8-labs.makelabs.in
