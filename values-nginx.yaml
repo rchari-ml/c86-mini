@@ -1,4 +1,8 @@
 controller:
+  service:
+    type: ClusterIP
+    enableHttp: false
+    enableHttps: true
   extraVolumes:
     - name: custom-ca
       secret:

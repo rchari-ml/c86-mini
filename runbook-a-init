@@ -121,6 +121,18 @@ helm install nginx-ingress ingress-nginx/ingress-nginx --namespace c8-labs-ingre
   --set-string controller.config.proxy-busy-buffers-size="128K" \
   -f values-nginx.yaml
 
+# create new namespace for cloudflare objects
+# secret to hold the cf token (from cf dashboard)
+kubectl create namespace cloudflare
+
+# Linked to tunnel name: c8-labs-gke-ap-21
+kubectl create secret generic cloudflared-token \
+  --namespace cloudflare \
+  --from-literal=token='<YOUR_TOKEN>'
+
+# add cloudflare tunnel deployment
+kubectl apply -f c8-labs-cf-tunnel.yaml
+
 # add headlamp repo and install in kubee-system
 # add initial set of certificates - used by headlamp dashboard
 helm repo add headlamp https://kubernetes-sigs.github.io/headlamp/
