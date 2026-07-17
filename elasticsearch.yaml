@@ -266,13 +266,8 @@ schedulerName: ""
 
 imagePullSecrets:
   - name: registry-docker-hub
-nodeSelector:
-  cloud.google.com/gke-spot: "true"
-tolerations:
-  - key: cloud.google.com/gke-spot
-    operator: Equal
-    value: "true"
-    effect: NoSchedule
+nodeSelector: {}
+tolerations: []
 
 # Enabling this will publicly expose your Elasticsearch instance.
 # Only enable this if you have security enabled on your cluster
