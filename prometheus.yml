@@ -69,6 +69,8 @@ spec:
       labels:
         app: prometheus
     spec:
+      nodeSelector:
+        cloud.google.com/gke-spot: "true"
       containers:
         - name: prometheus
           image: prom/prometheus:v3.5.0

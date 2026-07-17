@@ -19,6 +19,8 @@ connectors:
   replicas: 1
   metrics:
     prometheus: /actuator/prometheus
+  nodeSelector:
+    cloud.google.com/gke-spot: "true"
   resources:
     requests:
       cpu: "500m"

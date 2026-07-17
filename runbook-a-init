@@ -136,7 +136,8 @@ kubectl apply -f c8-labs-cf-tunnel.yaml
 # add headlamp repo and install in kubee-system
 # add initial set of certificates - used by headlamp dashboard
 helm repo add headlamp https://kubernetes-sigs.github.io/headlamp/
-helm install my-headlamp headlamp/headlamp --namespace c8-labs-ingress-nginx
+helm install my-headlamp headlamp/headlamp --namespace c8-labs-ingress-nginx --set-string 'nodeSelector.cloud\.google\.com/gke-spot=true'
+
 kubectl get pods -n  c8-labs-ingress-nginx
 
 kubectl create secret tls dashboard-makelabs-in-tls \

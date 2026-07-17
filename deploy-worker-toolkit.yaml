@@ -13,6 +13,8 @@ spec:
       labels:
         app: toolkit-app
     spec:
+      nodeSelector:
+        cloud.google.com/gke-spot: "true"
       containers:
       - name: toolkit-app
         image: asia-south2-docker.pkg.dev/c8-labs/c8-labs-repo/toolkit-app:v1

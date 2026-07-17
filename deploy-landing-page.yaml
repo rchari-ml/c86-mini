@@ -13,6 +13,8 @@ spec:
       labels:
         app: nginx-static-web-app
     spec:
+      nodeSelector:
+        cloud.google.com/gke-spot: "true"
       containers:
       - name: nginx-static-web-app
         image: ${WEBPAGEAPPURL}

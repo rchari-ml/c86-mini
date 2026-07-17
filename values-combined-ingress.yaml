@@ -171,6 +171,8 @@ identity:
   image:
     pullSecrets:
       - name: registry-docker-hub
+  nodeSelector:
+    cloud.google.com/gke-spot: "true"
   contextPath: "/identity"
   fullURL: "https://${UNAMESPACE}.makelabs.in/identity"
   firstUser:
@@ -208,6 +210,8 @@ console:
   image:
     pullSecrets:
       - name: registry-camunda-cloud
+  nodeSelector:
+    cloud.google.com/gke-spot: "true"
   nodeEnv: learning
   replicas: 1
   keycloak:
@@ -294,6 +298,8 @@ optimize:
     pullSecrets:
       - name: registry-docker-hub
   contextPath: "/optimize"
+  nodeSelector:
+    cloud.google.com/gke-spot: "true"
 #  ingress:
 #    enabled: true
   resources:

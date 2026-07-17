@@ -44,3 +44,6 @@ AWSCLIV2.pkg
 truststore.pem
 google-roots.crt
 grafana.my-ns.yaml
+.DS_Store
+google-api-gw-cert.pem
+raghu-makelabs-in-mls-c8-labs-zeebe-toolkit.jks

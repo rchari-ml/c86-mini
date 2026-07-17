@@ -3,6 +3,10 @@ controller:
     type: ClusterIP
     enableHttp: false
     enableHttps: true
+
+  nodeSelector:
+    cloud.google.com/gke-spot: "true"
+
   extraVolumes:
     - name: custom-ca
       secret:

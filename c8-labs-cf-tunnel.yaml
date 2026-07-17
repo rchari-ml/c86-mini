@@ -13,6 +13,8 @@ spec:
       labels:
         app: cloudflared
     spec:
+      nodeSelector:
+        cloud.google.com/gke-spot: "true"
       containers:
       - name: cloudflared
         image: cloudflare/cloudflared:latest
