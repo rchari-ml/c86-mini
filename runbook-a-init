@@ -242,3 +242,93 @@ gcloud compute networks subnets describe default \
 
 # delete cluster
 gcloud beta container --project "c8-labs" clusters delete "c8-labs-sravana"  --region "asia-south2"
+
+
+######
+### NAT gateway - reference
+$ gcloud compute routers nats list --router=c8-labs-router-two --router-region asia-south2
+NAME                 NAT_IP_ALLOCATE_OPTION  SOURCE_SUBNETWORK_IP_RANGES_TO_NAT  ENDPOINT_TYPES
+c8-labs-external-gw  AUTO_ONLY               ALL_SUBNETWORKS_ALL_IP_RANGES       ENDPOINT_TYPE_VM
+
+$ gcloud compute routers nats list --router=c8-labs-router --router-region asia-south1 
+NAME                 NAT_IP_ALLOCATE_OPTION  SOURCE_SUBNETWORK_IP_RANGES_TO_NAT     ENDPOINT_TYPES
+c8-labs-external-gw  AUTO_ONLY               ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES  ENDPOINT_TYPE_VM
+
+$ gcloud compute routers nats describe c8-labs-external-gw \
+    --router=c8-labs-router \
+    --region=asia-south1
+autoNetworkTier: STANDARD
+effectiveTcpTimeWaitTimeoutSec: 120
+enableDynamicPortAllocation: true
+enableEndpointIndependentMapping: false
+endpointTypes:
+- ENDPOINT_TYPE_VM
+logConfig:
+  enable: true
+  filter: ERRORS_ONLY
+maxPortsPerVm: 65536
+minPortsPerVm: 64
+name: c8-labs-external-gw
+natIpAllocateOption: AUTO_ONLY
+sourceSubnetworkIpRangesToNat: ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES
+type: PUBLIC
+
+### NAT router - for reference
+# two routers: 
+# one for asia-south1 -> c8-labs-router 
+# second for asia-south2 -> c8-labs-router-two
+gcloud compute routers list
+
+gcloud compute routers describe c8-labs-router \
+    --region=asia-south1
+creationTimestamp: '2025-08-01T00:31:34.777-07:00'
+description: ''
+encryptedInterconnectRouter: false
+id: '3000999523714716602'
+kind: compute#router
+name: c8-labs-router
+nats:
+- autoNetworkTier: STANDARD
+  effectiveTcpTimeWaitTimeoutSec: 120
+  enableDynamicPortAllocation: true
+  enableEndpointIndependentMapping: false
+  endpointTypes:
+  - ENDPOINT_TYPE_VM
+  logConfig:
+    enable: true
+    filter: ERRORS_ONLY
+  maxPortsPerVm: 65536
+  minPortsPerVm: 64
+  name: c8-labs-external-gw
+  natIpAllocateOption: AUTO_ONLY
+  sourceSubnetworkIpRangesToNat: ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES
+  type: PUBLIC
+network: https://www.googleapis.com/compute/v1/projects/c8-labs/global/networks/default
+region: https://www.googleapis.com/compute/v1/projects/c8-labs/regions/asia-south1
+selfLink: https://www.googleapis.com/compute/v1/projects/c8-labs/regions/asia-south1/routers/c8-labs-router
+
+gcloud compute routers describe c8-labs-router-two \
+    --region=asia-south2
+creationTimestamp: '2025-08-04T07:39:58.159-07:00'
+description: ''
+encryptedInterconnectRouter: false
+id: '2118979649626011858'
+kind: compute#router
+name: c8-labs-router-two
+nats:
+- autoNetworkTier: STANDARD
+  effectiveTcpTimeWaitTimeoutSec: 120
+  enableDynamicPortAllocation: false
+  enableEndpointIndependentMapping: false
+  endpointTypes:
+  - ENDPOINT_TYPE_VM
+  logConfig:
+    enable: true
+    filter: ERRORS_ONLY
+  name: c8-labs-external-gw
+  natIpAllocateOption: AUTO_ONLY
+  sourceSubnetworkIpRangesToNat: ALL_SUBNETWORKS_ALL_IP_RANGES
+  type: PUBLIC
+network: https://www.googleapis.com/compute/v1/projects/c8-labs/global/networks/default
+region: https://www.googleapis.com/compute/v1/projects/c8-labs/regions/asia-south2
+selfLink: https://www.googleapis.com/compute/v1/projects/c8-labs/regions/asia-south2/routers/c8-labs-router-two
