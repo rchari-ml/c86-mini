@@ -3,6 +3,7 @@ description: Minimal IAM permissions for namespace-scoped GKE developers for run
 stage: GA
 includedPermissions:
 - resourcemanager.projects.get
+- artifactregistry.repositories.downloadArtifacts
 - container.clusters.connect
 - container.clusters.get
 - container.thirdPartyObjects.create
