@@ -77,6 +77,7 @@ keytool -importcert -alias ml-ca -file cert-origin_ca_rsa_root.pem -keystore ${U
 # import google roots pem to the jks. 
 # plus, import cf origin root pem full chain to the jks. 
 # toolkit needs it for cert chain validation.
+openssl s_client -connect $UNAMESPACE:443 -showcerts <  /dev/null 2> /dev/null | sed -n '/-----BEGIN CERTIFICATE-----/,/-----END CERTIFICATE-----/p' > google-roots.pem
 keytool -importcert -alias ml-google-roots -file google-roots.pem                 -keystore ${UNAMESPACE}-zeebe-toolkit.jks -storepass changeit -noprompt
 keytool -importcert -alias ml-origin-ca        -file cert-origin_ca_rsa_root.pem  -keystore ${UNAMESPACE}-zeebe-toolkit.jks -storepass changeit -noprompt
 keytool -importcert -alias ml-fullchain-cert   -file cert-fullchain-c8-labs.pem   -keystore ${UNAMESPACE}-zeebe-toolkit.jks -storepass changeit -noprompt
@@ -116,4 +117,4 @@ kubectl create secret generic console-certificates-tls-secret  --from-file=./cer
 # Cleanup at the end
 rm -f ${UNAMESPACE}-zeebe.p12  ${UNAMESPACE}-zeebe.jks  ./${UNAMESPACE}-zeebe-key-pkcs8.pem ./${UNAMESPACE}-zeebe-toolkit.jks
 rm -f keycloak-keystore.jks keycloak-keystore.p12 keycloak-truststore.jks
-rm -f ${UNAMESPACE}-zeebe-toolkit.p12
+rm -f ${UNAMESPACE}-zeebe-toolkit.p12 google-roots.pem
