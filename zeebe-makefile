@@ -77,11 +77,23 @@ keytool -importcert -alias ml-ca -file cert-origin_ca_rsa_root.pem -keystore ${U
 # import google roots pem to the jks. 
 # plus, import cf origin root pem full chain to the jks. 
 # toolkit needs it for cert chain validation.
-openssl s_client -connect "${UNAMESPACE}.makelabs.in:443" -showcerts <  /dev/null 2> /dev/null | sed -n '/-----BEGIN CERTIFICATE-----/,/-----END CERTIFICATE-----/p' > google-roots.pem
-keytool -importcert -alias ml-google-roots -file google-roots.pem                 -keystore ${UNAMESPACE}-zeebe-toolkit.jks -storepass changeit -noprompt
+echo "Add certs from ${UNAMESPACE}.makelabs.in:443 to JKS "
+openssl s_client -connect ${UNAMESPACE}.makelabs.in:443 -showcerts <  /dev/null 2> /dev/null | sed -n '/-----BEGIN CERTIFICATE-----/,/-----END CERTIFICATE-----/p' > ml-cf-url-google-root.pem
+
+csplit -z -f ml-cf-url-cert-  -b "%02d.pem"  ml-cf-url-google-root.pem '/-----BEGIN CERTIFICATE-----/' '{*}'
+
+keytool -importcert  -alias ml-cf-url-cert0  -file ml-cf-url-cert-00.pem  -keystore  ${UNAMESPACE}-zeebe-toolkit.jks   -storepass changeit  -noprompt
+
+keytool -importcert  -alias ml-cf-url-cert1  -file ml-cf-url-cert-01.pem  -keystore  ${UNAMESPACE}-zeebe-toolkit.jks   -storepass changeit  -noprompt
+
+keytool -importcert  -alias ml-cf-url-cert2  -file ml-cf-url-cert-02.pem  -keystore  ${UNAMESPACE}-zeebe-toolkit.jks   -storepass changeit  -noprompt
+
+
 keytool -importcert -alias ml-origin-ca        -file cert-origin_ca_rsa_root.pem  -keystore ${UNAMESPACE}-zeebe-toolkit.jks -storepass changeit -noprompt
 keytool -importcert -alias ml-fullchain-cert   -file cert-fullchain-c8-labs.pem   -keystore ${UNAMESPACE}-zeebe-toolkit.jks -storepass changeit -noprompt
 
+echo "Below are the list of certs available in ${UNAMESPACE}-zeebe-toolkit.jks "
+keytool -list -storepass changeit  -keystore ${UNAMESPACE}-zeebe-toolkit.jks 
 
 kubectl create secret generic ${UNAMESPACE}-zeebe-toolkit-jks  --from-file=${UNAMESPACE}-zeebe-toolkit.jks   -n ${UNAMESPACE}
 
@@ -118,3 +130,4 @@ kubectl create secret generic console-certificates-tls-secret  --from-file=./cer
 rm -f ${UNAMESPACE}-zeebe.p12  ${UNAMESPACE}-zeebe.jks  ./${UNAMESPACE}-zeebe-key-pkcs8.pem ./${UNAMESPACE}-zeebe-toolkit.jks
 rm -f keycloak-keystore.jks keycloak-keystore.p12 keycloak-truststore.jks
 rm -f ${UNAMESPACE}-zeebe-toolkit.p12 google-roots.pem
+rm -f ml-cf-url-cert-00.pem ml-cf-url-cert-01.pem ml-cf-url-cert-02.pem
