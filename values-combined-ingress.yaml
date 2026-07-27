@@ -199,8 +199,6 @@ identity:
     - name: identity-truststore
       secret:
         secretName: ${UNAMESPACE}-zeebe-toolkit-jks
-  nodeSelector: # set to false for identity
-    cloud.google.com/gke-spot: "false"
 
 
 
