@@ -47,6 +47,7 @@ keytool -import -alias elasticsearch -keystore externaldb.jks -storetype jks -fi
 # import google roots pem to the jks. 
 # plus, import origin pem full chain to the jks. 
 # orchestration needs it for cert chain validation.
+openssl s_client -connect "${UNAMESPACE}.makelabs.in:443" -showcerts <  /dev/null 2> /dev/null | sed -n '/-----BEGIN CERTIFICATE-----/,/-----END CERTIFICATE-----/p' > google-roots.pem
 keytool -importcert -alias ml-google-roots -file google-roots.pem                 -keystore externaldb.jks -storepass changeit -noprompt
 # cert-fullchain-c8-labs.pem
 kubectl get secret c8-labs-init-certs -n c8-labs-ingress-nginx  -o jsonpath='{.data.cert-fullchain-c8-labs\.pem}' | base64 -d > cert-fullchain-c8-labs.pem
@@ -56,4 +57,4 @@ keytool -importcert -alias ml-fullchain-cert    -file cert-fullchain-c8-labs.pem
 kubectl  create secret -n ${UNAMESPACE} generic elastic-jks --from-file=externaldb.jks
 
 rm -f elastic-certificates.p12 elastic-certificate.pem elastic-certificate.crt  externaldb.jks
-rm -f tls.crt ca.crt tls.key
+rm -f tls.crt ca.crt tls.key google-roots.pem 
