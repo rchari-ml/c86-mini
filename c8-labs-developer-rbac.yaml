@@ -44,5 +44,6 @@ includedPermissions:
 - logging.usage.get
 - logging.views.get
 - logging.views.list
+- logging.views.access
 - observability.scopes.get
 - resourcemanager.projects.get
