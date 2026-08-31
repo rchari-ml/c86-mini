@@ -5,6 +5,12 @@ metadata:
   namespace: c8-labs-ingress-nginx
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    # --- ADD THESE WEBSOCKET & TIMEOUT SETTINGS for interactive access to participants ---
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
 spec:
   ingressClassName: nginx
 

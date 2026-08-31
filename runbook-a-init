@@ -149,8 +149,9 @@ kubectl create secret tls dashboard-makelabs-in-tls \
   --key=./cert-main-key-c8-labs.key \
   -n c8-labs-ingress-nginx
 
-# apply igress rules for K8S Dashboard
+# apply igress rules for K8S Dashboard and custom RBAC role
 kubectl apply -f c8-ingress-headlamp.yaml
+kubectl apply -f c8-labs-participant.yaml 
 # end of headlamp
 
 # add initial set of certificates to nginx ingress controller
