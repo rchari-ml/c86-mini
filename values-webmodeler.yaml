@@ -1,0 +1,28 @@
+global:
+  identity:
+    auth:
+      webModeler:
+        redirectUrl: "https://${UNAMESPACE}.makelabs.in/modeler"
+
+webModeler:
+  enabled: true
+  contextPath: "/modeler"
+  restapi:
+    mail:
+      fromAddress: noreply@example.com
+      smtpHost: smtp.example.com
+      smtpPort: 587
+      smtpUser: your-smtp-user
+      secret:
+        inlineSecret: your-smtp-password
+    externalDatabase:
+      host: "${UNAMESPACE}-postgresql"
+      port: 5432
+      database: "web-modeler"
+      username: "web-modeler"
+      secret:
+        existingSecret: "identity-secret-for-components"
+        existingSecretKey: "postgres-user-password"
+
+webModelerPostgresql:
+  enabled: false

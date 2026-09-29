@@ -1,0 +1,49 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ${UNAMESPACE}-ingress-webmodeler
+  namespace: ${UNAMESPACE}
+  labels:
+    app: camunda-platform
+    app.kubernetes.io/instance: ${UNAMESPACE}
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: camunda-platform
+    app.kubernetes.io/part-of: camunda-platform
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    meta.helm.sh/release-name: ${UNAMESPACE}
+    meta.helm.sh/release-namespace: ${UNAMESPACE}
+    kubernetes.io/ingress.allow-http: "false"  # on ingress, we only allow HTTPS. 
+    #networking.gke.io/managed-certificates: c8-managed-cert # shift to cf origin cert
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP" # Tell GKE to use HTTPS to backend
+    #nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    #nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    #nginx.ingress.kubernetes.io/proxy-ssl-secret: "c8-labs-ingress-nginx/custom-ca"
+    #nginx.ingress.kubernetes.io/proxy-ssl-verify: "on"
+    #nginx.ingress.kubernetes.io/proxy-ssl-verify-depth: "2"    
+    #nginx.ingress.kubernetes.io/proxy-ssl-server-name: "on"
+    #nginx.ingress.kubernetes.io/proxy-ssl-name: "${UNAMESPACE}.makelabs.in"
+spec:
+  tls:
+    - hosts:
+        - ${UNAMESPACE}.makelabs.in
+      secretName: cf-origin-cert
+  ingressClassName: "nginx"
+  rules:
+    - host: ${UNAMESPACE}.makelabs.in
+      http:
+        paths:
+          - path: /modeler
+            pathType: Prefix
+            backend:
+              service:
+                name: ${UNAMESPACE}-web-modeler-restapi
+                port:
+                  number: 80
+          - path: /modeler-ws
+            pathType: Prefix
+            backend:
+              service:
+                name: ${UNAMESPACE}-web-modeler-websockets
+                port:
+                  number: 80

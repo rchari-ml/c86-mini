@@ -26,6 +26,7 @@ cert-origin_ca_rsa_root.pem
 cert-main-origin_ca_rsa_root.pem
 values-connectors-env.my-ns.yaml
 values-combined-ingress.my-ns.yaml
+values-webmodeler.my-ns.yaml
 prometheus.my-ns.yaml
 ml-ca.crt 
 ml-toolkit.jks
@@ -47,3 +48,5 @@ grafana.my-ns.yaml
 .DS_Store
 google-api-gw-cert.pem
 raghu-makelabs-in-mls-c8-labs-zeebe-toolkit.jks
+ml-cf-url-google-root.pem
+google-roots.pem
