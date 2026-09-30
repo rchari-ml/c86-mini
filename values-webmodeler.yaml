@@ -23,6 +23,19 @@ webModeler:
       secret:
         existingSecret: "identity-secret-for-components"
         existingSecretKey: "postgres-user-password"
+    env:
+      - name: CAMUNDA_MODELER_CLUSTERS_0_ID
+        value: "${UNAMESPACE}"
+      - name: CAMUNDA_MODELER_CLUSTERS_0_NAME
+        value: "${UNAMESPACE}"
+      - name: CAMUNDA_MODELER_CLUSTERS_0_VERSION
+        value: "8.9.4"
+      - name: CAMUNDA_MODELER_CLUSTERS_0_AUTHENTICATION
+        value: "BEARER_TOKEN"
+      - name: CAMUNDA_MODELER_CLUSTERS_0_URL_GRPC
+        value: "grpc://${UNAMESPACE}-zeebe:26500"
+      - name: CAMUNDA_MODELER_CLUSTERS_0_URL_REST
+        value: "http://${UNAMESPACE}-zeebe:8080"
 
 webModelerPostgresql:
   enabled: false
